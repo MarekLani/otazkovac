@@ -1,0 +1,139 @@
+﻿@model CQA.Models.Question
+
+@{
+    ViewBag.Title = "Details";
+}
+
+
+@section Styles {
+        @Styles.Render("~/Content/themes/base/css")
+}
+
+<h2> @Html.DisplayFor(model => model.Title) </h2>
+<div>@Html.DisplayFor(model => model.QuestionText)</div>
+<div id="answers">
+@if (!Model.Answers.Any())
+{
+    <span id="noAnswers">Zatiaľ neboli pridané žiadne odpovede.</span>
+}
+else{
+    
+    foreach (var answer in Model.Answers)
+    {
+        <div class="answer">
+            <div class="answer-author"> @(answer.Author.RealName)</div>
+            <div class="answer-text"> @(answer.Text)</div>
+
+            @using(Ajax.BeginForm(new AjaxOptions(){
+                HttpMethod = "POST",
+                OnBegin = "onAnswerCreation",
+                Url = Url.Action("CreateRating", "Questions")})){
+                <input name="answerId" type="hidden" value="@(answer.AnswerId)" />
+                <input type="hidden" class="rating" name="rating" value="50" />
+            
+                <div class="slider-range"></div> 
+                <input type="submit" />
+                <div class="textValue">3</div>
+            }
+        <!-- //TODO add average rating -->
+       </div>   
+    }  
+}
+    </div>
+
+@if(!Model.Answers.Where(i => i.UserId == WebSecurity.CurrentUserId).Any()){
+    Html.RenderPartial("_CreateAnswerForm",new CQA.Models.CreateAnswer(Model.QuestionId));
+    <div id="loader" style="display:none">Loadujem</div>
+}
+  
+ 
+
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id=Model.QuestionId }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>
+
+@section Scripts {
+
+    <script type="text/javascript" src="/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+    @Scripts.Render("~/bundles/jqueryui")
+    @Scripts.Render("~/Scripts/jquery.ui.touch-punch.min.js")
+    <script>$('#widget').draggable();</script>
+   <script>
+       $(function () {
+           $(document).on("mySliderTrigger", ".slider-range", function () {
+               $(this).slider({
+                   range: false,
+                   min: 0,
+                   max: 100,
+                   value: 50,
+                   slide: function (event, ui) {
+                       $(this).parent().find(".rating").val(ui.value);
+                       hex = hexFromRGB(10, 10, ui.value);
+                       if (ui.value > 50) {
+                           $(this).parent().find(".ui-widget-content").css("background", "rgba(24, 179, 70, " + (ui.value - 50) * 2 / 100 + ")");
+                       }
+                       else {
+                           $(this).parent().find(".ui-widget-content").css("background", "rgba(219, 23, 9, " + (50-ui.value) * 2 / 100 + ")");
+                       }
+                       var el = $(this).parent().find(".textValue");
+                       if (ui.value < 20)
+                           el.html("1")
+                       else if (ui.value < 40)
+                           el.html("2")
+                       else if (ui.value < 60)
+                           el.html("3")
+                       else if (ui.value < 80)
+                           el.html("4")
+                       else el.html("5");
+                           
+                   }
+               });
+
+           });
+
+           $(".slider-range").each(function () { $(this).trigger('mySliderTrigger') })
+
+       });
+
+       function hexFromRGB(r, g, b) {
+           var hex = [
+           r.toString(16),
+           g.toString(16),
+           b.toString(16)
+           ];
+           $.each(hex, function (nr, val) {
+               if (val.length === 1) {
+                   hex[nr] = "0" + val;
+               }
+           });
+           return hex.join("").toUpperCase();
+       }
+    </script>
+        <script>
+
+            function onAnswerCreation() {
+                $("#loader").fadeIn(100);
+            }
+
+            function AnswerCreated(data) {
+                var s = '<div class="answer">' +
+               '<div class="answer-author">' + data.answerAuthor + '</div>' +
+               '<div class="answer-text">' + data.answerText + '</div>' +
+                '<form data-ajax="true" data-ajax-method="POST" data-ajax-url="/Questions/CreateRating" method="post">' +
+                    '<input name="answerId" type="hidden" value="'+data.answerId+'" />' +
+                    '<input type="hidden" class="rating" name="rating" value="50" />' +
+                    '<div class="slider-range"></div>' +
+                    '<input type="submit" />' +
+                '</form>' +
+                '</div>'
+
+                $("#loader").hide();
+                $("#noAnswers").remove();
+                $("#newAnswer").remove();
+                $(s).hide().appendTo("#answers").fadeIn(300);
+                $(".slider-range").last().trigger('mySliderTrigger');
+
+            }
+    </script>
+}

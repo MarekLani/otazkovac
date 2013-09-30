@@ -1,0 +1,416 @@
+/*
+ * Copyright 2012 soundarapandian
+ * Licensed under the Apache License, Version 2.0
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+/*Start : Override Bootstrap navigation */
+.navbar
+{
+	margin: 0;
+	padding: 0;
+	background-color:#219452;
+	/*box-shadow: 0px 0px 7px #000;
+	border-bottom: 1px #183867 solid;*/
+	/*height:70px !important;*/
+}
+.navbar-inner, footer {
+  border: none;
+  line-height: 50px;
+  background: url('../img/header-footer.png');
+  background-position: bottom;
+  
+}
+
+.navbar .brand-bootbus {
+	font-size: 30px;
+	cursor: pointer;
+	text-shadow: 0 1px 0px black;
+	color: #a8a9a9;
+	margin-top: 10px;
+  font-weight: bold;
+  vertical-align:center;
+}
+.navbar .nav li.dropdown > .dropdown-toggle .caret {
+	border-top-color: white;
+	border-bottom-color: white;
+}
+
+.caret
+{
+	vertical-align:center;
+	margin-top:20px !important;
+}
+
+.navbar .nav > li > a {
+	text-shadow: none;
+	color: white;
+	font-size: 17px;
+  font-weight: normal;
+
+
+}
+
+.nav li
+{
+	padding-top:0 !important;
+	height: 100%;
+	line-height:50px !important;
+}
+.navbar .nav > li > a:hover,
+.navbar .nav > li > a:focus {
+	color: white !important;
+	background: #333333 !important;
+	
+		 
+}
+.dropdown-menu li > a:hover,
+.dropdown-menu li > a:focus,
+.dropdown-submenu:hover > a {
+	background: #333333;
+}
+
+.nav li
+{
+	padding-top:5px;
+}
+
+.sidebar-nav {
+    padding: 9px 0;
+}
+
+.dropdown-menu .sub-menu {
+    left: 100%;
+    position: absolute;
+    top: 0;
+    visibility: hidden;
+    margin-top: -1px;
+}
+
+.dropdown-menu li:hover .sub-menu {
+    visibility: visible;
+}
+
+.dropdown:hover .dropdown-menu {
+    display: block;
+}
+
+.nav-tabs .dropdown-menu, .nav-pills .dropdown-menu, .navbar .dropdown-menu {
+    margin-top: 0;
+}
+
+
+
+/* End : Override Bootstrap navigation */
+
+/* Start : Override Bootstrap hero unit */
+.hero-unit {
+	background: none;
+	padding: 0 0 0 0;
+	margin: 0;
+}
+.hero-unit h1 {
+  margin: 10px 0 10px 0;
+  padding:10px;
+  text-shadow: none;/* 0 1px 0px #000102 !important;*/
+  /*background: rgba(54, 25, 25, .5);*/
+  font-weight: 100;
+}
+/* End : Override Bootstrap hero unit */
+
+/* Start : Override Bootstrap carousel */
+.carousel-control {
+  border: none;
+  width:40px;
+  margin: 0 10px 0 10px;
+}
+.left {
+  left: 0;
+}
+.right {
+  right: 0 !important;
+}
+
+.container-fluid
+{
+	padding-right: 0px;
+	padding-left: 0px;
+}
+
+.hero-unit h1
+{
+	color: white;
+}
+/* End : Override Bootstrap carousel */
+
+/* Start: Override Bootstrap Accordian */
+
+.accordion-group,
+.accordion-inner {
+  border: none;
+}
+
+/* End: Override Bootstrap Accordian */
+
+/* Start: Bootbusiness specific CSS */
+.content {
+  padding: 30px 0 !important;
+  background: url('../img/content.png');
+}
+.thumbnail img {
+  width: 100%;
+}
+.active-link {
+  background-color: #2E3436;
+}
+.page-header {
+  padding: 0 0 10px;
+  margin: 0;
+  border-bottom: none;/*1px solid #303030;*/
+  text-shadow: 0 1px 0px #fff;
+
+}
+.slider {
+	margin-top: -10px;
+}
+.widget-header {
+  border: 1px solid #DDD;
+  padding: 20px 5px;
+  text-align: center;
+  margin: 0;
+  border-bottom: 0;
+  background-color: #EEEEEC;
+  -webkit-border-radius: 5px 5px 0 0;
+     -moz-border-radius: 5px 5px 0 0;
+          border-radius: 5px 5px 0 0;
+}
+.widget-body {
+  font-size: 16px;
+  padding: 30px 0 20px 0;
+  border: 1px solid #DDD;
+  -webkit-border-radius: 0 0 5px 5px;
+     -moz-border-radius: 0 0 5px 5px;
+          border-radius: 0 0 5px 5px;
+}
+.widget-footer {
+  padding: 6%;
+  background-color: #EEEEEC;
+  border-top: 1px solid #DDD;
+}
+.widget-footer p {
+  margin: 0;
+}
+.features {
+  margin-top: 10px;
+  list-style: none;
+}
+.features > li {
+  line-height: 30px;
+}
+.features > li > i {
+  margin-right: 10px;
+  font-size: 20px;
+}
+.center-align {
+  text-align: center;
+}
+.product-snap {
+  display: inline;
+}
+.article {
+  font-size: 15px;
+  line-height: 22px;
+}
+.team-member-description {
+  padding-top: 60px;
+}
+.bottom-space {
+  margin-bottom: 30px;
+}
+.bottom-space-less {
+  margin-bottom: 10px;
+}
+.post-row {
+  padding-bottom: 10px;
+  border-bottom:  1px solid #eee;
+}
+.sidebar {
+  padding: 20px 0;
+}
+.circle {
+  width: 75px;
+  height: 75px;
+  background-color: #2E3436;
+  color: white;
+  text-align: center;
+  font-size: 25px;
+  -webkit-border-radius: 75px;
+    -moz-border-radius: 75px;
+         border-radius: 75px;
+}
+.event-date {
+  padding-top: 13px;
+  display: block;
+  line-height: 25px;
+}
+.counter {
+  display: block;  
+  padding-top: 25px;
+}
+.signin-with-list {
+  list-style: none;
+}
+.signin-with-list > li {
+  margin-top: 20px;
+}
+.signin-with-list > li > a {
+  color: white;
+  padding: 8px;
+  display: inline-block;
+  cursor: pointer;
+}
+.btn-facebook {
+  background: #3679EA;
+  -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+         border-radius: 3px;
+}
+.btn-twitter {
+  background: #53cbe9;
+  -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+         border-radius: 3px;
+}
+.btn-google {
+  background: #7288de;
+  -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+         border-radius: 3px;
+}
+.btn-github {
+  background: #2E3436;
+  -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+         border-radius: 3px;
+}
+.btn-facebook:hover, .btn-twitter:hover,
+.btn-google:hover, .btn-github:hover {
+  text-decoration: none;
+}
+.form-signin-signup input[type="text"],
+.form-signin-signup input[type="password"] {
+  width: 70%;
+  height: 30px;
+}
+.form-signin-signup input {
+  margin-bottom: 15px;
+}
+.remember-me {
+  margin: 0 auto;
+  width: 70%;
+}
+.remember-me a {
+  font-size: 15px;
+}
+.contact-mail,
+.contact-mail:hover {
+  color: black;
+  text-decoration: none;
+}
+.form-contact-us input[type="text"],
+.form-contact-us textarea {
+  margin-bottom: 20px;
+  width: 70%;
+}
+.form-contact-us input[type="text"] {
+  height: 25px;
+}
+.form-contact-us textarea {
+  height: 100px;
+}
+footer {
+  color: white;
+  padding-top: 20px;
+}
+.quick-links {
+  list-style: none;
+}
+.quick-links > li {
+  line-height: 30px;
+}
+.quick-links > li > a {
+  color: white;
+}
+.social-icons-row {
+  margin-top: 50px;
+}
+.social-icons-row > a {
+  color: white;
+  font-size: 30px;
+  margin-left: 25px;
+}
+.social-icons-row > a:hover,
+.social-icons-row > a:focus {
+  color: orange;
+  text-decoration: none;
+}
+.phone-number {
+  margin-left: 25px;
+}
+.footer-divider {
+  border-top: 0;  
+  border-bottom: 1px solid #333;
+}
+/* End: Bootbusiness specific CSS */
+
+/* Start: Responsive CSS section */
+@media (max-width: 979px) {
+  .nav-collapse .dropdown-menu a {
+    color: white;
+  }
+	.nav li
+	{
+		line-height:30px !important;
+	}
+
+	.nav
+	{
+		padding-top:10px;
+	}
+  .nav-collapse .dropdown-menu a:hover {
+    background-color: #2E3436;
+  }
+  .nav-collapse .nav-header,
+  .nav-collapse .dropdown-submenu > a {
+    display: none;
+  }
+}
+@media (min-width: 1200px) {
+  body {
+    padding-top: 50px;
+  }
+
+	.container
+	{
+		max-width:900px;
+	}
+}
+/* End : Responsive CSS section */
+/*flat boostrap*/
+.well, .navbar-inner, .popover, .btn, .tooltip, input, select, textarea, pre, .progress, .modal, .add-on, .alert, .table-bordered, .nav>.active>a, .dropdown-menu, .tooltip-inner, .badge, .label, .img-polaroid {
+-moz-box-shadow: none !important;
+-webkit-box-shadow: none !important;
+box-shadow: none !important;
+-webkit-border-radius: 0px !important;
+-moz-border-radius: 0px !important;
+border-radius: 0px !important;
+border-collapse: collapse !important;
+background-image: none !important;
+}

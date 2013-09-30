@@ -1,0 +1,127 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>@ViewBag.Title - My ASP.NET MVC Application</title>
+    <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+    <meta name="viewport" content="width=device-width" />
+
+    @Styles.Render("~/Content/css")
+    @RenderSection("styles", required: false)
+
+    <link type="text/css" rel="stylesheet" href="~/Content/bootstrap/css/bootstrap.css" />
+    <link type="text/css" rel="stylesheet" href="~/Content/bootstrap/css/normalize.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="~/Content/bootstrap/css/bootstrap-responsive.css" rel="stylesheet">
+    <link href="~/Content/bootstrap/css/bootstrap-override.css" rel="stylesheet">
+
+    @Scripts.Render("~/bundles/modernizr")
+    @Scripts.Render("~/bundles/jquery")
+        
+    <script src="~/Content/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+        $("document").ready(function () {
+
+            /*Start: Prevent the default white background on blur of top navigation */
+            $(".dropdown-menu li a").mousedown(function () {
+                var dropdown = $(this).parents('.dropdown');
+                var link = dropdown.children(':first-child');
+                link.css('background-color', "#2E3436");
+                link.css('color', 'white');
+            });
+            /*End: Prevent the default white background on blur of top navigation */
+
+            /*Start : Automatically start the slider */
+            $('.carousel').carousel({
+                interval: 6000
+            });
+            /*End: Automatically start the slider */
+            
+        });
+    </script>
+    @RenderSection("scripts", required: false)
+  
+</head>
+<body>
+    <header>
+        <!-- Start: Navigation wrapper -->
+        <div class="navbar navbar-fixed-top">
+            <div class="navbar-inner">
+                <div class="container" style="height:auto; padding:0;">
+                   <!-- @Html.ActionLink("FitManager", "Welcome", "HelloWorld", new { name = "This is a test", numTimes = 5 }, new { @class = "brand brand-bootbus logo" })
+                     @Html.ActionLink("Fit", "Welcome", "HelloWorld", new { name = "This is a test", numTimes = 5 }, new { @class = "brand brand-bootbus", @style="margin-left: 5px;"  })
+                    @Html.ActionLink("Manager", "Welcome", "HelloWorld", new { name = "This is a test", numTimes = 5 }, new { @class = "brand brand-bootbus", @style="color: #d8d8d8;margin-left: 3px;"  })
+                       -->
+                    <!-- Below button used for responsive navigation -->
+                    <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                        <span class="icon-bar"></span>
+                    </button>
+                    <!-- Start: Primary navigation -->
+                    <div class="nav-collapse collapse">
+                        <ul class="nav pull-right">
+                            <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                            <li>@Html.ActionLink("About", "About", "Home")</li>
+                            <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">About<b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="our_works.html">Our works</a></li>
+                                    <li><a href="patnerships.html">Parnerships</a></li>
+                                    <li><a href="leadership.html">Leadership</a></li>
+                                    <li><a href="news.html">News</a></li>
+                                    <li><a href="events.html">Events</a></li>
+                                    <li><a href="blog.html">Blog</a></li>
+                                </ul>
+                            </li>
+                            <li><a href="contact_us.html">Contact us</a></li>
+                             @Html.Partial("_LoginPartial")
+                            
+                        </ul>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End: Navigation wrapper -->
+        <!--<div class="content-wrapper">
+                <div class="float-left">
+                    <p class="site-title">@Html.ActionLink("FitManager", "Welcome", "HelloWorld", new { name = "This is a test", numTimes = 5 }, "CQA")</p>
+                </div>
+                <div class="float-right">
+                    <section id="login">
+                        @Html.Partial("_LoginPartial")
+                    </section>
+                    <nav>
+                        <ul id="menu">
+                            <li>@Html.ActionLink("Home", "Index", "Home")</li>
+                            <li>@Html.ActionLink("About", "About", "Home")</li>
+                            <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+                -->
+    </header>
+    <div class="content">
+    @RenderSection("Banner", required: false)
+        <div class="container">
+            
+            @RenderBody()
+        </div>
+    </div>
+
+    <footer>
+        <div class="content-wrapper">
+            <div class="float-left">
+                <p>&copy; @DateTime.Now.Year - My ASP.NET MVC Application</p>
+            </div>
+        </div>
+    </footer>
+
+
+    
+    
+</body>
+</html>

@@ -1,0 +1,180 @@
+﻿@model CQA.Models.RegisterTrainerModel
+
+@{
+    ViewBag.Title = "Registrácia tréner";
+}
+
+@section Styles {
+    @Styles.Render("~/Content/themes/base/css")
+}
+<h2>RegisterTrainer</h2>
+<hgroup class="title">
+    <h1>@ViewBag.Title.</h1>
+    <h2>Create a new account.</h2>
+</hgroup>
+
+@using (Html.BeginForm(new { action = "RegisterTrainer" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary()
+
+    <fieldset>
+        <legend>Registration Form</legend>
+        <ol id="trainerRegistrationFields">
+            <li>
+                @Html.LabelFor(m => m.UserName)
+                @Html.TextBoxFor(m => m.UserName)
+            </li>
+            <li>
+                @Html.LabelFor(m => m.RealName)
+                @Html.TextBoxFor(m => m.RealName)
+                @Html.ValidationMessageFor(m => m.RealName)
+            </li>
+            <li>
+                @Html.LabelFor(m => m.Password)
+                @Html.PasswordFor(m => m.Password)
+            </li>
+            <li>
+                @Html.LabelFor(m => m.ConfirmPassword)
+                @Html.PasswordFor(m => m.ConfirmPassword)
+            </li>
+
+            <li>
+                
+            </li>
+
+            <li class="place">
+                @Html.DropDownListFor( m => m.Places[0].RegionId,
+                new SelectList(ViewBag.Regions, 
+                               "RegionId", "Name"),
+                "-- Zvoľte kraj --",
+                new { 
+                    @class= "regionDropDown"
+                })
+                <input class="city" disabled="disabled" type="text" value="Najskôr zvoľte kraj"/> 
+                @Html.TextBoxFor(m => m.Places[0].CityId, new { @class = "cityId", @type="hidden" })  
+                         
+            </li>
+
+        </ol>
+        <a href="#" id="nextAdress">Pridať ďalšiu lokalitu</a>
+        <input type="submit" value="Register" />
+    </fieldset>
+}
+
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/jqueryui")
+<script type="text/javascript">
+
+    var n = 0;
+    var selectedCities = [];
+    $(document).on("click", "#nextAdress", function (event) {
+        event.preventDefault();
+        if ($(".city").last().prop("disabled") != true && $(".city").last().val() != "") {
+            n++
+
+            $("#trainerRegistrationFields").append('<li class="place">' +
+                   '<select class="regionDropDown" data-val="true" data-val-number="The field RegionId must be a number." data-val-required="The RegionId field is required." id="Places_0__RegionId" name="Places[' + n + '].RegionId">' +
+                        '<option value="">-- Zvoľte kraj --</option>' +
+                        '<option value="1">Banskobystrick&#253; kraj</option>' +
+                        '<option value="2">Bratislavsk&#253; kraj</option>' +
+                        '<option value="3">Košick&#253; kraj</option>' +
+                        '<option value="4">Nitriansky kraj</option>' +
+                        '<option value="5">Prešovsk&#253; kraj</option>' +
+                        '<option value="6">Trenčiansky kraj</option>' +
+                        '<option value="7">Trnavsk&#253; kraj</option>' +
+                        '<option value="8">Žilinsk&#253; kraj</option>' +
+                    '</select>' +
+                    '<input class="city" disabled="disabled" value="Najskôr zvoľte kraj"/>' +
+                    '<input class="cityId" data-val="true" data-val-number="The field CityId must be a number." data-val-required="The CityId field is required." id="Places_0__CityId" name="Places[' + n + '].CityId" type="text" value="" />' +
+                    '<a class="removeLocality" href="#"> Zrušiť lokalitu</a>' +
+                    '</li>');
+        }
+        else {
+            alert("Predošlá lokalita zatiaľ nie je zvolená!");
+        }
+    });
+    
+    $("#trainerRegistrationFields").on("click", ".removeLocality", function (event) {
+        event.preventDefault();
+        $(this).parent().remove();
+        $(".cityId").each(function (index, value) {
+            $(this).attr('name', 'Place[' + index + '].CityId');
+        });
+        $(".regionId").each(function (index, value) {
+            $(this).attr('name', 'Place[' + index + '].RegionId');
+        });
+    });
+
+    $("#trainerRegistrationFields").on("change", ".regionDropDown", (function () {
+        $(this).siblings(".city").prop('disabled', false);
+        $(this).siblings(".city").val("");
+        $(this).siblings(".cityId").val("");
+    }));
+
+        //$("#City").focus(function () {
+        //    if ($(this).val() == 'Enter your name') {
+        //        $(this).val("");
+        //    }
+        //});
+        //$("#City").blur(function () {
+        //    if ($(this).val() == '') {
+        //        $(this).val("Enter your name");
+        //    }
+        //});
+    $("#trainerRegistrationFields").on("focus", ".city", function () {
+            $(".city").autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: "@Url.Action("GetCities")",
+                        dataType: "json",
+                        contentType: "application/json; charset=utf-8",
+                        method: "POST",
+                        data: "{'RegionId': " + this.element.siblings(".regionDropDown").val() + ", 'Name': '" + request.term + "'}",
+
+                        success: function (data) {
+                            response(
+                                $.map(data.d, function (item) {
+                                    var used = false;
+                                    $(".cityId").each(function (index, element) {
+                                        if ($(this).val() == item.CityId)
+                                            used = true;
+                                    });
+                                    if (!used)
+                                    return {
+                                        label: item.Name,
+                                        value: item.CityId
+                                    }
+                                }));
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            alert(textStatus);
+                        }
+                    });
+                },
+                minLength: 2,
+                select: function (event, ui) {
+                    event.preventDefault();
+                    $(this).val(ui.item.label);
+                    $(this).siblings(".cityId").val(ui.item.value);
+                    selectedCities.push(ui.item.value)
+
+                },
+                change: function (event, ui) {
+                    //alert("what");
+                    if ((ui.item == null || ui.item == undefined) && ($(this).val() != "")) {
+                        $(this).val("");
+                        $(this).siblings(".cityId").val("");
+                        alert("Prosím začnite písat názov mesta znovu a zvoľte jednu z ponúknutých možností.");
+                    }
+
+                }
+            });
+        });
+
+</script>
+
+}

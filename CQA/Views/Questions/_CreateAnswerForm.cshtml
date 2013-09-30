@@ -1,0 +1,22 @@
+﻿@model CQA.Models.CreateAnswer
+
+<div id="newAnswer">
+        <div>Odpovedať:</div>
+
+    @using (Ajax.BeginForm( new AjaxOptions(){
+    HttpMethod = "POST",
+    Url = Url.Action("CreateAnswer", "Questions"),
+    OnSuccess = "AnswerCreated(data)"})){
+
+        <div class="editor-field">
+            @Html.EditorFor(model => model.QuestionId, new { @class= "questionId" })
+        </div>
+         <div class="editor-label">
+            @Html.LabelFor(model => model.Text)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.Text, new { @class= "questionText" })
+        </div>
+        <input type="submit" class="submit" value="Create" />
+    }
+    </div>
