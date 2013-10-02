@@ -32,8 +32,8 @@ namespace CQA.Models
         [Required]
         public string RealName { get; set; }
 
-        [Required]
-        public string UrlName { get; set; }
+        //[Required]
+        //public int UisId { get; set; }
 
         public virtual ICollection<UploadedImage> Images { get; set; }
 
@@ -44,17 +44,6 @@ namespace CQA.Models
         
     }
 
-    public class RegisterExternalLoginModel
-    {
-        [Required]
-        [Display(Name = "User name")]
-        public string UserName { get; set; }
-
-        public string ExternalLoginData { get; set; }
-
-        [Display(Name = "Email")]
-        public string Email { get; set; }
-    }
 
     public class LocalPasswordModel
     {
@@ -78,7 +67,7 @@ namespace CQA.Models
     public class LoginModel
     {
         [Required]
-        [Display(Name = "Email")]
+        [Display(Name = "Prihlasovacie meno")]
         public string UserName { get; set; }
 
         [Required]
@@ -86,7 +75,7 @@ namespace CQA.Models
         [Display(Name = "Password")]
         public string Password { get; set; }
 
-        [Display(Name = "Remember me?")]
+        [Display(Name = "Pamatať si ma?")]
         public bool RememberMe { get; set; }
     }
 
@@ -97,7 +86,7 @@ namespace CQA.Models
         public string UserName { get; set; }
 
         [Required]
-        [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 6)]
+        [StringLength(100, ErrorMessage = "The {0} must be at least {2} characters long.", MinimumLength = 0)]
         [DataType(DataType.Password)]
         [Display(Name = "Password")]
         public string Password { get; set; }

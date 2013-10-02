@@ -8,6 +8,10 @@ using System.Web;
 using System.Web.Mvc;
 using CQA.Models;
 using WebMatrix.WebData;
+using System.DirectoryServices.Protocols;
+using System.Security.Permissions;
+using System.DirectoryServices.AccountManagement;
+using System.DirectoryServices;
 
 namespace CQA.Controllers
 {
@@ -15,12 +19,14 @@ namespace CQA.Controllers
     public class QuestionsController : Controller
     {
         private CQADBContext db = new CQADBContext();
+        // static variables used throughout the example
 
         //
         // GET: /Questions/
 
         public ActionResult Index()
         {
+
             return View(db.Questions.ToList());
         }
 

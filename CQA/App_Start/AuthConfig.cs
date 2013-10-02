@@ -23,7 +23,7 @@ namespace CQA
             //OAuthWebSecurity.RegisterTwitterClient(
             //    consumerKey: "",
             //    consumerSecret: "");
-            OAuthWebSecurity.RegisterClient(new CQA.App_Start.FacebookScopedClient("345626672235621", "9785de07193c0585fd849a7dbd2f4e12"), "Facebook", null);
+           
             /*OAuthWebSecurity.RegisterFacebookClient(
                 appId: "345626672235621",
                 appSecret: "9785de07193c0585fd849a7dbd2f4e12");*/

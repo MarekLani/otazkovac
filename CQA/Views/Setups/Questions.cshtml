@@ -1,0 +1,31 @@
+﻿@model IEnumerable<CQA.Models.Question>
+
+@{
+    ViewBag.Title = "CQA";
+}
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+
+
+@foreach (var item in Model) {
+   <div class="question"> 
+       <div style="float:left; margin-right:20px;">
+           <div style="text-align:center">@item.Answers.Count()</div>
+           <div> @if(item.Answers.Count() == 1){ @Html.Raw("Odpoveď")}
+                 else if (item.Answers.Count() > 1 && item.Answers.Count() < 5)
+                 {
+                     @Html.Raw("Odpovede")
+                 }
+               else{
+                    @Html.Raw("Odpovedí")
+               } 
+           </div> </div> 
+       
+       <a href="@Url.Action("Details", new { id=item.QuestionId })"><span style="line-height:40px; font-size:20px; vertical-align:central">@item.Title </span> </a>
+   </div>
+
+}
+
+

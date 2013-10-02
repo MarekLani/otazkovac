@@ -18,6 +18,8 @@ namespace CQA.Models
         public DbSet<Answer> Answers { get; set; }
         public DbSet<Rating> Ratings { get; set; }
         public DbSet<Comment> Comments { get; set; }
+        public DbSet<Subject> Subjects{ get; set; }
+        public DbSet<Setup> Setup { get; set; }
 
 
         // <summary>

@@ -19,11 +19,16 @@ namespace CQA.Models
         [DataType(DataType.MultilineText)]
         public string QuestionText { get; set; }
 
+        public string Hint { get; set; }
+
         public int UserId { get; set; }
         [ForeignKey("UserId")]
         public virtual UserProfile Author { get; set; }
 
         public virtual ICollection<Answer> Answers { get; set;}
+
+        public int SetupId { get; set; }
+        public virtual Setup Setup { get; set; }
 
     }
 }
