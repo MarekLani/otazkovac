@@ -19,7 +19,7 @@ namespace CQA.Models
         public DbSet<Rating> Ratings { get; set; }
         public DbSet<Comment> Comments { get; set; }
         public DbSet<Subject> Subjects{ get; set; }
-        public DbSet<Setup> Setup { get; set; }
+        public DbSet<Setup> Setups { get; set; }
 
 
         // <summary>
@@ -41,10 +41,6 @@ namespace CQA.Models
                 .HasForeignKey(u => u.UserId)
                  .WillCascadeOnDelete(false);
 
-            modelBuilder.Entity<Question>()
-                .HasRequired(c => c.Author)
-                .WithMany(u => u.Questions)
-                .HasForeignKey(u => u.UserId);
 
             modelBuilder.Entity<Rating>()
                 .HasRequired(c => c.Author)
@@ -56,7 +52,7 @@ namespace CQA.Models
                 .HasRequired(c => c.Author)
                 .WithMany(u => u.Answers)
                 .HasForeignKey(u => u.UserId)
-                .WillCascadeOnDelete(false);
+                 .WillCascadeOnDelete(false); ;
     
 
             base.OnModelCreating(modelBuilder);

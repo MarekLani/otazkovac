@@ -26,8 +26,33 @@ namespace CQA.Controllers
 
         public ActionResult Index()
         {
+            Random rand = new Random();
+            if (rand.Next(4) != 4)
+            {
+                //user is going to validate answer
+                var answers = db.Answers.OrderByDescending(a => a.Ratings.Count())
+                                    .Where(a => !a.Ratings.Where(r => r.UserId == WebSecurity.CurrentUserId).Any() && a.Ratings.Count() < 17);
+                if (answers.Any())
+                {
+                    int n = answers.First().Ratings.Count();   
+                    var bestRatedAnswers = answers.Where(a => a.Ratings.Count() == n);
+                    return View("a", bestRatedAnswers.ElementAt(rand.Next(bestRatedAnswers.Count() - 1)));
 
-            return View(db.Questions.ToList());
+                }
+            }
+
+            var questions = db.Questions.OrderBy(q => q.Answers.Count())
+                                .Where(a => !a.Answers.Where(r => r.UserId == WebSecurity.CurrentUserId).Any());
+            if (questions.Any())
+            {
+                int n = questions.First().Answers.Count();
+                var worstAnsweredQuestions = questions.Where(a => a.Answers.Count() == n);
+                return View("a", worstAnsweredQuestions.ElementAt(rand.Next(worstAnsweredQuestions.Count() - 1)));
+
+            }
+           //Else return unfortunately there is nothing to return 
+            return Json(false);
+          
         }
 
         //
@@ -60,7 +85,6 @@ namespace CQA.Controllers
         {
             if (ModelState.IsValid)
             {
-                question.Author = db.UserProfiles.Find(WebSecurity.CurrentUserId);
                 db.Questions.Add(question);
                 db.SaveChanges();
                 return RedirectToAction("Index");

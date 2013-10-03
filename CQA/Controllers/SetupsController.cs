@@ -20,7 +20,7 @@ namespace CQA.Controllers
 
         public ActionResult Index()
         {
-            var setup = db.Setup.Include(s => s.Subject);
+            var setup = db.Setups.Include(s => s.Subject);
             return View(setup.ToList());
         }
 
@@ -29,7 +29,7 @@ namespace CQA.Controllers
 
         public ActionResult Details(int id = 0)
         {
-            Setup setup = db.Setup.Find(id);
+            Setup setup = db.Setups.Find(id);
             if (setup == null)
             {
                 return HttpNotFound();
@@ -54,7 +54,7 @@ namespace CQA.Controllers
         {
             if (ModelState.IsValid)
             {
-                db.Setup.Add(setup);
+                db.Setups.Add(setup);
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
@@ -68,7 +68,7 @@ namespace CQA.Controllers
 
         public ActionResult Edit(int id = 0)
         {
-            Setup setup = db.Setup.Find(id);
+            Setup setup = db.Setups.Find(id);
             if (setup == null)
             {
                 return HttpNotFound();
@@ -98,7 +98,7 @@ namespace CQA.Controllers
 
         public ActionResult Delete(int id = 0)
         {
-            Setup setup = db.Setup.Find(id);
+            Setup setup = db.Setups.Find(id);
             if (setup == null)
             {
                 return HttpNotFound();
@@ -112,14 +112,22 @@ namespace CQA.Controllers
         [HttpPost, ActionName("Delete")]
         public ActionResult DeleteConfirmed(int id)
         {
-            Setup setup = db.Setup.Find(id);
-            db.Setup.Remove(setup);
+            Setup setup = db.Setups.Find(id);
+            db.Setups.Remove(setup);
             db.SaveChanges();
             return RedirectToAction("Index");
         }
 
-        [HttpPost]
-        public void AddQuestions(HttpPostedFileBase file, int setupId)
+        [HttpGet]
+        public ActionResult Questions(int id)
+        {
+            ViewData["SetupId"] = id;
+            var questions = db.Setups.Find(id).Questions;
+            return View(questions);
+        }
+
+       [HttpPost]
+        public ActionResult AddQuestions(HttpPostedFileBase file, int setupId)
         {
             var reader = new StreamReader(file.InputStream);
             List<string> columnNames = new List<string>();
@@ -143,9 +151,9 @@ namespace CQA.Controllers
             {
 
                 var Line = reader.ReadLine();
-                var values = firstLine.Split(',');
+                var values = Line.Split(';');
 
-                var q = db.Questions.Find(values[0]);
+                var q = db.Questions.Find(Convert.ToInt32(values[0]));
                 if(q != null){
                     q.QuestionText = values[1];
                     if(values.Count() == 3)
@@ -165,6 +173,7 @@ namespace CQA.Controllers
             }
 
             db.SaveChanges();
+            return RedirectToAction("Details", new { id=setupId });
         }
 
 

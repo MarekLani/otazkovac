@@ -33,20 +33,6 @@ namespace CQA
                     id = UrlParameter.Optional
                 });
 
-
-            
-
-            routes.MapRoute(
-               "ArticleDetail",
-               "clanok/{title}",
-               defaults: new
-                {
-                    controller = "articles",
-                    action = "details",
-                    title = UrlParameter.Optional
-                });
-
-
             routes.MapRoute("Base",
                 string.Empty,
                 new

@@ -7,6 +7,12 @@
 <p>
     @Html.ActionLink("Create New", "Create")
 </p>
+<form action="@Url.Action("AddQuestions","Setups")" method="post" enctype="multipart/form-data" >
+     <input name="file" type="file" accept=".csv" />
+    <input type="hidden" name="setupId" value="@(ViewData["SetupId"])" />
+    <input type="submit" value="Pridať otázky" />
+</form>
+
 
 
 @foreach (var item in Model) {
@@ -23,7 +29,7 @@
                } 
            </div> </div> 
        
-       <a href="@Url.Action("Details", new { id=item.QuestionId })"><span style="line-height:40px; font-size:20px; vertical-align:central">@item.Title </span> </a>
+       <a href="@Url.Action("Details", new { id=item.QuestionId })"><span style="line-height:40px; font-size:20px; vertical-align:central">@item.QuestionText </span> </a>
    </div>
 
 }

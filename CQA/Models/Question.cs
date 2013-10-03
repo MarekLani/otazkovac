@@ -13,17 +13,12 @@ namespace CQA.Models
         public int QuestionId { get; set; }
 
         [Required(ErrorMessageResourceType = typeof(ErrorStrings), ErrorMessageResourceName = "Required")]
-        public string Title { get; set; }
-
-        [Required(ErrorMessageResourceType = typeof(ErrorStrings), ErrorMessageResourceName = "Required")]
         [DataType(DataType.MultilineText)]
         public string QuestionText { get; set; }
 
         public string Hint { get; set; }
 
-        public int UserId { get; set; }
-        [ForeignKey("UserId")]
-        public virtual UserProfile Author { get; set; }
+        public string ImageUri { get; set; }
 
         public virtual ICollection<Answer> Answers { get; set;}
 
