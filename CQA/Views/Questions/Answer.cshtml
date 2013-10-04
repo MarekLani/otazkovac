@@ -1,0 +1,68 @@
+﻿@model CQA.Models.Question
+
+@{
+    ViewBag.Title = "Details";
+}
+
+
+@section Styles {
+        @Styles.Render("~/Content/themes/base/css")
+}
+
+
+<div>@Html.DisplayFor(model => model.QuestionText)</div>
+@if (Model.Hint != null)
+{
+    <div id="hint"> @Ajax.ActionLink("zobraziť nápovedu", "GetHint", "Questions", new { questionId = Model.QuestionId}, new AjaxOptions
+               {
+                   OnSuccess = "showHint(data)",
+                   HttpMethod = "GET"
+               })        
+
+    </div>
+}
+    
+    @{Html.RenderPartial("_CreateAnswerForm", new CQA.Models.CreateAnswer(Model.QuestionId));}
+    <div id="loader" style="display:none">Loadujem</div>
+
+
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id=Model.QuestionId }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>
+
+@section Scripts {
+
+    <script type="text/javascript" src="/Scripts/jquery.unobtrusive-ajax.min.js"></script>
+   
+        <script>
+
+            function onAnswerCreation() {
+                $("#loader").fadeIn(100);
+            }
+
+            function AnswerCreated(data) {
+                var s = '<div class="answer">' +
+               '<div class="answer-author">' + data.answerAuthor + '</div>' +
+               '<div class="answer-text">' + data.answerText + '</div>' +
+                '<form data-ajax="true" data-ajax-method="POST" data-ajax-url="/Questions/CreateEvaluation" method="post">' +
+                    '<input name="answerId" type="hidden" value="'+data.answerId+'" />' +
+                    '<input type="hidden" class="rating" name="rating" value="50" />' +
+                    '<div class="slider-range"></div>' +
+                    '<input type="submit" />' +
+                '</form>' +
+                '</div>'
+
+                $("#loader").hide();
+                $("#noAnswers").remove();
+                $("#newAnswer").remove();
+                $(s).hide().appendTo("#answers").fadeIn(300);
+                $(".slider-range").last().trigger('mySliderTrigger');
+
+            }
+
+            function showHint(data) {
+                $("#hint").prepend(data.Hint);
+            }
+    </script>
+}

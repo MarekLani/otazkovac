@@ -15,41 +15,31 @@ using System.DirectoryServices;
 
 namespace CQA.Controllers
 {
+
+    public enum UserActionType
+    {
+        Evaluation = 1,
+        Answering,
+        AnsweringWithHint,
+        EvaluationWithHint,
+        SkippedAnswering,
+        SkippedEvaluation
+
+    }
+
     [Authorize]
     public class QuestionsController : Controller
     {
+
+
         private CQADBContext db = new CQADBContext();
-        // static variables used throughout the example
 
         //
         // GET: /Questions/
 
         public ActionResult Index()
         {
-            Random rand = new Random();
-            if (rand.Next(4) != 4)
-            {
-                //user is going to validate answer
-                var answers = db.Answers.OrderByDescending(a => a.Ratings.Count())
-                                    .Where(a => !a.Ratings.Where(r => r.UserId == WebSecurity.CurrentUserId).Any() && a.Ratings.Count() < 17);
-                if (answers.Any())
-                {
-                    int n = answers.First().Ratings.Count();   
-                    var bestRatedAnswers = answers.Where(a => a.Ratings.Count() == n);
-                    return View("a", bestRatedAnswers.ElementAt(rand.Next(bestRatedAnswers.Count() - 1)));
-
-                }
-            }
-
-            var questions = db.Questions.OrderBy(q => q.Answers.Count())
-                                .Where(a => !a.Answers.Where(r => r.UserId == WebSecurity.CurrentUserId).Any());
-            if (questions.Any())
-            {
-                int n = questions.First().Answers.Count();
-                var worstAnsweredQuestions = questions.Where(a => a.Answers.Count() == n);
-                return View("a", worstAnsweredQuestions.ElementAt(rand.Next(worstAnsweredQuestions.Count() - 1)));
-
-            }
+           
            //Else return unfortunately there is nothing to return 
             return Json(false);
           
@@ -175,8 +165,20 @@ namespace CQA.Controllers
             }
         }
 
+        [HttpGet]
+        public ActionResult GetHint(int questionId)
+        {
+            if(db.Questions.Find(questionId).Hint != null){
+                return Json(new { Hint = db.Questions.Find(questionId).Hint});
+            }
+            else{
+                Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                return Json(false);
+            }
+        }
+
         [HttpPost]
-        public ActionResult CreateRating(int answerId, int rating)
+        public ActionResult CreateEvaluation(int answerId, int value)
         {
             if (ModelState.IsValid)
             {
@@ -187,16 +189,48 @@ namespace CQA.Controllers
                     return Json(false);
                 }
 
-                var r = new Rating();
-                r.UserId= WebSecurity.CurrentUserId;
-                r.AnswerId = answerId;
-                r.Value = (double)rating/100;
-                db.Ratings.Add(r);
+                var e = new Evaluation();
+                e.UserId= WebSecurity.CurrentUserId;
+                e.AnswerId = answerId;
+                e.Value = (double)value/100;
+                db.Ratings.Add(e);
                 db.SaveChanges();
 
             }
 
             return Json(true);
+        }
+
+        [HttpGet]
+        public ActionResult AnswerAndEvaluate(int setupId)
+        {
+            Random rand = new Random();
+            if (rand.Next(4) != 4)
+            {
+                //user is going to validate answer
+                var answers = db.Answers.OrderByDescending(a => a.Evaluations.Count())
+                                    .Where(a => !a.Evaluations.Where(r => r.UserId == WebSecurity.CurrentUserId).Any() && a.Evaluations.Count() < 17 && a.Question.SetupId == setupId);
+                var res = answers.ToList();
+                if (res.Any())
+                {
+                    int n = res.First().Evaluations.Count();
+                    var bestRatedAnswers = res.Where(a => a.Evaluations.Count() == n);
+                    return View("Evaluate", bestRatedAnswers.ElementAt(rand.Next(bestRatedAnswers.Count() - 1)));
+
+                }
+            }
+
+            var questions = db.Questions.OrderBy(q => q.Answers.Count())
+                                .Where(q => !q.Answers.Where(r => r.UserId == WebSecurity.CurrentUserId).Any() && q.SetupId == setupId );
+            var res2 = questions.ToList();
+            if (res2.Any())
+            {
+                int n = res2.First().Answers.Count();
+                var worstAnsweredQuestions = res2.Where(a => a.Answers.Count() == n);
+                return View("Answer", worstAnsweredQuestions.ElementAt(rand.Next(worstAnsweredQuestions.Count() - 1)));
+
+            }
+            return Json(false);
         }
 
         protected override void Dispose(bool disposing)

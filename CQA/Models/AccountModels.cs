@@ -39,9 +39,11 @@ namespace CQA.Models
 
         public virtual ICollection<Question> Questions { get; set; }
         public virtual ICollection<Answer> Answers { get; set; }
-        public virtual ICollection<Rating> Ratings { get; set; }
+        public virtual ICollection<Evaluation> Evaluations { get; set; }
         public virtual ICollection<Comment> Comments { get; set; }
-        
+
+        public virtual ICollection<UsersSetup> UsersSetups { get; set; }
+        public virtual ICollection<UsersSetupAction> UsersSetupActions { get; set; }
     }
 
 

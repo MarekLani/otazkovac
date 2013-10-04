@@ -16,7 +16,7 @@ namespace CQA.Models
         public DbSet<UploadedImage> UploadedImages { get; set; }
         public DbSet<Question> Questions { get; set; }
         public DbSet<Answer> Answers { get; set; }
-        public DbSet<Rating> Ratings { get; set; }
+        public DbSet<Evaluation> Ratings { get; set; }
         public DbSet<Comment> Comments { get; set; }
         public DbSet<Subject> Subjects{ get; set; }
         public DbSet<Setup> Setups { get; set; }
@@ -41,19 +41,50 @@ namespace CQA.Models
                 .HasForeignKey(u => u.UserId)
                  .WillCascadeOnDelete(false);
 
+            modelBuilder.Entity<Evaluation>()
+              .HasKey(e => new { e.UserId, e.AnswerId});
 
-            modelBuilder.Entity<Rating>()
-                .HasRequired(c => c.Author)
-                .WithMany(u => u.Ratings)
-                .HasForeignKey(u => u.UserId)
-                .WillCascadeOnDelete(false);
+            modelBuilder.Entity<UserProfile>()
+                        .HasMany(u => u.Evaluations)
+                        .WithRequired(e => e.Author)
+                        .HasForeignKey(e => e.UserId);
+
+            modelBuilder.Entity<Answer>()
+                        .HasMany(a => a.Evaluations)
+                        .WithRequired(e => e.Answer)
+                        .HasForeignKey(e => e.AnswerId);
 
             modelBuilder.Entity<Answer>()
                 .HasRequired(c => c.Author)
                 .WithMany(u => u.Answers)
                 .HasForeignKey(u => u.UserId)
-                 .WillCascadeOnDelete(false); ;
-    
+                 .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<UsersSetup>()
+              .HasKey(us => new { us.UserId, us.SetupId });
+
+            modelBuilder.Entity<UserProfile>()
+                        .HasMany(u => u.UsersSetups)
+                        .WithRequired(us => us.User)
+                        .HasForeignKey(us => us.UserId);
+
+            modelBuilder.Entity<Setup>()
+                        .HasMany(s => s.UsersSetups)
+                        .WithRequired(us => us.Setup)
+                        .HasForeignKey(us => us.SetupId);
+
+            modelBuilder.Entity<UsersSetupAction>()
+              .HasKey(us => new { us.UserId, us.SetupId });
+
+            modelBuilder.Entity<UserProfile>()
+                        .HasMany(u => u.UsersSetupActions)
+                        .WithRequired(usa => usa.User)
+                        .HasForeignKey(usa => usa.UserId);
+
+            modelBuilder.Entity<Setup>()
+                        .HasMany(s => s.UsersSetupActions)
+                        .WithRequired(usa => usa.Setup)
+                        .HasForeignKey(usa => usa.SetupId); 
 
             base.OnModelCreating(modelBuilder);
         }

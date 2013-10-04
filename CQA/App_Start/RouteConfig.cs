@@ -49,6 +49,12 @@ namespace CQA
                new { numTimes = @"\d+", name = @"[a-z][A-Z]*" }
                );
 
+            routes.MapRoute(
+              "AnswerAndEvaluate",
+              "{controller}/{action}/{setupId}",
+              new { controller = "Questions", action = "AnswerAndEvaluate", setupId = UrlParameter.Optional }
+              );
+
            routes.MapRoute(
               "Base2",
               "{controller}/{action}/{id}",

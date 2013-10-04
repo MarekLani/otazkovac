@@ -25,7 +25,7 @@ namespace CQA.Models
         public int UserId { get; set; }
         public virtual UserProfile Author{ get; set; }
 
-        public virtual ICollection<Rating> Ratings { get; set; }
+        public virtual ICollection<Evaluation> Evaluations { get; set; }
 
     }
 

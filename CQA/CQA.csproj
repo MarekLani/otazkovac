@@ -190,6 +190,8 @@
     <Compile Include="Controllers\QuestionsController.cs" />
     <Compile Include="Controllers\SetupsController.cs" />
     <Compile Include="Controllers\SubjectsController.cs" />
+    <Compile Include="Controllers\UsersController.cs" />
+    <Compile Include="Models\UsersSetup.cs" />
     <Compile Include="Filters\InitializeSimpleMembershipAttribute.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -595,6 +597,9 @@
     <Content Include="Views\Setups\Edit.cshtml" />
     <Content Include="Views\Setups\Delete.cshtml" />
     <Content Include="Views\Setups\Questions.cshtml" />
+    <Content Include="Views\Users\Index.cshtml" />
+    <Content Include="Views\Questions\Evaluate.cshtml" />
+    <Content Include="Views\Questions\Answer.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -8,6 +8,7 @@ using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using CQA.Models;
+using WebMatrix.WebData;
 
 namespace CQA.Controllers
 {
@@ -126,7 +127,7 @@ namespace CQA.Controllers
             return View(questions);
         }
 
-       [HttpPost]
+        [HttpPost]
         public ActionResult AddQuestions(HttpPostedFileBase file, int setupId)
         {
             var reader = new StreamReader(file.InputStream);
@@ -149,26 +150,21 @@ namespace CQA.Controllers
 
             while (!reader.EndOfStream)
             {
-
                 var Line = reader.ReadLine();
                 var values = Line.Split(';');
 
-                var q = db.Questions.Find(Convert.ToInt32(values[0]));
-                if(q != null){
-                    q.QuestionText = values[1];
-                    if(values.Count() == 3)
-                        q.Hint = values[2];
-                }
-                else{
-                    Question newQ = new Question();
-                    newQ.QuestionId = Convert.ToInt32(values[0]);
-                    newQ.QuestionText = values[1];
-                    //If hint is present
-                    if (values.Count() == 3)
-                        newQ.Hint = values[2];
-                    newQ.SetupId = setupId;
+                Question newQ = new Question();
+                newQ.QuestionId = Convert.ToInt32(values[0]);
+                newQ.QuestionText = values[1];
+                //If hint is present
+                if (values.Count() == 3)
+                    newQ.Hint = values[2];
+                newQ.SetupId = setupId;
+
+                if(db.Questions.Find(Convert.ToInt32(values[0])) != null)
+                    db.Entry(newQ).State = EntityState.Modified;
+                else
                     db.Questions.Add(newQ);
-                }
 
             }
 

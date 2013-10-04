@@ -22,5 +22,8 @@ namespace CQA.Models
         public virtual Subject Subject { get; set; }
 
         public virtual ICollection<Question> Questions { get; set; }
+
+        public virtual ICollection<UsersSetup> UsersSetups { get; set; }
+        public virtual ICollection<UsersSetupAction> UsersSetupActions { get; set; }
     }
 }

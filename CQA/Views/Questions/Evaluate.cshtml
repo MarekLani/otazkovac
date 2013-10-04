@@ -1,52 +1,41 @@
-﻿@model CQA.Models.Question
+﻿@model CQA.Models.Answer
 
 @{
-    ViewBag.Title = "Details";
+    ViewBag.Title = "Evaluate";
 }
+
+<h2>Evaluate</h2>
 
 
 @section Styles {
         @Styles.Render("~/Content/themes/base/css")
 }
 
-
-<div>@Html.DisplayFor(model => model.QuestionText)</div>
-<div id="answers">
-@if (!Model.Answers.Any())
+<h2> @Html.DisplayFor(model => model.Question.QuestionText) </h2>
+@if (Model.Question.Hint != null)
 {
-    <span id="noAnswers">Zatiaľ neboli pridané žiadne odpovede.</span>
+    <div id="hint"> @Ajax.ActionLink("zobraziť nápovedu", "GetHint", "Questions", new { questionId = Model.QuestionId}, new AjaxOptions
+               {
+                   OnSuccess = "showHint(data)",
+                   HttpMethod = "GET"
+               })        
+
+    </div>
 }
-else{
-    
-    foreach (var answer in Model.Answers)
-    {
-        <div class="answer">
-            <div class="answer-author"> @(answer.Author.RealName)</div>
-            <div class="answer-text"> @(answer.Text)</div>
+
+<div class="answer-text"> @Html.DisplayFor(model => model.Text)</div>
 
             @using(Ajax.BeginForm(new AjaxOptions(){
                 HttpMethod = "POST",
                 OnBegin = "onAnswerCreation",
                 Url = Url.Action("CreateEvaluation", "Questions")})){
-                <input name="answerId" type="hidden" value="@(answer.AnswerId)" />
+                <input name="answerId" type="hidden" value="@Html.DisplayFor(model => model.AnswerId)" />
                 <input type="hidden" class="value" name="value" value="50" />
             
                 <div class="slider-range"></div> 
                 <input type="submit" />
                 <div class="textValue">3</div>
             }
-        <!-- //TODO add average rating -->
-       </div>   
-    }  
-}
-    </div>
-
-@if(!Model.Answers.Where(i => i.UserId == WebSecurity.CurrentUserId).Any()){
-    Html.RenderPartial("_CreateAnswerForm",new CQA.Models.CreateAnswer(Model.QuestionId));
-    <div id="loader" style="display:none">Loadujem</div>
-}
-  
- 
 
 <p>
     @Html.ActionLink("Edit", "Edit", new { id=Model.QuestionId }) |
@@ -61,8 +50,8 @@ else{
     <script>$('#widget').draggable();</script>
    <script>
        $(function () {
-           $(document).on("mySliderTrigger", ".slider-range", function () {
-               $(this).slider({
+           $(".slider-range").each(function () { $(this).trigger('mySliderTrigger') })
+               $(".slider-range").slider({
                    range: false,
                    min: 0,
                    max: 100,
@@ -92,9 +81,6 @@ else{
 
            });
 
-           $(".slider-range").each(function () { $(this).trigger('mySliderTrigger') })
-
-       });
 
        function hexFromRGB(r, g, b) {
            var hex = [
@@ -109,31 +95,14 @@ else{
            });
            return hex.join("").toUpperCase();
        }
+
+       function onAnswerCreation() {
+           $("#loader").fadeIn(100);
+       }
+
+       function showHint(data) {
+           $("#hint").prepend(data.Hint);
+       }
     </script>
-        <script>
-
-            function onAnswerCreation() {
-                $("#loader").fadeIn(100);
-            }
-
-            function AnswerCreated(data) {
-                var s = '<div class="answer">' +
-               '<div class="answer-author">' + data.answerAuthor + '</div>' +
-               '<div class="answer-text">' + data.answerText + '</div>' +
-                '<form data-ajax="true" data-ajax-method="POST" data-ajax-url="/Questions/CreateRating" method="post">' +
-                    '<input name="answerId" type="hidden" value="'+data.answerId+'" />' +
-                    '<input type="hidden" class="rating" name="rating" value="50" />' +
-                    '<div class="slider-range"></div>' +
-                    '<input type="submit" />' +
-                '</form>' +
-                '</div>'
-
-                $("#loader").hide();
-                $("#noAnswers").remove();
-                $("#newAnswer").remove();
-                $(s).hide().appendTo("#answers").fadeIn(300);
-                $(".slider-range").last().trigger('mySliderTrigger');
-
-            }
-    </script>
+       
 }
