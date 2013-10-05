@@ -153,25 +153,38 @@ namespace CQA.Controllers
                 var Line = reader.ReadLine();
                 var values = Line.Split(';');
 
-                Question newQ = new Question();
-                newQ.QuestionId = Convert.ToInt32(values[0]);
-                newQ.QuestionText = values[1];
-                //If hint is present
-                if (values.Count() == 3)
-                    newQ.Hint = values[2];
-                newQ.SetupId = setupId;
-
-                if(db.Questions.Find(Convert.ToInt32(values[0])) != null)
-                    db.Entry(newQ).State = EntityState.Modified;
+                Question q = db.Questions.Find(Convert.ToInt32(values[0]));
+                if ( q != null)
+                {
+                    FillupQuestion(ref q, values);
+                    db.Entry(q).State = EntityState.Modified;
+                    db.SaveChanges();
+                }
                 else
+                {
+                    Question newQ = new Question();
+                    FillupQuestion(ref newQ, values);
+                    newQ.SetupId = setupId;
                     db.Questions.Add(newQ);
+                    db.SaveChanges();
+                }
 
             }
 
-            db.SaveChanges();
             return RedirectToAction("Details", new { id=setupId });
         }
 
+        private void FillupQuestion(ref Question q, string[] values)
+        {
+            q.QuestionId = Convert.ToInt32(values[0]);
+            q.QuestionText = values[1];
+            //If hint is present
+            if (values.Count() == 3 && values[2] != "")
+                q.Hint = values[2];
+            else
+                q.Hint = null;
+
+        }
 
         protected override void Dispose(bool disposing)
         {

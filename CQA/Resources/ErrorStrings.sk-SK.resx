@@ -124,7 +124,7 @@
     <value>Vyskytla sa chyba pri nahrávaní obrázku {0}, prosím skúste znova.&lt;br&gt;</value>
   </data>
   <data name="Required" xml:space="preserve">
-    <value>Potrebujem ho braaachoooo</value>
+    <value>Pole "{0}" nesmie byť prázdne.</value>
   </data>
   <data name="SameNameOfImage" xml:space="preserve">
     <value>Obrázok s rovnakým názvom ste už nahrali - ({0}).&lt;br&gt;</value>

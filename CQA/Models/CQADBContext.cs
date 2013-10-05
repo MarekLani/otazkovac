@@ -20,7 +20,8 @@ namespace CQA.Models
         public DbSet<Comment> Comments { get; set; }
         public DbSet<Subject> Subjects{ get; set; }
         public DbSet<Setup> Setups { get; set; }
-
+        public DbSet<UsersSetup> UsersSetups { get; set; }
+        public DbSet<UsersSetupAction> UsersSetupActions { get; set; }
 
         // <summary>
         /// The below Method is used to define the Maping

@@ -20,8 +20,7 @@ namespace CQA.Controllers
     {
         Evaluation = 1,
         Answering,
-        AnsweringWithHint,
-        EvaluationWithHint,
+        ShowHint,
         SkippedAnswering,
         SkippedEvaluation
 
@@ -155,6 +154,8 @@ namespace CQA.Controllers
                 db.Answers.Add(answer);
                 db.SaveChanges();
 
+                UserMadeAction((int)UserActionType.Answering, db.Questions.Find(questionId).SetupId);
+
                 object result = new { answerText = text, answerAuthor = db.UserProfiles.Find(WebSecurity.CurrentUserId).RealName, answerId = answer.AnswerId };
                 return Json(result);
             }
@@ -168,12 +169,19 @@ namespace CQA.Controllers
         [HttpGet]
         public ActionResult GetHint(int questionId)
         {
-            if(db.Questions.Find(questionId).Hint != null){
-                return Json(new { Hint = db.Questions.Find(questionId).Hint});
+            Question q = db.Questions.Find(questionId);
+            if(q != null && q.Hint != null){
+
+                if (!db.UsersSetupActions.Where(usa => usa.UserId == WebSecurity.CurrentUserId && usa.SetupId == q.SetupId).Any())
+                {
+                    UserMadeAction((int)UserActionType.ShowHint, db.Questions.Find(questionId).SetupId);
+                }
+
+                return Json(new { Hint = db.Questions.Find(questionId).Hint }, JsonRequestBehavior.AllowGet);
             }
             else{
                 Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                return Json(false);
+                return Json(false, JsonRequestBehavior.AllowGet);
             }
         }
 
@@ -196,14 +204,38 @@ namespace CQA.Controllers
                 db.Ratings.Add(e);
                 db.SaveChanges();
 
+                //Mark action
+                UserMadeAction((int)UserActionType.Evaluation, db.Answers.Find(answerId).Question.SetupId);
             }
 
+
+
             return Json(true);
+        }
+
+        private void UserMadeAction(int action, int setupId)
+        {
+            UsersSetupAction usa = new UsersSetupAction();
+            usa.UserId = WebSecurity.CurrentUserId;
+            usa.SetupId = setupId;
+            usa.Action = action;
+            db.UsersSetupActions.Add(usa);
+            db.SaveChanges();
         }
 
         [HttpGet]
         public ActionResult AnswerAndEvaluate(int setupId)
         {
+
+            if (db.UsersSetups.Where( us => us.UserId == WebSecurity.CurrentUserId && us.SetupId == setupId ).ToList() == null)
+            {
+                UsersSetup us = new UsersSetup();
+                us.UserId = WebSecurity.CurrentUserId;
+                us.Score = 0;
+                us.SetupId = setupId;
+                db.UsersSetups.Add(us);
+            }
+
             Random rand = new Random();
             if (rand.Next(4) != 4)
             {
@@ -215,7 +247,7 @@ namespace CQA.Controllers
                 {
                     int n = res.First().Evaluations.Count();
                     var bestRatedAnswers = res.Where(a => a.Evaluations.Count() == n);
-                    return View("Evaluate", bestRatedAnswers.ElementAt(rand.Next(bestRatedAnswers.Count() - 1)));
+                    return View("Evaluate", bestRatedAnswers.ElementAt(rand.Next(bestRatedAnswers.Count())));
 
                 }
             }
@@ -227,7 +259,7 @@ namespace CQA.Controllers
             {
                 int n = res2.First().Answers.Count();
                 var worstAnsweredQuestions = res2.Where(a => a.Answers.Count() == n);
-                return View("Answer", worstAnsweredQuestions.ElementAt(rand.Next(worstAnsweredQuestions.Count() - 1)));
+                return View("Answer", worstAnsweredQuestions.ElementAt(rand.Next(worstAnsweredQuestions.Count())));
 
             }
             return Json(false);

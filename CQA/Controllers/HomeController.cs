@@ -15,7 +15,7 @@ namespace CQA.Controllers
 
     public class HomeController : Controller
     {
-         private CQADBContext db = new CQADBContext();
+        private CQADBContext db = new CQADBContext();
         public ActionResult Index()
         {
             ViewBag.Message = "Modify this template to jump-start your ASP.NET MVC application.";
@@ -53,6 +53,14 @@ namespace CQA.Controllers
             return View();
         }
 
+        public ActionResult _MainMenu()
+        {
+            var menu = new Menu();
+            menu.Setups = db.Setups.Where(s => s.Active).ToList();
+            return PartialView("_Menu", menu);
+        }
+
+
         public ActionResult About()
         {
             ViewBag.Message = "Your app description page.";
@@ -60,11 +68,6 @@ namespace CQA.Controllers
             return View();
         }
 
-        public ActionResult Contact()
-        {
-            ViewBag.Message = "Your contact page.";
 
-            return View();
-        }
     }
 }

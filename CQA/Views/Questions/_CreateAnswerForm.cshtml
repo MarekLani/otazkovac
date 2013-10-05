@@ -1,7 +1,6 @@
 ﻿@model CQA.Models.CreateAnswer
 
 <div id="newAnswer">
-        <div>Odpovedať:</div>
 
     @using (Ajax.BeginForm( new AjaxOptions(){
     HttpMethod = "POST",
@@ -13,10 +12,11 @@
         </div>
          <div class="editor-label">
             @Html.LabelFor(model => model.Text)
+             @Html.ValidationMessageFor(model => model.Text, String.Empty, new { @class="text-error"})
         </div>
         <div class="editor-field">
             @Html.EditorFor(model => model.Text, new { @class= "questionText" })
         </div>
-        <input type="submit" class="submit" value="Create" />
+        <button type="submit" class="btn btn-primary"> Odpovedať </button> 
     }
     </div>

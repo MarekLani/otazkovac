@@ -41,8 +41,9 @@ namespace CQA.Models
         [HiddenInput(DisplayValue = false)]
         public int QuestionId { get; set; }
 
-        [Required]
-        [DisplayName("Vaša odpoveď")]
+        [DataType(DataType.MultilineText)]
+        [DisplayName("Vaša odpoveď:")]
+        [Required(ErrorMessageResourceType = typeof(ErrorStrings), ErrorMessageResourceName = "Required")]
         public string Text { get; set; }
 
     }
