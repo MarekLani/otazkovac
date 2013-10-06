@@ -8,5 +8,6 @@ namespace CQA.Models
     public class Menu
     {
         public List<Setup> Setups { get; set; }
+        public bool SubjectsNotEmpty { get; set; }
     }
 }

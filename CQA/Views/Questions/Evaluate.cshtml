@@ -10,7 +10,8 @@
 <h3>Ohodnotťe správnosť odpovede</h3>
 
 <div class="question">
-    <h3> @Html.DisplayFor(model => model.Question.QuestionText) </h3>
+    
+    <h3> <span style="font-size: 0.7em;">Otázka: </span> @Html.DisplayFor(model => model.Question.QuestionText) </h3>
     @if (Model.Question.Hint != null)
     {
 
@@ -24,8 +25,12 @@
 
     }
 </div>
-<div class="answer-text"> @Html.DisplayFor(model => model.Text)</div>
+<div class="answer"> 
+    <h3><span style="font-size: 0.7em;">Odpoveď: </span>@Html.DisplayFor(model => model.Text)</h3>
 
+</div>
+
+<div style="text-align:center">
         @using (Ajax.BeginForm(new AjaxOptions()
         {
             HttpMethod = "POST",
@@ -35,27 +40,35 @@
         {
             <input name="answerId" type="hidden" value="@Html.DisplayFor(model => model.AnswerId)" />
             <input type="hidden" class="value" name="value" value="50" />
-            
-            <img src="~/Images/thumbDown.png" />
-            <div class="slider-range" style="float:left"></div> 
-            <img src="~/Images/thumbUp.png" />
-            <input type="submit" />
-            <div class="textValue">3</div>
+            <div id="sliderWrap">
+                <img src="~/Images/thumbDown.png" class="thumb"/>
+                <div class="ui-widget-content-wrapper">
+                    <div class="slider-range" style=""></div>
+                </div> 
+                <img src="~/Images/thumbUp.png" class="thumb" />
+                <div style="clear:both"></div>
+            </div>
+            <div id="textValue">Čiastočne správne aj nesprávne</div>
+            <button type="submit" class="btn btn-primary">Ohodnotiť</button>
         }
+    </div>
 
-<p>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.QuestionId }) |
-    @Html.ActionLink("Back to List", "Index")
-</p>
 
 @section Scripts {
 
     <script type="text/javascript" src="/Scripts/jquery.unobtrusive-ajax.min.js"></script>
     @Scripts.Render("~/bundles/jqueryui")
     @Scripts.Render("~/Scripts/jquery.ui.touch-punch.min.js")
-    <script>$('#widget').draggable();</script>
+
+    <script>jQuery('#widget').draggable();</script>
+    <script src="~/Scripts/AnswerAndEvaluateCommon.js"></script>  
    <script>
-       $(function () {
+
+       $(document).ready(function () {
+           $("#MenuSetupItem"+@(Model.Question.SetupId)).addClass("activeMenuItem")
+        })
+
+       jQuery(function ($) {
            $(".slider-range").each(function () { $(this).trigger('mySliderTrigger') })
                $(".slider-range").slider({
                    range: false,
@@ -63,30 +76,29 @@
                    max: 100,
                    value: 50,
                    slide: function (event, ui) {
-                       $(this).parent().find(".value").val(ui.value);
+                       $(this).parent().parent().siblings(".value").val(ui.value);
                        hex = hexFromRGB(10, 10, ui.value);
                        if (ui.value > 50) {
-                           $(this).parent().find(".ui-widget-content").css("background", "rgba(24, 179, 70, " + (ui.value - 50) * 2 / 100 + ")");
+                           $(this).parent().css("background", "rgba(22, 149, 49, " + (ui.value - 50) * 2 / 100 + ")");
                        }
                        else {
-                           $(this).parent().find(".ui-widget-content").css("background", "rgba(219, 23, 9, " + (50-ui.value) * 2 / 100 + ")");
+                           $(this).parent().css("background", "rgba(143, 20, 20, " + (50 - ui.value) * 2 / 100 + ")");
                        }
-                       var el = $(this).parent().find(".textValue");
+                       var el = $(this).parent().parent().siblings("#textValue");
                        if (ui.value < 20)
-                           el.html("1")
+                           el.html("Úplne nesprávne")
                        else if (ui.value < 40)
-                           el.html("2")
+                           el.html("Čiastočne nesprávne")
                        else if (ui.value < 60)
-                           el.html("3")
+                           el.html("Čiastočne správne aj nesprávne")
                        else if (ui.value < 80)
-                           el.html("4")
-                       else el.html("5");
+                           el.html("Čiastočne správne")
+                       else el.html("Úplne správne");
                            
                    }
                });
 
            });
-
 
        function hexFromRGB(r, g, b) {
            var hex = [
@@ -100,14 +112,6 @@
                }
            });
            return hex.join("").toUpperCase();
-       }
-
-       function onAnswerCreation() {
-           $("#loader").fadeIn(100);
-       }
-
-       function showHint(data) {
-           $("#hint").prepend(data.Hint);
        }
     </script>
        

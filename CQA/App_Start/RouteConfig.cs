@@ -37,7 +37,7 @@ namespace CQA
                 string.Empty,
                 new
                 {
-                    controller = "Questions",
+                    controller = "Home",
                     action = "Index",
                     id = string.Empty
                 });

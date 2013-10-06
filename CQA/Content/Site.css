@@ -759,7 +759,6 @@ tr.pager td {
         width: auto;
     }
 
-
     /* footer
     ----------------------------------------------------------*/
     footer .float-left,
@@ -778,72 +777,16 @@ tr.pager td {
         }
 }
 
-/* Create article css */
-#uploadedImages
-{
-	margin-bottom: 20px;
-	padding-left: 20px;
-}
-
-#toggleFavourite, #toggleFollowing
-{
-	cursor:pointer;
-	width:32px;
-}
-
-/* Registration form*/
-.regionDropDown option:first-child
-{
-	display: none;
-}
-	/*override UI autocomplete*/
-ul .ui-autocomplet
-{
-	color:red !important;
-}
-
-/*Gallery*/
-.gallery_image_wrapper
-{
-	width: 150px;
-	height: 190px;
-	float:left;
-	position:relative;
-}
-.gallery_image
-{
-	width: 150px;
-	height: 150px;
-	float:left;
-	position:relative;
-	margin-left: 1px;
-}
-
-.image
-{
-}
-
-.img_thumb
-{
-	height:150px;
-	width: 150px;
-	position:absolute;
-}
-
-.image_overlay
-{
-	background-color: rgba(0, 0, 0, 0.6);
-	position: absolute;
-	height: 150px;
-	width: 150px;
-	display: none;
-}
-
-.zoom_icon
-{
-	margin: 45px;
-	margin-top: 55px";
-}
+	.nav a{
+		color:white !important;
+		text-decoration:none;
+		line-height:50px;
+		vertical-align: central;
+		padding-top: 10px;
+	}
+	.nav a:hover{
+		text-decoration:none;
+	}
 
 /*Answer Detail ----*/
 #newAnswer
@@ -860,8 +803,9 @@ ul .ui-autocomplet
 
 .answer
 {
-	border-top: 1px gray solid;
-	margin-top:15px;
+	margin-top:10px;
+	border-bottom: 1px lightgray solid;
+	padding-bottom: 5px;
 }
 
 .question
@@ -875,7 +819,58 @@ ul .ui-autocomplet
 #hint
 {
 	font-size:16px;
+	text-align: center;
 }
+
+#sliderWrap
+{
+	width:90%;
+	 margin: 0 auto;
+	  padding-left:25px;
+}
+
+.ui-slider-handle
+{
+	 padding:8px;
+	 cursor: pointer !important;
+	 margin-top: -8px;
+	 -moz-border-radius: 17px !important;
+	 border-radius: 17px !important;
+	 background: white !important;
+}
+.ui-widget-content
+{
+	background: none !important;
+	border: none !important;;
+}
+
+.ui-widget-content-wrapper
+{
+	background: white;
+	border: 1px solid lightgray;
+	float:left;
+	width:80% ;
+	margin:12px;
+	padding-right: 25px;
+	padding-left: 7px;
+
+	-moz-border-radius: 10px !important;
+	 border-radius: 10px !important;
+}
+
+.thumb
+{
+	float: left;
+	width: 40px;
+}
+
+#textValue
+{
+	margin: 10px;
+	font-size: 18px;
+	font-weight: 500;
+}
+
 
 /*Forms*/
 textarea

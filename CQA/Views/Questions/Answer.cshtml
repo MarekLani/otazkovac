@@ -12,6 +12,7 @@
 <h3>Odpovedzte na otázku</h3>
 
 <div class="question">
+    Otázka:
     <h3>@Html.DisplayFor(model => model.QuestionText)</h3>
     @if (Model.Hint != null)
     {
@@ -32,8 +33,14 @@
 
 @section Scripts {
 
-    @Scripts.Render("~/bundles/jqueryval")   
+    @Scripts.Render("~/bundles/jqueryval")
+
+    <script src="~/Scripts/AnswerAndEvaluateCommon.js"></script>   
         <script>
+
+            $(document).ready(function () {
+                $("#MenuSetupItem"+@(Model.SetupId)).addClass("activeMenuItem")
+            })
 
             function onAnswerCreation() {
                 $("#loader").fadeIn(100);
@@ -58,21 +65,6 @@
                 $(".slider-range").last().trigger('mySliderTrigger');
 
             }
-
-
-            //Todo add to standalone js file because it is the same for evaluating
-
-            function showHint(data) {
-                $("#hint").children(".btn").remove();
-                var el = $("<span>Nápoveda:<b> "+data.Hint+"</b></span>")
-                el.hide();
-                $("#hint").prepend(el);
-                el.fadeIn(250);
-            }
-
-            $(document).ready(function () {
-                $("#MenuSetupItem"+@(Model.SetupId)).addClass("activeMenuItem")
-            })
-            
     </script>
+    <script src="~/Scripts/AnswerAndEvaluateCommon.js"></script>
 }
