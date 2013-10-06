@@ -21,7 +21,7 @@ namespace CQA.Models
         public DbSet<Subject> Subjects{ get; set; }
         public DbSet<Setup> Setups { get; set; }
         public DbSet<UsersSetup> UsersSetups { get; set; }
-        public DbSet<UsersSetupAction> UsersSetupActions { get; set; }
+        public DbSet<UsersAction> UsersActions { get; set; }
 
         // <summary>
         /// The below Method is used to define the Maping
@@ -74,18 +74,22 @@ namespace CQA.Models
                         .WithRequired(us => us.Setup)
                         .HasForeignKey(us => us.SetupId);
 
-            modelBuilder.Entity<UsersSetupAction>()
-              .HasKey(us => new { us.UserId, us.SetupId });
-
+            //Creating many to many relationship where duplicity in foreign keys is allowed
             modelBuilder.Entity<UserProfile>()
-                        .HasMany(u => u.UsersSetupActions)
+                        .HasMany(u => u.UsersActions)
                         .WithRequired(usa => usa.User)
                         .HasForeignKey(usa => usa.UserId);
 
-            modelBuilder.Entity<Setup>()
-                        .HasMany(s => s.UsersSetupActions)
-                        .WithRequired(usa => usa.Setup)
-                        .HasForeignKey(usa => usa.SetupId); 
+            modelBuilder.Entity<Question>()
+                        .HasMany(s => s.UsersActions)
+                        .WithOptional(ua => ua.Question)
+                        .HasForeignKey(usa => usa.QuestionId);
+
+            modelBuilder.Entity<Answer>()
+                       .HasMany(a => a.UsersActions)
+                       .WithOptional(ua => ua.Answer)
+                       .HasForeignKey(ua => ua.AnswerId); 
+
 
             base.OnModelCreating(modelBuilder);
         }

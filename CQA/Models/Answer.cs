@@ -26,6 +26,7 @@ namespace CQA.Models
         public virtual UserProfile Author{ get; set; }
 
         public virtual ICollection<Evaluation> Evaluations { get; set; }
+        public virtual ICollection<UsersAction> UsersActions { get; set; }
 
     }
 

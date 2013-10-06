@@ -43,7 +43,7 @@ namespace CQA.Models
         public virtual ICollection<Comment> Comments { get; set; }
 
         public virtual ICollection<UsersSetup> UsersSetups { get; set; }
-        public virtual ICollection<UsersSetupAction> UsersSetupActions { get; set; }
+        public virtual ICollection<UsersAction> UsersActions { get; set; }
     }
 
 

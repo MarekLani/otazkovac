@@ -154,7 +154,7 @@ namespace CQA.Controllers
                 db.Answers.Add(answer);
                 db.SaveChanges();
 
-                UserMadeAction((int)UserActionType.Answering, db.Questions.Find(questionId).SetupId);
+                UserMadeAction((int)UserActionType.Answering, 0,questionId);
 
                 object result = new { answerText = text, answerAuthor = db.UserProfiles.Find(WebSecurity.CurrentUserId).RealName, answerId = answer.AnswerId };
                 return Json(result);
@@ -172,9 +172,9 @@ namespace CQA.Controllers
             Question q = db.Questions.Find(questionId);
             if(q != null && q.Hint != null){
 
-                if (!db.UsersSetupActions.Where(usa => usa.UserId == WebSecurity.CurrentUserId && usa.SetupId == q.SetupId).Any())
+                if (!db.UsersActions.Where(usa => usa.UserId == WebSecurity.CurrentUserId && usa.QuestionId == questionId).Any())
                 {
-                    UserMadeAction((int)UserActionType.ShowHint, db.Questions.Find(questionId).SetupId);
+                    UserMadeAction((int)UserActionType.ShowHint, 0,questionId);
                 }
 
                 return Json(new { Hint = db.Questions.Find(questionId).Hint }, JsonRequestBehavior.AllowGet);
@@ -205,7 +205,7 @@ namespace CQA.Controllers
                 db.SaveChanges();
 
                 //Mark action
-                UserMadeAction((int)UserActionType.Evaluation, db.Answers.Find(answerId).Question.SetupId);
+                UserMadeAction((int)UserActionType.Evaluation, answerId,0);
             }
 
 
@@ -213,13 +213,22 @@ namespace CQA.Controllers
             return Json(true);
         }
 
-        private void UserMadeAction(int action, int setupId)
+        private void UserMadeAction(int action, int answerId, int questionId)
         {
-            UsersSetupAction usa = new UsersSetupAction();
-            usa.UserId = WebSecurity.CurrentUserId;
-            usa.SetupId = setupId;
-            usa.Action = action;
-            db.UsersSetupActions.Add(usa);
+            UsersAction ua = new UsersAction();
+            ua.UserId = WebSecurity.CurrentUserId;
+
+            if (answerId != 0)
+            {
+                ua.AnswerId = answerId;
+            }
+            else
+            {
+                ua.QuestionId = questionId;
+            }
+            
+            ua.Action = action;
+            db.UsersActions.Add(ua);
             db.SaveChanges();
         }
 
@@ -241,7 +250,7 @@ namespace CQA.Controllers
             {
                 //user is going to validate answer
                 var answers = db.Answers.OrderByDescending(a => a.Evaluations.Count())
-                                    .Where(a => !a.Evaluations.Where(r => r.UserId == WebSecurity.CurrentUserId).Any() && a.Evaluations.Count() < 17 && a.Question.SetupId == setupId);
+                                    .Where(a =>/* !a.Evaluations.Where(r => r.UserId == WebSecurity.CurrentUserId).Any()) &&*/ a.Evaluations.Count() < 17 && a.Question.SetupId == setupId);
                 var res = answers.ToList();
                 if (res.Any())
                 {

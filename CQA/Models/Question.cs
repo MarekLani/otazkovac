@@ -21,6 +21,7 @@ namespace CQA.Models
         public string ImageUri { get; set; }
 
         public virtual ICollection<Answer> Answers { get; set;}
+        public virtual ICollection<UsersAction> UsersActions { get; set; }
 
         public int SetupId { get; set; }
         public virtual Setup Setup { get; set; }

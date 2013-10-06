@@ -1,44 +1,50 @@
 ﻿@model CQA.Models.Answer
 
 @{
-    ViewBag.Title = "Evaluate";
+    ViewBag.Title = "Ohodnoťte odpoveď";
 }
-
-<h2>Evaluate</h2>
-
-
 @section Styles {
         @Styles.Render("~/Content/themes/base/css")
 }
 
-<h2> @Html.DisplayFor(model => model.Question.QuestionText) </h2>
-@if (Model.Question.Hint != null)
-{
-    <div id="hint"> @Ajax.ActionLink("zobraziť nápovedu", "GetHint", "Questions", new { questionId = Model.QuestionId}, new AjaxOptions
-               {
-                   OnSuccess = "showHint(data)",
-                   HttpMethod = "GET"
-               })        
+<h3>Ohodnotťe správnosť odpovede</h3>
 
-    </div>
-}
+<div class="question">
+    <h3> @Html.DisplayFor(model => model.Question.QuestionText) </h3>
+    @if (Model.Question.Hint != null)
+    {
 
+        <div id="hint"> @Ajax.ActionLink("Zobraziť nápovedu", "GetHint", "Questions", new { questionId = Model.QuestionId }, new AjaxOptions
+                    {
+                        OnSuccess = "showHint(data)",
+                        HttpMethod = "GET"
+                    },
+                    new { @class = "btn" })        
+        </div>
+
+    }
+</div>
 <div class="answer-text"> @Html.DisplayFor(model => model.Text)</div>
 
-            @using(Ajax.BeginForm(new AjaxOptions(){
-                HttpMethod = "POST",
-                OnBegin = "onAnswerCreation",
-                Url = Url.Action("CreateEvaluation", "Questions")})){
-                <input name="answerId" type="hidden" value="@Html.DisplayFor(model => model.AnswerId)" />
-                <input type="hidden" class="value" name="value" value="50" />
+        @using (Ajax.BeginForm(new AjaxOptions()
+        {
+            HttpMethod = "POST",
+            OnBegin = "onAnswerCreation",
+            Url = Url.Action("CreateEvaluation", "Questions")
+        }))
+        {
+            <input name="answerId" type="hidden" value="@Html.DisplayFor(model => model.AnswerId)" />
+            <input type="hidden" class="value" name="value" value="50" />
             
-                <div class="slider-range"></div> 
-                <input type="submit" />
-                <div class="textValue">3</div>
-            }
+            <img src="~/Images/thumbDown.png" />
+            <div class="slider-range" style="float:left"></div> 
+            <img src="~/Images/thumbUp.png" />
+            <input type="submit" />
+            <div class="textValue">3</div>
+        }
 
 <p>
-    @Html.ActionLink("Edit", "Edit", new { id=Model.QuestionId }) |
+    @Html.ActionLink("Edit", "Edit", new { id = Model.QuestionId }) |
     @Html.ActionLink("Back to List", "Index")
 </p>
 

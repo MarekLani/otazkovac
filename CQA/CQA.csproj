@@ -209,7 +209,7 @@
     <Compile Include="Models\Evaluation.cs" />
     <Compile Include="Models\Setup.cs" />
     <Compile Include="Models\Subject.cs" />
-    <Compile Include="Models\UsersSetupAction.cs" />
+    <Compile Include="Models\UsersAction.cs" />
     <Compile Include="Models\ViewModels\Menu.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources\ErrorStrings.Designer.cs">
@@ -327,6 +327,8 @@
     <Content Include="Images\favouriteIconIn.png" />
     <Content Include="Images\logo.png" />
     <Content Include="Images\placeholder-360x200.jpg" />
+    <Content Include="Images\thumbDown.png" />
+    <Content Include="Images\thumbUp.png" />
     <Content Include="Images\zoomIcon.png" />
     <Content Include="Scripts\cultures\globalize.culture.sk-SK.js" />
     <Content Include="Scripts\globalize.js" />
