@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
@@ -14,9 +15,11 @@ namespace CQA.Models
         public int SubjectId { get; set; }
 
         [Required]
+        [DisplayName("Meno predmetu")]
         public string Name { get; set; }
 
         [Required]
+        [DisplayName("Skrátené meno")]
         public string Shortcut { get; set; }
 
         public virtual ICollection<Setup> Setups { get; set; }

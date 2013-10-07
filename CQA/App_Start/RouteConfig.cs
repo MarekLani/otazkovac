@@ -13,26 +13,6 @@ namespace CQA
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
-            routes.MapRoute(
-                name: "SKAbout",
-                url: "o_nas/{id}",
-                defaults: new
-                {
-                    controller = "Home",
-                    action = "About",
-                    id = UrlParameter.Optional
-                });
-
-            routes.MapRoute(
-                name: "SKContact",
-                url: "kontakt/{id}",
-                defaults: new
-                {
-                    controller = "Home",
-                    action = "Contact",
-                    id = UrlParameter.Optional
-                });
-
             routes.MapRoute("Base",
                 string.Empty,
                 new
@@ -43,26 +23,16 @@ namespace CQA
                 });
 
             routes.MapRoute(
-               "Welcome",
-               "{controller}/{action}/{name}/{numTimes}/",
-               new { controller = "HelloWorldController", action = "Welcome", name = UrlParameter.Optional, numTimes = UrlParameter.Optional },
-               new { numTimes = @"\d+", name = @"[a-z][A-Z]*" }
-               );
+             "AnswerAndEvaluate",
+             "Questions/{action}/{setupId}",
+             new { Controller="Questions", action = "AnswerAndEvaluate", setupId = UrlParameter.Optional }
+             );
 
             routes.MapRoute(
-              "AnswerAndEvaluate",
-              "{controller}/{action}/{setupId}",
-              new { controller = "Questions", action = "AnswerAndEvaluate", setupId = UrlParameter.Optional }
-              );
-
-           routes.MapRoute(
               "Base2",
               "{controller}/{action}/{id}",
-              new { controller = "Home", action = "Index", id = UrlParameter.Optional}
-              );
-
-
-
+              new { controller = "Setups", action = "Questions", id = UrlParameter.Optional }
+             );
 
         }
     }

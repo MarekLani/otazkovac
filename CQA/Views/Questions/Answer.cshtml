@@ -25,11 +25,9 @@
         </div>
     }
 </div>
- 
-   
+
     @{Html.RenderPartial("_CreateAnswerForm", new CQA.Models.CreateAnswer(Model.QuestionId));}
     <div id="loader" style="display:none">Loadujem</div>
-
 
 @section Scripts {
 
@@ -37,13 +35,13 @@
 
     <script src="~/Scripts/AnswerAndEvaluateCommon.js"></script>   
         <script>
-
-            $(document).ready(function () {
+            jQuery.noConflict();
+            jQuery(document).ready(function ($) {
                 $("#MenuSetupItem"+@(Model.SetupId)).addClass("activeMenuItem")
             })
 
             function onAnswerCreation() {
-                $("#loader").fadeIn(100);
+                jQuery("#loader").fadeIn(100);
             }
 
             function AnswerCreated(data) {
@@ -58,11 +56,11 @@
                 '</form>' +
                 '</div>'
 
-                $("#loader").hide();
-                $("#noAnswers").remove();
-                $("#newAnswer").remove();
-                $(s).hide().appendTo("#answers").fadeIn(300);
-                $(".slider-range").last().trigger('mySliderTrigger');
+                jQuery("#loader").hide();
+                jQuery("#noAnswers").remove();
+                jQuery("#newAnswer").remove();
+                jQuery(s).hide().appendTo("#answers").fadeIn(300);
+                jQuery(".slider-range").last().trigger('mySliderTrigger');
 
             }
     </script>

@@ -1,32 +1,17 @@
 ﻿@model CQA.Models.Subject
 
 @{
-    ViewBag.Title = "Delete";
+    ViewBag.Title = "Vymazať predmet";
 }
 
-<h2>Delete</h2>
+<h2>Vymazať predmet</h2>
 
-<h3>Are you sure you want to delete this?</h3>
-<fieldset>
-    <legend>Subject</legend>
+<h3>Naozaj chcete vymazať predmet  @Html.DisplayFor(model => model.Name) ?</h3>
+<h4>(Vymazaním predmetu sa vymažú aj všetky setupy tohoto predmetu)</h4>
 
-    <div class="display-label">
-         @Html.DisplayNameFor(model => model.Name)
-    </div>
-    <div class="display-field">
-        @Html.DisplayFor(model => model.Name)
-    </div>
-
-    <div class="display-label">
-         @Html.DisplayNameFor(model => model.Shortcut)
-    </div>
-    <div class="display-field">
-        @Html.DisplayFor(model => model.Shortcut)
-    </div>
-</fieldset>
 @using (Html.BeginForm()) {
     <p>
-        <input type="submit" value="Delete" /> |
-        @Html.ActionLink("Back to List", "Index")
+        <button type="submit" class="btn"> Vymazať predmet </button> | 
+        @Html.ActionLink("Späť na predmety", "Index")
     </p>
 }

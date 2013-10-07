@@ -1,21 +1,19 @@
 ﻿@model CQA.Models.LoginModel
 
 @{
-    ViewBag.Title = "Log in";
+    ViewBag.Title = "Prihlásenie";
 }
 
-<hgroup class="title">
-    <h1>@ViewBag.Title.</h1>
-</hgroup>
+
+    <h2>Otázkovač - @ViewBag.Title</h2>
 
 <div id="loginForm">
-<h2>Use a local account to log in.</h2>
+<h3>Prihláste sa pomocou Vášho Ais konta</h3>
 @using (Html.BeginForm(new { ReturnUrl = ViewBag.ReturnUrl })) {
     @Html.AntiForgeryToken()
     @Html.ValidationSummary(true)
 
     <fieldset>
-        <legend>Log in Form</legend>
         <ol>
             <li>
                 @Html.LabelFor(m => m.UserName)
@@ -32,23 +30,10 @@
                 @Html.LabelFor(m => m.RememberMe, new { @class = "checkbox" })
             </li>
         </ol>
-        <input type="submit" value="Log in" />
+        <button type="submit" class="btn btn-primary">Prihlásiť</button>
     </fieldset>
-    <p>
-        @Html.ActionLink("Register", "RegisterTrainer") if you don't have an account.
-        @Html.ActionLink("Register", "RegisterUser") if you don't have user an account.
-    </p>
-     <p>
-        @Html.ActionLink("Forgot Password", "ResetPassword")
-    </p>
 }
 </div>
-
-<!--
-<section class="social" id="socialLoginForm">
-    <h2>Prihlásiť sa môžete aj prostredníctvom týchto služieb:</h2>
-
-</section>-->
 
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")

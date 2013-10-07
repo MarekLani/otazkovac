@@ -1,39 +1,17 @@
 ﻿@model CQA.Models.Setup
 
 @{
-    ViewBag.Title = "Delete";
+    ViewBag.Title = "Vymazať setup";
 }
 
-<h2>Delete</h2>
+<h2>Vymazať setup</h2>
 
-<h3>Are you sure you want to delete this?</h3>
-<fieldset>
-    <legend>Setup</legend>
+<h3>Naozaj chcete vymazať setup  @Html.DisplayFor(model => model.Name) z predmetu @Html.DisplayFor(model => model.Subject.Name)?</h3>
+<h4>(Vymazaním setupu sa vymažú aj všetky otázky tohto setupu)</h4>
 
-    <div class="display-label">
-         @Html.DisplayNameFor(model => model.Name)
-    </div>
-    <div class="display-field">
-        @Html.DisplayFor(model => model.Name)
-    </div>
-
-    <div class="display-label">
-         @Html.DisplayNameFor(model => model.Active)
-    </div>
-    <div class="display-field">
-        @Html.DisplayFor(model => model.Active)
-    </div>
-
-    <div class="display-label">
-         @Html.DisplayNameFor(model => model.Subject.Name)
-    </div>
-    <div class="display-field">
-        @Html.DisplayFor(model => model.Subject.Name)
-    </div>
-</fieldset>
 @using (Html.BeginForm()) {
     <p>
-        <input type="submit" value="Delete" /> |
-        @Html.ActionLink("Back to List", "Index")
+        <button type="submit" class="btn"> Vymazať setup</button> |
+        @Html.ActionLink("Späť na setupy", "Index")
     </p>
 }

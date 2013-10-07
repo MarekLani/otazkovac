@@ -123,6 +123,9 @@ namespace CQA.Controllers
         public ActionResult Questions(int id)
         {
             ViewData["SetupId"] = id;
+            var setup = db.Setups.Find(id);
+            ViewData["SetupName"] = setup.Name;
+            ViewData["SubjectName"] = setup.Subject.Name;
             var questions = db.Setups.Find(id).Questions;
             return View(questions);
         }
@@ -130,7 +133,7 @@ namespace CQA.Controllers
         [HttpPost]
         public ActionResult AddQuestions(HttpPostedFileBase file, int setupId)
         {
-            var reader = new StreamReader(file.InputStream);
+            var reader = new StreamReader(file.InputStream, Encoding.UTF8);
             List<string> columnNames = new List<string>();
             //List<QARating> data = new List<QARating>();
 

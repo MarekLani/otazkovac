@@ -41,14 +41,19 @@
             <input name="answerId" type="hidden" value="@Html.DisplayFor(model => model.AnswerId)" />
             <input type="hidden" class="value" name="value" value="50" />
             <div id="sliderWrap">
+                <div id="sliderInlineWrap">
                 <img src="~/Images/thumbDown.png" class="thumb"/>
                 <div class="ui-widget-content-wrapper">
                     <div class="slider-range" style=""></div>
                 </div> 
                 <img src="~/Images/thumbUp.png" class="thumb" />
-                <div style="clear:both"></div>
+                <div style="clear:both" />
+                </div>
             </div>
+            
+
             <div id="textValue">Čiastočne správne aj nesprávne</div>
+            <a href="#" class="btn skip">Preskočiť</a>
             <button type="submit" class="btn btn-primary">Ohodnotiť</button>
         }
     </div>
@@ -60,11 +65,12 @@
     @Scripts.Render("~/bundles/jqueryui")
     @Scripts.Render("~/Scripts/jquery.ui.touch-punch.min.js")
 
-    <script>jQuery('#widget').draggable();</script>
-    <script src="~/Scripts/AnswerAndEvaluateCommon.js"></script>  
-   <script>
 
-       $(document).ready(function () {
+   <script src="~/Scripts/AnswerAndEvaluateCommon.js"></script>  
+   <script>
+       jQuery.noConflict();
+       jQuery('#widget').draggable();
+       jQuery(document).ready(function ($) {
            $("#MenuSetupItem"+@(Model.Question.SetupId)).addClass("activeMenuItem")
         })
 
@@ -106,7 +112,7 @@
            g.toString(16),
            b.toString(16)
            ];
-           $.each(hex, function (nr, val) {
+           jQuery.each(hex, function (nr, val) {
                if (val.length === 1) {
                    hex[nr] = "0" + val;
                }

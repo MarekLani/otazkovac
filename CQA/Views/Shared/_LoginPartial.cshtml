@@ -2,20 +2,19 @@
 {
 
     <li>
-        @Html.ActionLink(User.Identity.Name, "Manage", "Account", routeValues: null, htmlAttributes: new { @class = "username", title = "Manage" })
+        <div class="accountWrap">
+            Prihlásený ako: <span style="font-size:18px">@(User.Identity.Name)</span>
+        </div>
     </li>
     <li>
+        <div class="accountWrap">
         @using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm" }))
         {
             @Html.AntiForgeryToken()
             <a  href="javascript:document.getElementById('logoutForm').submit()">Odhlásiť sa</a>
         }
+        </div>
     </li>
 
 }
-else
-{
 
-    <li>@Html.ActionLink("Log in", "Login", "Account", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>
-
-}

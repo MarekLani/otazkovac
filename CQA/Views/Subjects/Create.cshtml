@@ -1,10 +1,10 @@
 ﻿@model CQA.Models.Subject
 
 @{
-    ViewBag.Title = "Create";
+    ViewBag.Title = "Vytvoriť predmet";
 }
 
-<h2>Create</h2>
+<h2>Vytvoriť predmet</h2>
 
 @using (Html.BeginForm()) {
     @Html.ValidationSummary(true)
@@ -29,13 +29,13 @@
         </div>
 
         <p>
-            <input type="submit" value="Create" />
+            <button type="submit" class="btn">Vytvoriť predmet</button>
         </p>
     </fieldset>
 }
 
 <div>
-    @Html.ActionLink("Back to List", "Index")
+    @Html.ActionLink("Späť na predmety", "Index")
 </div>
 
 @section Scripts {

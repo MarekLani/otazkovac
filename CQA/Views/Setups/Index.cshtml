@@ -1,13 +1,13 @@
 ﻿@model IEnumerable<CQA.Models.Setup>
 
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Setupy";
 }
 
-<h2>Index</h2>
+<h2>Setupy</h2>
 
 <p>
-    @Html.ActionLink("Create New", "Create")
+    @Html.ActionLink("Vytvoriť nový setup", "Create", null, new { @class="btn"})
 </p>
 <table>
     <tr>
@@ -26,7 +26,7 @@
 @foreach (var item in Model) {
     <tr>
         <td>
-            @Html.ActionLink(item.Name,"Questions", new { id=item.SetupId })
+          @Html.DisplayFor(modelItem => item.Name)
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.Active)
@@ -35,9 +35,9 @@
             @Html.DisplayFor(modelItem => item.Subject.Name)
         </td>
         <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.SetupId }) |
-            @Html.ActionLink("Details", "Details", new { id=item.SetupId }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.SetupId })
+            @Html.ActionLink("Editovať", "Edit", new { id=item.SetupId }) |
+            @Html.ActionLink("Otázky","Questions", new { id=item.SetupId }) |
+            @Html.ActionLink("Vymazať", "Delete", new { id=item.SetupId })
         </td>
     </tr>
 }

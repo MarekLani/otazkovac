@@ -1,10 +1,10 @@
 ﻿@model CQA.Models.Subject
 
 @{
-    ViewBag.Title = "Edit";
+    ViewBag.Title = "Editovať predmet";
 }
 
-<h2>Edit</h2>
+<h2>Editovať predmet</h2>
 
 @using (Html.BeginForm()) {
     @Html.ValidationSummary(true)
@@ -31,13 +31,13 @@
         </div>
 
         <p>
-            <input type="submit" value="Save" />
+            <button type="submit" class="btn">Uložiť zmeny</button>
         </p>
     </fieldset>
 }
 
 <div>
-    @Html.ActionLink("Back to List", "Index")
+    @Html.ActionLink("Späť na predmety", "Index")
 </div>
 
 @section Scripts {

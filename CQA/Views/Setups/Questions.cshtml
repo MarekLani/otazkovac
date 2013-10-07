@@ -1,22 +1,21 @@
 ﻿@model IEnumerable<CQA.Models.Question>
 
 @{
-    ViewBag.Title = "CQA";
+    ViewBag.Title = "Zoznam otázok";
 }
 
-<p>
-    @Html.ActionLink("Create New", "Create")
-</p>
+<h2>Otázky pre setup @(ViewData["SetupName"]), z predmetu  @(ViewData["SubjectName"])</h2>
+
 <form action="@Url.Action("AddQuestions","Setups")" method="post" enctype="multipart/form-data" >
      <input name="file" type="file" accept=".csv" />
     <input type="hidden" name="setupId" value="@(ViewData["SetupId"])" />
-    <input type="submit" value="Pridať otázky" />
+    <button type="submit" class="btn btn-primary">Pridať otázky</button>
 </form>
 
 
 
 @foreach (var item in Model) {
-   <div class="question"> 
+   <div class="questionInList"> 
        <div style="float:left; margin-right:20px;">
            <div style="text-align:center">@item.Answers.Count()</div>
            <div> @if(item.Answers.Count() == 1){ @Html.Raw("Odpoveď")}
@@ -29,9 +28,13 @@
                } 
            </div> </div> 
        
-       <a href="@Url.Action("Details", new { id=item.QuestionId })"><span style="line-height:40px; font-size:20px; vertical-align:central">@item.QuestionText </span> </a>
+       <span style="line-height:40px; font-size:20px; vertical-align:central">@item.QuestionText </span>
    </div>
-
 }
+
+<br />
+<div>
+    @Html.ActionLink("Späť na setupy", "Index")
+</div>
 
 

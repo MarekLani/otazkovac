@@ -1,13 +1,13 @@
 ﻿@model IEnumerable<CQA.Models.Subject>
 
 @{
-    ViewBag.Title = "Index";
+    ViewBag.Title = "Predmety";
 }
 
-<h2>Index</h2>
+<h2>Predmety</h2>
 
 <p>
-    @Html.ActionLink("Create New", "Create")
+    @Html.ActionLink("Pridať predmet", "Create", null ,new { @class = "btn" })
 </p>
 <table>
     <tr>
@@ -29,9 +29,8 @@
             @Html.DisplayFor(modelItem => item.Shortcut)
         </td>
         <td>
-            @Html.ActionLink("Edit", "Edit", new { id=item.SubjectId }) |
-            @Html.ActionLink("Details", "Details", new { id=item.SubjectId }) |
-            @Html.ActionLink("Delete", "Delete", new { id=item.SubjectId })
+            @Html.ActionLink("Editovať", "Edit", new { id=item.SubjectId }) |
+            @Html.ActionLink("Vymazať", "Delete", new { id=item.SubjectId })
         </td>
     </tr>
 }

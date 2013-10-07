@@ -9,28 +9,47 @@ body {
     color: #333;
     font-size: .85em;
     font-family: "Segoe UI", Verdana, Helvetica, Sans-Serif;
-    margin: 0;
-    padding: 0;
-	
+
 }
 
-/*a {
-    color: #333;
-    outline: none;
-    padding-left: 3px;
-    padding-right: 3px;
-    text-decoration: underline;
+
+.nav a
+{
+	color:white !important;
+	font-size: 16px;
 }
 
-    a:link, a:visited,
-    a:active, a:hover {
-        color: #333;
-    }
+.nav a:hover{
+	text-decoration:none;	
+}
 
-    a:hover {
-        background-color: #c7d1d6;
-    }
-*/
+.content a
+{
+	color: #333333
+}
+
+.accountWrap
+{
+	line-height:50px;
+	color:white !important;
+	vertical-align: bottom !important;
+	margin: 10px;
+}
+
+.nav a:hover{
+	text-decoration:none;
+}
+
+th
+{
+	padding-right: 15px;
+}
+
+td
+{
+	font-size: 16px;
+}
+
 header, footer, hgroup,
 nav, section {
     display: block;
@@ -354,8 +373,8 @@ aside {
 
 /* login page */
 #loginForm {
-    float: left;
-    width: 55%;
+    width: auto;
+	text-align: left;
 }
 
     #loginForm .validation-error {
@@ -777,16 +796,6 @@ tr.pager td {
         }
 }
 
-	.nav a{
-		color:white !important;
-		text-decoration:none;
-		line-height:50px;
-		vertical-align: central;
-		padding-top: 10px;
-	}
-	.nav a:hover{
-		text-decoration:none;
-	}
 
 /*Answer Detail ----*/
 #newAnswer
@@ -816,17 +825,33 @@ tr.pager td {
 	padding-bottom: 5px;
 }
 
+.questionInList
+{
+	margin-top:10px;
+	border-bottom: 1px lightgray solid;
+	padding-bottom: 5px;
+}
+
 #hint
 {
 	font-size:16px;
 	text-align: center;
 }
 
+
+
 #sliderWrap
 {
-	width:90%;
-	 margin: 0 auto;
-	  padding-left:25px;
+  text-align:center;
+  width: 100%;
+  margin: 10px;
+	
+}
+
+#sliderInlineWrap
+{
+	display: inline-block;
+	width: 80%
 }
 
 .ui-slider-handle
@@ -871,6 +896,93 @@ tr.pager td {
 	font-weight: 500;
 }
 
+@media (max-width: 979px)
+{
+
+	.ui-widget-content-wrapper
+	{
+		background: white;
+		border: 1px solid lightgray;
+		float:left;
+		width:80% ;
+		margin:8px;
+		padding-right: 25px;
+		padding-left: 7px;
+
+		-moz-border-radius: 10px !important;
+		 border-radius: 10px !important;
+	}
+
+	.thumb
+	{
+		float: left;
+		width: 30px;
+	}
+}
+
+@media (max-width: 750px)
+{
+	#sliderInlineWrap 
+	{
+		width: 100%;
+		
+	}
+
+	.ui-widget-content-wrapper
+	{
+		width: 80%;
+	}
+
+	
+}
+
+@media (max-width: 610px)
+{
+		.thumb
+	{
+		float: left;
+		width: 25px;
+	}
+
+    .ui-widget-content-wrapper
+	{
+		width: 72%;
+	}
+}
+
+@media (max-width: 450px)
+{
+	ui-widget-content-wrapper
+	{
+		width: 50%;
+		margin-top:-10px !important;
+		padding-right: 25px;
+		padding-left: 7px;
+		-moz-border-radius: 10px !important;
+		 border-radius: 10px !important;
+	}
+
+    .thumb
+	{
+		float: left;
+		width: 20px;
+	}
+
+	.skip
+	{
+		margin-left: 10px;
+	}
+
+	.ui-slider-handle
+	{
+		 padding:4px;
+		 cursor: pointer !important;
+		 margin-top: -6px;
+		 -moz-border-radius: 8px !important;
+		 border-radius: 8px !important;
+		 background: white !important;
+	}
+}
 
 /*Forms*/
 textarea
