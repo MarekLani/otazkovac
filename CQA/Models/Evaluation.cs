@@ -7,7 +7,7 @@ using CQA.Resources;
 
 namespace CQA.Models
 {
-    public class Evaluation
+    public class Evaluation : DateCreatedModel
     {
 
         public int UserId { get; set; }

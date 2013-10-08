@@ -27,113 +27,10 @@ namespace CQA.Controllers
     }
 
     [Authorize]
-    public class QuestionsController : Controller
+    public class QuestionsAndAnswersController : Controller
     {
 
-
         private CQADBContext db = new CQADBContext();
-
-        //
-        // GET: /Questions/
-
-        public ActionResult Index()
-        {
-           
-           //Else return unfortunately there is nothing to return 
-            return Json(false);
-          
-        }
-
-        //
-        // GET: /Questions/Details/5
-
-        public ActionResult Details(int id = 0)
-        {
-
-            Question question = db.Questions.Find(id);
-            if (question == null)
-            {
-                return HttpNotFound();
-            }
-            return View(question);
-        }
-
-        //
-        // GET: /Questions/Create
-
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        //
-        // POST: /Questions/Create
-
-        [HttpPost]
-        public ActionResult Create(Question question)
-        {
-            if (ModelState.IsValid)
-            {
-                db.Questions.Add(question);
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-
-            return View(question);
-        }
-
-        //
-        // GET: /Questions/Edit/5
-
-        public ActionResult Edit(int id = 0)
-        {
-            Question question = db.Questions.Find(id);
-            if (question == null)
-            {
-                return HttpNotFound();
-            }
-            return View(question);
-        }
-
-        //
-        // POST: /Questions/Edit/5
-
-        [HttpPost]
-        public ActionResult Edit(Question question)
-        {
-            if (ModelState.IsValid)
-            {
-                db.Entry(question).State = EntityState.Modified;
-                db.SaveChanges();
-                return RedirectToAction("Index");
-            }
-            return View(question);
-        }
-
-        //
-        // GET: /Questions/Delete/5
-
-        public ActionResult Delete(int id = 0)
-        {
-            Question question = db.Questions.Find(id);
-            if (question == null)
-            {
-                return HttpNotFound();
-            }
-            return View(question);
-        }
-
-        //
-        // POST: /Questions/Delete/5
-
-        [HttpPost, ActionName("Delete")]
-        public ActionResult DeleteConfirmed(int id)
-        {
-            Question question = db.Questions.Find(id);
-            db.Questions.Remove(question);
-            db.SaveChanges();
-            return RedirectToAction("Index");
-        }
 
         [HttpPost]
         public ActionResult CreateAnswer(int questionId, string text)
@@ -204,11 +101,18 @@ namespace CQA.Controllers
                 db.Ratings.Add(e);
                 db.SaveChanges();
 
+                //Check if we already have 3 evaluations and if the evaluated answer can be shown to answer
+                var answer = db.Answers.Find(answerId);
+                if (answer.Evaluations.Count == 3)
+                {
+                    answer.SeenEvaluation = false;
+                    db.Entry(answer).State = EntityState.Modified;
+                    db.SaveChanges();
+                }
+
                 //Mark action
                 UserMadeAction((int)UserActionType.Evaluation, answerId,0);
             }
-
-
 
             return Json(true);
         }
@@ -272,6 +176,12 @@ namespace CQA.Controllers
 
             }
             return Json(false);
+        }
+
+        public ActionResult MyEvaluatedAnswers()
+        {
+            var Answers = db.Answers.Where(a => a.SeenEvaluation != null && a.UserId == WebSecurity.CurrentUserId);
+            return View(Answers);
         }
 
         protected override void Dispose(bool disposing)

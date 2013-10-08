@@ -9,5 +9,6 @@ namespace CQA.Models
     {
         public List<Setup> Setups { get; set; }
         public bool SubjectsNotEmpty { get; set; }
+        public int UnseenEvaluatedAnswersCount { get; set; }
     }
 }

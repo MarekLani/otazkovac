@@ -21,11 +21,14 @@
                     <!-- Start: Primary navigation -->
                     <div class="nav-collapse collapse">
                         <ul class="nav pull-right">
-                            <li>@Html.ActionLink("Predmety", "Index", "Subjects")</li>
-                            @if(Model.SubjectsNotEmpty){
-                                <li>@Html.ActionLink("Setups", "Index", "Setups")</li>
+                            @if(User.Identity.IsAuthenticated){
+                                <li>Moje odpovede (@(Model.UnseenEvaluatedAnswersCount))</li>
+                                <li>@Html.ActionLink("Predmety", "Index", "Subjects")</li>
+                                if(Model.SubjectsNotEmpty){
+                                    <li>@Html.ActionLink("Setups", "Index", "Setups")</li>
+                                }
+                                 @Html.Partial("_LoginPartial")
                             }
-                             @Html.Partial("_LoginPartial")
                         </ul>
 
                     </div>

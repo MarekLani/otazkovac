@@ -187,10 +187,11 @@
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\FilesController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\QuestionsController.cs" />
+    <Compile Include="Controllers\QuestionsAndAnswersController.cs" />
     <Compile Include="Controllers\SetupsController.cs" />
     <Compile Include="Controllers\SubjectsController.cs" />
     <Compile Include="Controllers\UsersController.cs" />
+    <Compile Include="Models\DateCreatedModel.cs" />
     <Compile Include="Models\UsersSetup.cs" />
     <Compile Include="Filters\InitializeSimpleMembershipAttribute.cs" />
     <Compile Include="Global.asax.cs">
@@ -417,12 +418,8 @@
     <Content Include="Views\Articles\Create.cshtml" />
     <Content Include="Views\Articles\Edit.cshtml" />
     <Content Include="Views\Articles\Delete.cshtml" />
-    <Content Include="Views\Questions\Index.cshtml" />
-    <Content Include="Views\Questions\Details.cshtml" />
-    <Content Include="Views\Questions\Create.cshtml" />
-    <Content Include="Views\Questions\Edit.cshtml" />
-    <Content Include="Views\Questions\Delete.cshtml" />
-    <Content Include="Views\Questions\_CreateAnswerForm.cshtml" />
+    <Content Include="Views\QuestionsAndAnswers\Index.cshtml" />
+    <Content Include="Views\QuestionsAndAnswers\_CreateAnswerForm.cshtml" />
     <Content Include="Views\Subjects\Index.cshtml" />
     <Content Include="Views\Subjects\Details.cshtml" />
     <Content Include="Views\Subjects\Create.cshtml" />
@@ -435,8 +432,8 @@
     <Content Include="Views\Setups\Delete.cshtml" />
     <Content Include="Views\Setups\Questions.cshtml" />
     <Content Include="Views\Users\Index.cshtml" />
-    <Content Include="Views\Questions\Evaluate.cshtml" />
-    <Content Include="Views\Questions\Answer.cshtml" />
+    <Content Include="Views\QuestionsAndAnswers\Evaluate.cshtml" />
+    <Content Include="Views\QuestionsAndAnswers\Answer.cshtml" />
     <Content Include="Views\Home\_Menu.cshtml" />
   </ItemGroup>
   <ItemGroup>

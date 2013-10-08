@@ -94,13 +94,14 @@ namespace CQA.Models
             base.OnModelCreating(modelBuilder);
         }
 
-        //public override int SaveChanges()
-        //{
-        //    foreach (var item in ChangeTracker.Entries<IModel>())
-        //        item.Entity.Modified = DateTime.Now;
+        public override int SaveChanges()
+        {
+            foreach (var item in ChangeTracker.Entries<DateCreatedModel>())
+                if(item.Entity.DateCreated == null)
+                    item.Entity.DateCreated = DateTime.Now;
 
-        //    return base.SaveChanges();
-        //}
+            return base.SaveChanges();
+        }
 
         //:IDatabaseInitializer
         public class Initializer : IDatabaseInitializer<CQADBContext>

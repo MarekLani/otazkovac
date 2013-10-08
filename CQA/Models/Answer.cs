@@ -10,7 +10,7 @@ using CQA.Resources;
 
 namespace CQA.Models
 {
-    public class Answer
+    public class Answer : DateCreatedModel
     {
         public int AnswerId { get; set; }
 
@@ -24,6 +24,14 @@ namespace CQA.Models
 
         public int UserId { get; set; }
         public virtual UserProfile Author{ get; set; }
+
+        /// <summary>
+        /// Flag for determining if Answer have enough evaluations to be displayed to author
+        /// NULL = not enough ratings
+        /// False = enough ratings but not seen
+        /// True = already seen
+        /// </summary>
+        public bool? SeenEvaluation { get; set; }
 
         public virtual ICollection<Evaluation> Evaluations { get; set; }
         public virtual ICollection<UsersAction> UsersActions { get; set; }
