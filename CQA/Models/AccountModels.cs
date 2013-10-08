@@ -44,6 +44,7 @@ namespace CQA.Models
 
         public virtual ICollection<UsersSetup> UsersSetups { get; set; }
         public virtual ICollection<UsersAction> UsersActions { get; set; }
+        public virtual ICollection<QuestionView> QuestionViews { get; set; }
     }
 
 

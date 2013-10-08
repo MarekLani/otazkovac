@@ -182,11 +182,11 @@ namespace CQA.Controllers
             q.QuestionId = Convert.ToInt32(values[0]);
             q.QuestionText = values[1];
             //If hint is present
-            if (values.Count() == 3 && values[2] != "")
+            if (values[2] != "")
                 q.Hint = values[2];
             else
                 q.Hint = null;
-
+            q.IsActive = (1 == Convert.ToInt32(values[3]));
         }
 
         protected override void Dispose(bool disposing)

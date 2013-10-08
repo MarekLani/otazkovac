@@ -53,6 +53,8 @@ namespace CQA.Controllers
 
                 UserMadeAction((int)UserActionType.Answering, 0,questionId);
 
+                UserSeenQuestion(questionId);
+
                 object result = new { answerText = text, answerAuthor = db.UserProfiles.Find(WebSecurity.CurrentUserId).RealName, answerId = answer.AnswerId };
                 return Json(result);
             }
@@ -112,9 +114,38 @@ namespace CQA.Controllers
 
                 //Mark action
                 UserMadeAction((int)UserActionType.Evaluation, answerId,0);
+
+                //Mark question as seen
+                UserSeenQuestion(answer.QuestionId);
+                
+                db.SaveChanges();
             }
 
             return Json(true);
+        }
+
+        /// <summary>
+        /// Finds and update/creates new record of viewed question by user
+        /// </summary>
+        /// <param name="questionId"></param>
+        private void UserSeenQuestion(int questionId)
+        {
+            QuestionView qv = db.QuestionViews.Find(new {QuestionId =questionId, UserId=WebSecurity.CurrentUserId });
+            if (qv == null)
+            {
+                qv = new QuestionView();
+                qv.QuestionId = questionId;
+                qv.UserId = WebSecurity.CurrentUserId;
+                qv.ViewDate = DateTime.Now;
+                db.QuestionViews.Add(qv);
+            }
+            else
+            {
+                qv.ViewDate = DateTime.Now;
+                db.Entry(qv).State = EntityState.Modified;
+            }
+
+            db.SaveChanges();
         }
 
         private void UserMadeAction(int action, int answerId, int questionId)
@@ -150,7 +181,8 @@ namespace CQA.Controllers
             }
 
             Random rand = new Random();
-            if (rand.Next(4) != 4)
+            int p = db.Setups.Find(setupId).AnsweringProbability;
+            if (rand.Next(p) != p-1)
             {
                 //user is going to validate answer
                 var answers = db.Answers.OrderByDescending(a => a.Evaluations.Count())
@@ -165,17 +197,36 @@ namespace CQA.Controllers
                 }
             }
 
-            var questions = db.Questions.OrderBy(q => q.Answers.Count())
-                                .Where(q => !q.Answers.Where(r => r.UserId == WebSecurity.CurrentUserId).Any() && q.SetupId == setupId );
-            var res2 = questions.ToList();
-            if (res2.Any())
-            {
-                int n = res2.First().Answers.Count();
-                var worstAnsweredQuestions = res2.Where(a => a.Answers.Count() == n);
-                return View("Answer", worstAnsweredQuestions.ElementAt(rand.Next(worstAnsweredQuestions.Count())));
+            //Choosing a question to be answered
+            //Algorythm looks like this:
+            //1. Choose active questions from current setup, which was not already answered by current user
+            //2. From this questions choose only those, which answers were not evaluated by current user in last two days
+            //3. If no questions are selected in step two, ignore 2 days rule and select from all questions
 
+            //Step 1 take active questions which user has not answered yet
+            var tempQuestions = db.Questions.Where( q => !q.Answers.Where(r => r.UserId == WebSecurity.CurrentUserId).Any() &&
+                q.IsActive &&
+                q.SetupId == setupId).OrderByDescending(q => q.Answers.Count()).ToList();
+
+            if (tempQuestions.Any())
+            {
+                //Step2 Check if there are questions to be answered, which have not been seen by current user in last two days
+                //TODO check if the order of questions stays as it was
+                var questions = tempQuestions.Where(q => q.QuestionViews.Single(qv => qv.UserId == WebSecurity.CurrentUserId).ViewDate.AddDays(2) < DateTime.Now).OrderByDescending(q => q.Answers.Count()).ToList();
+                
+                //Step3 if there are no questions from step2 we have to ignore 2 days rule
+                if (!questions.Any())
+                    questions = tempQuestions;
+                
+                //Check if there is any question to be answered
+                if(questions.Any()){
+                    int n = questions.First().Answers.Count();
+                    var worstAnsweredQuestions = questions.Where(a => a.Answers.Count() == n);
+                    return View("Answer", worstAnsweredQuestions.ElementAt(rand.Next(worstAnsweredQuestions.Count())));
+                }
             }
-            return Json(false);
+
+            return View("Nothing to do here");
         }
 
         public ActionResult MyEvaluatedAnswers()

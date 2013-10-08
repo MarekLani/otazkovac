@@ -39,20 +39,19 @@
         }))
         {
             <input name="answerId" type="hidden" value="@Html.DisplayFor(model => model.AnswerId)" />
-            <input type="hidden" class="value" name="value" value="50" />
+            <input type="hidden" id="value" name="value" value="50" />
+            <div id="textValue">Čiastočne správne</div>
             <div id="sliderWrap">
                 <div id="sliderInlineWrap">
-                <img src="~/Images/thumbDown.png" class="thumb"/>
+                <img src="~/Images/thumbDown.png" class="thumb" id="thumbDown"/>
                 <div class="ui-widget-content-wrapper">
                     <div class="slider-range" style=""></div>
                 </div> 
-                <img src="~/Images/thumbUp.png" class="thumb" />
+                <img src="~/Images/thumbUp.png" class="thumb" id="thumbUp"/>
                 <div style="clear:both" />
                 </div>
             </div>
-            
-
-            <div id="textValue">Čiastočne správne aj nesprávne</div>
+  
             <a href="#" class="btn skip">Preskočiť</a>
             <button type="submit" class="btn btn-primary">Ohodnotiť</button>
         }
@@ -71,10 +70,11 @@
        jQuery.noConflict();
        jQuery('#widget').draggable();
        jQuery(document).ready(function ($) {
-           $("#MenuSetupItem"+@(Model.Question.SetupId)).addClass("activeMenuItem")
+           $("#MenuSetupItem"+@(Model.Question.SetupId)).addClass("activeMenuItem");
         })
 
        jQuery(function ($) {
+
            $(".slider-range").each(function () { $(this).trigger('mySliderTrigger') })
                $(".slider-range").slider({
                    range: false,
@@ -82,7 +82,7 @@
                    max: 100,
                    value: 50,
                    slide: function (event, ui) {
-                       $(this).parent().parent().siblings(".value").val(ui.value);
+                       $("#value").val(ui.value);
                        hex = hexFromRGB(10, 10, ui.value);
                        if (ui.value > 50) {
                            $(this).parent().css("background", "rgba(22, 149, 49, " + (ui.value - 50) * 2 / 100 + ")");
@@ -91,19 +91,36 @@
                            $(this).parent().css("background", "rgba(143, 20, 20, " + (50 - ui.value) * 2 / 100 + ")");
                        }
                        var el = $(this).parent().parent().siblings("#textValue");
-                       if (ui.value < 20)
+                       if (ui.value < 11)
                            el.html("Úplne nesprávne")
-                       else if (ui.value < 40)
+                       else if (ui.value < 37)
                            el.html("Čiastočne nesprávne")
-                       else if (ui.value < 60)
-                           el.html("Čiastočne správne aj nesprávne")
-                       else if (ui.value < 80)
+                       else if (ui.value < 63)
                            el.html("Čiastočne správne")
+                       else if (ui.value < 89)
+                           el.html("Takmer správne")
                        else el.html("Úplne správne");
                            
                    }
                });
 
+               //Moving sliding by icons  TODO check if the value field is also changed 
+               $("#thumbDown").click(function(){
+                   var val = $("#value").val();
+                   if(val < 5)
+                       $(".slider-range").slider('value',0);
+                   else
+                       $(".slider-range").slider('value',val-5);
+               });
+               $("#thumbUp").click(function(){
+                   var val = $("#value").val();
+                   if(val > 95)
+                       $(".slider-range").slider('value',100);
+                   else
+                       $(".slider-range").slider('value',val+5);
+                      
+                   
+               });
            });
 
        function hexFromRGB(r, g, b) {

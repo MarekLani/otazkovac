@@ -22,7 +22,7 @@ namespace CQA.Models
         public DbSet<Setup> Setups { get; set; }
         public DbSet<UsersSetup> UsersSetups { get; set; }
         public DbSet<UsersAction> UsersActions { get; set; }
-
+        public DbSet<QuestionView> QuestionViews { get; set; }
         // <summary>
         /// The below Method is used to define the Maping
         /// </summary>
@@ -74,6 +74,8 @@ namespace CQA.Models
                         .WithRequired(us => us.Setup)
                         .HasForeignKey(us => us.SetupId);
 
+          
+            #region UsersSetups
             //Creating many to many relationship where duplicity in foreign keys is allowed
             modelBuilder.Entity<UserProfile>()
                         .HasMany(u => u.UsersActions)
@@ -88,8 +90,24 @@ namespace CQA.Models
             modelBuilder.Entity<Answer>()
                        .HasMany(a => a.UsersActions)
                        .WithOptional(ua => ua.Answer)
-                       .HasForeignKey(ua => ua.AnswerId); 
+                       .HasForeignKey(ua => ua.AnswerId);
 
+            #endregion
+
+            #region QuestionViews
+
+            modelBuilder.Entity<UserProfile>()
+                .HasMany(u => u.QuestionViews)
+                .WithRequired(qv => qv.User);
+
+            modelBuilder.Entity<Question>()
+                .HasMany(q => q.QuestionViews)
+                .WithRequired(qv => qv.Question);
+
+            modelBuilder.Entity<QuestionView>()
+              .HasKey(qv => new { qv.UserId, qv.QuestionId });
+
+            #endregion
 
             base.OnModelCreating(modelBuilder);
         }

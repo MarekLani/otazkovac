@@ -28,6 +28,14 @@
             @Html.ValidationMessageFor(model => model.Active)
         </div>
 
+        <div class="editor-label" style="float:left; margin-right: 15px; margin-top: 3px;; margin-bottom: 10px;">
+            @Html.LabelFor(model => model.AnsweringProbability)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.AnsweringProbability)
+            @Html.ValidationMessageFor(model => model.AnsweringProbability)
+        </div>
+
         <div style="clear:both"/>
         <div class="editor-label">
             @Html.LabelFor(model => model.SubjectId)

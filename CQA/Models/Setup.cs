@@ -26,6 +26,10 @@ namespace CQA.Models
         [DisplayName("Meno predmetu")]
         public virtual Subject Subject { get; set; }
 
+        [DisplayName("Pomer hodnotení k odpovediam (uvedťe počet hodnotení na jednu odpoveď)")]
+        [Required]
+        public int AnsweringProbability { get; set; }
+
         public virtual ICollection<Question> Questions { get; set; }
 
         public virtual ICollection<UsersSetup> UsersSetups { get; set; }

@@ -17,6 +17,9 @@
         <th>
             @Html.DisplayNameFor(model => model.Active)
         </th>
+         <th>
+            @Html.DisplayNameFor(model => model.AnsweringProbability)
+        </th>
         <th>
             @Html.DisplayNameFor(model => model.Subject.Name)
         </th>
@@ -30,6 +33,9 @@
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.Active)
+        </td>
+         <td>
+            @Html.DisplayFor(modelItem => item.AnsweringProbability)
         </td>
         <td>
             @Html.DisplayFor(modelItem => item.Subject.Name)
