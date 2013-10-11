@@ -181,19 +181,59 @@ namespace CQA.Controllers
             }
 
             Random rand = new Random();
+
+            //Base on probability set for setup it is selected if user is going to evaluate or answer
             int p = db.Setups.Find(setupId).AnsweringProbability;
             if (rand.Next(p) != p-1)
             {
                 //user is going to validate answer
-                var answers = db.Answers.OrderByDescending(a => a.Evaluations.Count())
-                                    .Where(a =>/* !a.Evaluations.Where(r => r.UserId == WebSecurity.CurrentUserId).Any()) &&*/ a.Evaluations.Count() < 17 && a.Question.SetupId == setupId);
-                var res = answers.ToList();
-                if (res.Any())
-                {
-                    int n = res.First().Evaluations.Count();
-                    var bestRatedAnswers = res.Where(a => a.Evaluations.Count() == n);
-                    return View("Evaluate", bestRatedAnswers.ElementAt(rand.Next(bestRatedAnswers.Count())));
 
+                //Algorythm for selection of answer to be evaluated looks like this:
+                //1. Find all answers, which have not been already evaluated by current user,
+                //   which were not written by current user, which are in current setup and for active question
+                //2. With greedy maximization principle, try to find questions which have fewer than 3 evaluations
+                //  and which question was not seen by current user in last day, if such a answer exists ruturn it
+                //3. If no such a question exists try to find question which have fewer then 16 evaluations with
+                // the same proccedure as before. 
+                //4.If there is no answer sleected byt his rules, ignore 1 day rule and try to find
+                // answer as before, but without the one day rule.
+                //5. If there are also no results, try to find question to be answered
+
+                //step 1
+                var answers = db.Answers
+                                    .Where(a => !a.Evaluations.Where(e => e.UserId == WebSecurity.CurrentUserId).Any()
+                                        && a.Question.SetupId == setupId
+                                        && a.UserId != WebSecurity.CurrentUserId
+                                        && a.Question.IsActive).ToList();
+
+                if (answers.Any())
+                {
+                    //step 2
+                    var bottomGreedy = answers
+                                .Where(a => a.Question.QuestionViews.Single(qv => qv.UserId == WebSecurity.CurrentUserId).ViewDate.AddDays(1) < DateTime.Now
+                                    && a.Evaluations.Count < 3).OrderByDescending(a => a.Evaluations.Count()).ToList();
+                    if (bottomGreedy.Any())
+                    {
+                        int n = bottomGreedy.First().Evaluations.Count();
+                        var bestEvaluatedAnswers = bottomGreedy.Where(a => a.Evaluations.Count() == n);
+                        return View("Evaluate", bestEvaluatedAnswers.ElementAt(rand.Next(bestEvaluatedAnswers.Count())));
+                    }
+                    else
+                    {
+                        //step 3 and 4
+                        var upperGreedy = answers
+                            .Where(a => a.Evaluations.Count < 16)
+                            .OrderByDescending(a => a.Evaluations.Count()).ToList();
+                        if (upperGreedy.Any())
+                        {
+                            var UnseenAnswers = upperGreedy.Where(a => a.Question.QuestionViews.Single(qv => qv.QuestionId == a.QuestionId && qv.UserId == WebSecurity.CurrentUserId).ViewDate.AddDays(1) < DateTime.Now).ToList();
+                            if (UnseenAnswers.Any())
+                                upperGreedy = UnseenAnswers;
+                            int n = upperGreedy.First().Evaluations.Count();
+                            var bestEvaluatedAnswers = upperGreedy.Where(a => a.Evaluations.Count() == n);
+                            return View("Evaluate", bestEvaluatedAnswers.ElementAt(rand.Next(bestEvaluatedAnswers.Count())));
+                        }
+                    }
                 }
             }
 
