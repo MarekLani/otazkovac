@@ -150,26 +150,14 @@ namespace CQA.Models
                 {
                     roles.CreateRole("Admin");
                 }
-                if (!roles.RoleExists("Editor"))
-                {
-                    roles.CreateRole("Editor");
-                }
-                if (!roles.RoleExists("User"))
-                {
-                    roles.CreateRole("User");
-                }
-                if (!roles.RoleExists("Trainer"))
-                {
-                    roles.CreateRole("Trainer");
-                }
+               
+                if (!WebSecurity.UserExists("xlanim"))
+                    WebSecurity.CreateUserAndAccount("xlanim", "pass", new { RealName = "Marek" });
 
-                //if (!WebSecurity.UserExists("mareklani@gmail.com"))
-                //    WebSecurity.CreateUserAndAccount("mareklani@gmail.com", "aaaaaa", new { RealName = "Marek", UrlName = "Marek_1254" });
-
-                //if (!roles.GetRolesForUser("Marek").Contains("Admin"))
-                //{
-                //    roles.AddUsersToRoles(new[] { "Marek" }, new[] { "Admin" });
-                //}
+                if (!roles.GetRolesForUser("xlanim").Contains("Admin"))
+                {
+                       roles.AddUsersToRoles(new[] { "xlanim" }, new[] { "Admin" });
+                }
                 //if (!roles.GetRolesForUser("Trainer").Contains("Trainer"))
                 //{
                 //    roles.AddUsersToRoles(new[] { "Trainer" }, new[] { "Trainer" });

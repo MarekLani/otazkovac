@@ -14,11 +14,10 @@ using System.Dynamic;
 using Postal;
 using CQA.Membership;
 using System.DirectoryServices;
-using System.Linq;
 
 namespace CQA.Controllers
 {
-    [Authorize]
+    
     //[InitializeSimpleMembership]
     public class AccountController : Controller
     {
@@ -181,93 +180,7 @@ namespace CQA.Controllers
             return View(model);
         }
 
-        [AllowAnonymous]
-        public ActionResult ResetPassword()
-        {
-            return View();
-        }
 
-        [AllowAnonymous]
-        [HttpPost]
-        public ActionResult ResetPassword(ResetPasswordModel model)
-        {
-            var users = db.UserProfiles.Where(u => u.UserName == model.UserName);
-            if (users.Any())
-            {
-                var user = users.First();
-                string emailAddress = user.UserName;
-                string confirmationToken =
-                    WebSecurity.GeneratePasswordResetToken(model.UserName);
-                dynamic email = new Email("ChngPasswordEmail");
-                email.To = emailAddress;
-                email.UserName = model.UserName;
-                email.ConfirmationToken = confirmationToken;
-                email.Send();
-
-                return RedirectToAction("ResetPwStepTwo");
-            }
-
-            return RedirectToAction("InvalidUserName");
-        }
-
-        [AllowAnonymous]
-        public ActionResult InvalidUserName()
-        {
-            return View();
-        }
-
-        [AllowAnonymous]
-        public ActionResult ResetPwStepTwo()
-        {
-            return View();
-        }
-
-        [AllowAnonymous]
-        [HttpPost]
-        public ActionResult ResetPasswordConfirmation(ResetPasswordConfirmModel model)
-        {
-            if (WebSecurity.ResetPassword(model.Token, model.NewPassword))
-            {
-                return RedirectToAction("PasswordResetSuccess");
-            }
-            return RedirectToAction("PasswordResetFailure");
-        }
-
-        [AllowAnonymous]
-        public ActionResult ResetPasswordConfirmation(string Id)
-        {
-            ResetPasswordConfirmModel model = new ResetPasswordConfirmModel() { Token = Id };
-            return View(model);
-        }
-
-        [AllowAnonymous]
-        public ActionResult PasswordResetFailure()
-        {
-            return View();
-        }
-
-        [AllowAnonymous]
-        public ActionResult PasswordResetSuccess()
-        {
-            return View();
-        }
-
-        //
-        // GET: /Account/Manage
-
-        public ActionResult Manage(ManageMessageId? message)
-        {
-            ViewBag.StatusMessage =
-                message == ManageMessageId.ChangePasswordSuccess ? "Your password has been changed."
-                : message == ManageMessageId.SetPasswordSuccess ? "Your password has been set."
-                : message == ManageMessageId.RemoveLoginSuccess ? "The external login was removed."
-                : "";
-            ViewBag.HasLocalPassword = OAuthWebSecurity.HasLocalAccount(WebSecurity.GetUserId(User.Identity.Name));
-            ViewBag.ReturnUrl = Url.Action("Manage");
-            return View();
-        }
-
-        //
         // POST: /Account/Manage
 
         [HttpPost]
@@ -352,23 +265,6 @@ namespace CQA.Controllers
             ChangePasswordSuccess,
             SetPasswordSuccess,
             RemoveLoginSuccess,
-        }
-
-        internal class ExternalLoginResult : ActionResult
-        {
-            public ExternalLoginResult(string provider, string returnUrl)
-            {
-                Provider = provider;
-                ReturnUrl = returnUrl;
-            }
-
-            public string Provider { get; private set; }
-            public string ReturnUrl { get; private set; }
-
-            public override void ExecuteResult(ControllerContext context)
-            {
-                OAuthWebSecurity.RequestAuthentication(Provider, ReturnUrl);
-            }
         }
 
         private static string ErrorCodeToString(MembershipCreateStatus createStatus)

@@ -989,3 +989,18 @@ textarea
 {
 	width:100% !important;
 }
+
+/*Overide jquery ui*/
+.ui-menu
+{
+	background-color: white !important;
+	-moz-border-radius: 0px !important;
+	border-radius: 0px !important;
+	border: 1px lightblue solid !important;
+}
+
+.ui-menu-item
+{
+	list-style:none;
+	padding: 5px;
+}

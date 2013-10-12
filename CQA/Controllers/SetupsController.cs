@@ -12,6 +12,8 @@ using WebMatrix.WebData;
 
 namespace CQA.Controllers
 {
+
+    [Authorize(Roles = "Admin")] 
     public class SetupsController : Controller
     {
         private CQADBContext db = new CQADBContext();
@@ -135,7 +137,7 @@ namespace CQA.Controllers
         {
             var reader = new StreamReader(file.InputStream, Encoding.UTF8);
             List<string> columnNames = new List<string>();
-            //List<QARating> data = new List<QARating>();
+
 
             System.Globalization.CultureInfo customCulture = (System.Globalization.CultureInfo)System.Threading.Thread.CurrentThread.CurrentCulture.Clone();
             customCulture.NumberFormat.NumberDecimalSeparator = ".";
@@ -143,13 +145,6 @@ namespace CQA.Controllers
             System.Threading.Thread.CurrentThread.CurrentCulture = customCulture;
 
             var firstLine = reader.ReadLine();
-
-            //var colNames = firstLine.Split(',');
-
-            //foreach (var value in colNames)
-            //{
-            //    columnNames.Add(value);
-            //}
 
             while (!reader.EndOfStream)
             {

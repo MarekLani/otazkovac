@@ -36,6 +36,17 @@ namespace CQA.Models
         public virtual ICollection<Evaluation> Evaluations { get; set; }
         public virtual ICollection<UsersAction> UsersActions { get; set; }
 
+
+        public double GetAvgEvaluation()
+        {
+            double total = 0;
+            foreach (var e in this.Evaluations)
+            {
+                total += e.Value;
+            }
+            return total / this.Evaluations.Count();
+        }
+
     }
 
     public class CreateAnswer

@@ -1,0 +1,15 @@
+﻿@model ICollection<CQA.Models.Answer>
+@{
+    ViewBag.Title = "EvaluatedAnswers";
+}
+
+<h2>EvaluatedAnswers</h2>
+
+@foreach (var a in Model)
+{
+    <div class="evaluatedAnswer">
+        <div>@(a.Question.QuestionText)</div>
+        <div>@(a.Text)</div>
+        <div>@(a.GetAvgEvaluation();)</div>
+    </div>
+}

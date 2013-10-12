@@ -22,7 +22,7 @@
                     <div class="nav-collapse collapse">
                         <ul class="nav pull-right">
                             @if(User.Identity.IsAuthenticated){
-                                <li>Moje odpovede (@(Model.UnseenEvaluatedAnswersCount))</li>
+                                <li>@Html.ActionLink("Moje odpovede "+Model.UnseenEvaluatedAnswersCount,"EvaluatedAnswers","Users")</li>
                                 <li>@Html.ActionLink("Predmety", "Index", "Subjects")</li>
                                 if(Model.SubjectsNotEmpty){
                                     <li>@Html.ActionLink("Setups", "Index", "Setups")</li>

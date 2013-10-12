@@ -1,0 +1,71 @@
+﻿@{
+    ViewBag.Title = "Pridať administrátora";
+}
+
+@section Styles{
+    @Styles.Render("~/Content/themes/base/css");
+}
+
+<h2>Pridať administrátora</h2>
+@(TempData["AdminAdded"])
+
+@using (Html.BeginForm("AddAdmin", "Users", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    <input id="user" name="user"  type="text" value="Začnite písať meno"/> 
+    <button type="submit" class="btn btn-primary" style="margin-top:-10px">Pridaj administrátora </button>
+}
+
+Administrátori:
+@foreach (string u in (List<string>)ViewData["Admins"])
+{
+    @(u + " ")
+}
+
+@section Scripts{
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/jqueryui")
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#user").click(function () {
+                this.select();
+            });
+
+            $("#user").autocomplete({
+                source: function (request, response) {
+                    $.ajax({
+                        url: "@Url.Action("GetUsers","Users")",
+                        dataType: "json",
+                        contentType: "application/json; charset=utf-8",
+                        method: "POST",
+                        data: "{ 'Name': '" + request.term + "'}",
+
+                        success: function (data) {
+                            response(
+                                $.map(data, function (item) {
+                                    return {
+                                        value: item.UserName,
+                                        label: item.UserName
+                                    }
+                                }));
+                        },
+                        error: function (XMLHttpRequest, textStatus, errorThrown) {
+                            alert(textStatus);
+                        }
+                    });
+                },
+                minLength: 2,
+
+                change: function (event, ui) {
+
+                    if ((ui.item == null || ui.item == undefined) && ($(this).val() != "")) {
+                        $(this).val("");
+                        alert("Prosím začnite písat meno používateľa znovu a zvoľte jednu z ponúknutých možností.");
+                    }
+
+                }
+            });
+        });
+
+    </script>
+}
