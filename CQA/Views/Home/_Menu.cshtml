@@ -14,7 +14,7 @@
                     <div class="nav-collapse collapse">
                         <ul class="nav pull-left">
                             @foreach(var s in Model.Setups){
-                            <li>@Html.ActionLink(s.Subject.Shortcut + " " + s.Name, "AnswerAndEvaluate", "Questions", new { setupId = s.SetupId }, new { id = "MenuSetupItem" + s.SetupId }) </li>
+                            <li>@Html.ActionLink(s.Subject.Shortcut + " " + s.Name, "AnswerAndEvaluate", "QuestionsAndAnswers", new { setupId = s.SetupId }, new { id = "MenuSetupItem" + s.SetupId }) </li>
                             }
                         </ul>
                     </div>

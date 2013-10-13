@@ -23,6 +23,7 @@ namespace CQA.Models
         public DbSet<UsersSetup> UsersSetups { get; set; }
         public DbSet<UsersAction> UsersActions { get; set; }
         public DbSet<QuestionView> QuestionViews { get; set; }
+        public DbSet<SetupStatistics> SetupsStatistics { get; set; }
         // <summary>
         /// The below Method is used to define the Maping
         /// </summary>

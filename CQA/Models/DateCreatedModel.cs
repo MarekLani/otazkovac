@@ -7,6 +7,6 @@ namespace CQA.Models
 {
     public class DateCreatedModel
     {
-        public DateTime DateCreated { get; set; } 
+        public DateTime? DateCreated { get; set; } 
     }
 }

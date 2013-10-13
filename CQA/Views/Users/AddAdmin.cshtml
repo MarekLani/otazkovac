@@ -7,7 +7,21 @@
 }
 
 <h2>Pridať administrátora</h2>
-@(TempData["AdminAdded"])
+
+@if(TempData["AdminAdded"] != null){
+<div class="alert alert-success">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    @(TempData["AdminAdded"])
+</div>
+}
+
+@if(TempData["AdminNotAdded"] != null){
+    <div class="alert">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        @(TempData["AdminNotAdded"])
+    </div>
+}
+
 
 @using (Html.BeginForm("AddAdmin", "Users", FormMethod.Post))
 {

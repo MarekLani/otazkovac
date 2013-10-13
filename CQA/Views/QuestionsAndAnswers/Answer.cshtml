@@ -16,7 +16,7 @@
     <h3>@Html.DisplayFor(model => model.QuestionText)</h3>
     @if (Model.Hint != null)
     {
-        <div id="hint"> @Ajax.ActionLink("Zobraziť nápovedu", "GetHint", "Questions", new { questionId = Model.QuestionId }, new AjaxOptions
+        <div id="hint"> @Ajax.ActionLink("Zobraziť nápovedu", "GetHint", "QuestionsAndAnswers", new { questionId = Model.QuestionId }, new AjaxOptions
                    {
                        OnSuccess = "showHint(data)",
                        HttpMethod = "GET"
@@ -26,8 +26,18 @@
     }
 </div>
 
-    @{Html.RenderPartial("_CreateAnswerForm", new CQA.Models.CreateAnswer(Model.QuestionId));}
-    <div id="loader" style="display:none">Loadujem</div>
+<div id="answer" style="display:none">Vaša odpoveď:
+    <h3></h3>
+</div>
+
+<div class="alert alert-success" style="display:none">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    Ďakujeme za odpoveď. Po dosiahnutí minimálneho potrebného množstva hodnotení Vás notifikujeme
+    a hodnotenie správnosti Vašej odpovede si budete môcť pozreť cez odkaz Moje odpovede v menu.
+    <br/> ( Hodnotenie však nebude konečné a časom sa môže zmeniť )
+</div>
+
+ @{Html.RenderPartial("_CreateAnswerForm", new CQA.Models.CreateAnswer(Model.QuestionId));}
 
 @section Scripts {
 
@@ -35,33 +45,16 @@
 
     <script src="~/Scripts/AnswerAndEvaluateCommon.js"></script>   
         <script>
-            jQuery.noConflict();
             jQuery(document).ready(function ($) {
                 $("#MenuSetupItem"+@(Model.SetupId)).addClass("activeMenuItem")
             })
 
-            function onAnswerCreation() {
-                jQuery("#loader").fadeIn(100);
-            }
-
             function AnswerCreated(data) {
-                var s = '<div class="answer">' +
-               '<div class="answer-author">' + data.answerAuthor + '</div>' +
-               '<div class="answer-text">' + data.answerText + '</div>' +
-                '<form data-ajax="true" data-ajax-method="POST" data-ajax-url="/Questions/CreateEvaluation" method="post">' +
-                    '<input name="answerId" type="hidden" value="'+data.answerId+'" />' +
-                    '<input type="hidden" class="rating" name="rating" value="50" />' +
-                    '<div class="slider-range"></div>' +
-                    '<input type="submit" />' +
-                '</form>' +
-                '</div>'
-
-                jQuery("#loader").hide();
-                jQuery("#noAnswers").remove();
-                jQuery("#newAnswer").remove();
-                jQuery(s).hide().appendTo("#answers").fadeIn(300);
-                jQuery(".slider-range").last().trigger('mySliderTrigger');
-
+                $("#answer").children("h3").append(data.answerText);
+                $("#next").fadeIn();
+                $("#newAnswer").fadeOut();
+                $("#answer").fadeIn();
+                $(".alert").fadeIn();
             }
     </script>
     <script src="~/Scripts/AnswerAndEvaluateCommon.js"></script>

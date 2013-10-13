@@ -45,8 +45,8 @@ namespace CQA.Controllers
                 }
 
                 var answer = new Answer();
-                answer.UserId = WebSecurity.CurrentUserId;// = db.UserProfiles.Find(WebSecurity.CurrentUserId);
-                answer.QuestionId = questionId;//db.Questions.Find(questionId);
+                answer.UserId = WebSecurity.CurrentUserId;
+                answer.QuestionId = questionId;
                 answer.Text = text;
                 db.Answers.Add(answer);
                 db.SaveChanges();
@@ -55,7 +55,7 @@ namespace CQA.Controllers
 
                 UserSeenQuestion(questionId);
 
-                object result = new { answerText = text, answerAuthor = db.UserProfiles.Find(WebSecurity.CurrentUserId).RealName, answerId = answer.AnswerId };
+                object result = new { answerText = text };
                 return Json(result);
             }
             else
@@ -105,7 +105,7 @@ namespace CQA.Controllers
 
                 //Check if we already have 3 evaluations and if the evaluated answer can be shown to answer
                 var answer = db.Answers.Find(answerId);
-                if (answer.Evaluations.Count == 3)
+                if (answer.Evaluations.Count == MyConsts.MinEvaluationLimit)
                 {
                     answer.SeenEvaluation = false;
                     db.Entry(answer).State = EntityState.Modified;
@@ -130,7 +130,7 @@ namespace CQA.Controllers
         /// <param name="questionId"></param>
         private void UserSeenQuestion(int questionId)
         {
-            QuestionView qv = db.QuestionViews.Find(new {QuestionId =questionId, UserId=WebSecurity.CurrentUserId });
+            QuestionView qv = db.QuestionViews.Find(WebSecurity.CurrentUserId,questionId);
             if (qv == null)
             {
                 qv = new QuestionView();
@@ -170,6 +170,8 @@ namespace CQA.Controllers
         [HttpGet]
         public ActionResult AnswerAndEvaluate(int setupId)
         {
+            var defaultQuestionView = new QuestionView();
+            defaultQuestionView.ViewDate = DateTime.MinValue;
 
             if (db.UsersSetups.Where( us => us.UserId == WebSecurity.CurrentUserId && us.SetupId == setupId ).ToList() == null)
             {
@@ -191,9 +193,9 @@ namespace CQA.Controllers
                 //Algorythm for selection of answer to be evaluated looks like this:
                 //1. Find all answers, which have not been already evaluated by current user,
                 //   which were not written by current user, which are in current setup and for active question
-                //2. With greedy maximization principle, try to find questions which have fewer than 3 evaluations
+                //2. With greedy maximization principle, try to find questions which have fewer than 3 evaluations (MinEvaluationLimit)
                 //  and which question was not seen by current user in last day, if such a answer exists ruturn it
-                //3. If no such a question exists try to find question which have fewer then 16 evaluations with
+                //3. If no such a question exists try to find question which have fewer then 16 (FullEvaluationLimit) evaluations with
                 // the same proccedure as before. 
                 //4.If there is no answer sleected byt his rules, ignore 1 day rule and try to find
                 // answer as before, but without the one day rule.
@@ -210,8 +212,9 @@ namespace CQA.Controllers
                 {
                     //step 2
                     var bottomGreedy = answers
-                                .Where(a => a.Question.QuestionViews.Single(qv => qv.UserId == WebSecurity.CurrentUserId).ViewDate.AddDays(1) < DateTime.Now
-                                    && a.Evaluations.Count < 3).OrderByDescending(a => a.Evaluations.Count()).ToList();
+                                .Where(a => a.Question.QuestionViews.Where(qv => qv.UserId == WebSecurity.CurrentUserId)
+                                    .DefaultIfEmpty(defaultQuestionView).Single().ViewDate.AddDays(1) < DateTime.Now
+                                    && a.Evaluations.Count < MyConsts.MinEvaluationLimit).OrderByDescending(a => a.Evaluations.Count()).ToList();
                     if (bottomGreedy.Any())
                     {
                         int n = bottomGreedy.First().Evaluations.Count();
@@ -222,11 +225,12 @@ namespace CQA.Controllers
                     {
                         //step 3 and 4
                         var upperGreedy = answers
-                            .Where(a => a.Evaluations.Count < 16)
+                            .Where(a => a.Evaluations.Count < MyConsts.FullEvaluationLimit)
                             .OrderByDescending(a => a.Evaluations.Count()).ToList();
                         if (upperGreedy.Any())
                         {
-                            var UnseenAnswers = upperGreedy.Where(a => a.Question.QuestionViews.Single(qv => qv.QuestionId == a.QuestionId && qv.UserId == WebSecurity.CurrentUserId).ViewDate.AddDays(1) < DateTime.Now).ToList();
+                            var UnseenAnswers = upperGreedy.Where(a => a.Question.QuestionViews.Where(qv => qv.QuestionId == a.QuestionId && qv.UserId == WebSecurity.CurrentUserId)
+                                .DefaultIfEmpty(defaultQuestionView).Single().ViewDate.AddDays(1) < DateTime.Now).ToList();
                             if (UnseenAnswers.Any())
                                 upperGreedy = UnseenAnswers;
                             int n = upperGreedy.First().Evaluations.Count();
@@ -252,7 +256,8 @@ namespace CQA.Controllers
             {
                 //Step2 Check if there are questions to be answered, which have not been seen by current user in last two days
                 //TODO check if the order of questions stays as it was
-                var questions = tempQuestions.Where(q => q.QuestionViews.Single(qv => qv.UserId == WebSecurity.CurrentUserId).ViewDate.AddDays(2) < DateTime.Now).OrderByDescending(q => q.Answers.Count()).ToList();
+                var questions = tempQuestions.Where(q => q.QuestionViews.Where(qv => qv.UserId == WebSecurity.CurrentUserId)
+                    .DefaultIfEmpty(defaultQuestionView).Single().ViewDate.AddDays(2) < DateTime.Now).OrderByDescending(q => q.Answers.Count()).ToList();
                 
                 //Step3 if there are no questions from step2 we have to ignore 2 days rule
                 if (!questions.Any())
@@ -266,7 +271,7 @@ namespace CQA.Controllers
                 }
             }
 
-            return View("Nothing to do here");
+            return View("NothingToDoHere");
         }
 
         public ActionResult MyEvaluatedAnswers()

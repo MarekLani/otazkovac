@@ -192,6 +192,8 @@
     <Compile Include="Controllers\SubjectsController.cs" />
     <Compile Include="Controllers\UsersController.cs" />
     <Compile Include="Models\DateCreatedModel.cs" />
+    <Compile Include="Models\MyConsts.cs" />
+    <Compile Include="Models\SetupStatistics.cs" />
     <Compile Include="Models\UsersSetup.cs" />
     <Compile Include="Filters\InitializeSimpleMembershipAttribute.cs" />
     <Compile Include="Global.asax.cs">
@@ -328,6 +330,7 @@
     <Content Include="Images\favouriteIcon.png" />
     <Content Include="Images\favouriteIconIn.png" />
     <Content Include="Images\logo.png" />
+    <Content Include="Images\Nothing_2479d8_2822723.gif" />
     <Content Include="Images\placeholder-360x200.jpg" />
     <Content Include="Images\thumbDown.png" />
     <Content Include="Images\thumbUp.png" />
@@ -403,22 +406,14 @@
       <BrowseToURL>~/Account/_RegisterUser</BrowseToURL>
     </Content>
     <Content Include="Views\Account\RegisterTrainer.cshtml" />
-    <Content Include="Views\Emails\_ViewStart.cshtml" />
     <Content Include="Views\Account\ConfirmationFailure.cshtml" />
     <Content Include="Views\Account\ConfirmationSuccess.cshtml" />
     <Content Include="Views\Account\RegisterStepTwo.cshtml" />
-    <Content Include="Views\Emails\RegEmail.cshtml" />
-    <Content Include="Views\Emails\ChngPasswordEmail.cshtml" />
     <Content Include="Views\Account\PasswordResetFailure.cshtml" />
     <Content Include="Views\Account\PasswordResetSuccess.cshtml" />
     <Content Include="Views\Account\ResetPassword.cshtml" />
     <Content Include="Views\Account\ResetPasswordConfirmation.cshtml" />
     <Content Include="Views\Account\ResetPwStepTwo.cshtml" />
-    <Content Include="Views\Articles\Index.cshtml" />
-    <Content Include="Views\Articles\Details.cshtml" />
-    <Content Include="Views\Articles\Create.cshtml" />
-    <Content Include="Views\Articles\Edit.cshtml" />
-    <Content Include="Views\Articles\Delete.cshtml" />
     <Content Include="Views\QuestionsAndAnswers\Index.cshtml" />
     <Content Include="Views\QuestionsAndAnswers\_CreateAnswerForm.cshtml" />
     <Content Include="Views\Subjects\Index.cshtml" />
@@ -438,6 +433,7 @@
     <Content Include="Views\Home\_Menu.cshtml" />
     <Content Include="Views\Users\AddAdmin.cshtml" />
     <Content Include="Views\Users\EvaluatedAnswers.cshtml" />
+    <Content Include="Views\QuestionsAndAnswers\NothingToDoHere.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

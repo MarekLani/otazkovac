@@ -28,10 +28,14 @@ namespace CQA.Models
 
         [DisplayName("Pomer hodnotení k odpovediam (uvedťe počet hodnotení na jednu odpoveď)")]
         [Required]
+        [Range(1,50)]
         public int AnsweringProbability { get; set; }
 
         public virtual ICollection<Question> Questions { get; set; }
 
         public virtual ICollection<UsersSetup> UsersSetups { get; set; }
+
+        public virtual ICollection<SetupStatistics> SetupStatistics { get; set; }
+
     }
 }

@@ -55,7 +55,7 @@ namespace CQA.Controllers
             }
             else
             {
-                TempData["AdminAdded"] = user + "je už administrátorom";
+                TempData["AdminNotAdded"] = user + " je už administrátorom";
             }
             ViewData["Admins"] = roles.GetUsersInRole("Admin").ToList();
             return View();
