@@ -12,22 +12,26 @@
 <h3>Odpovedzte na otázku</h3>
 
 <div class="question">
-    Otázka:
-    <h3>@Html.DisplayFor(model => model.QuestionText)</h3>
-    @if (Model.Hint != null)
-    {
-        <div id="hint"> @Ajax.ActionLink("Zobraziť nápovedu", "GetHint", "QuestionsAndAnswers", new { questionId = Model.QuestionId }, new AjaxOptions
-                   {
-                       OnSuccess = "showHint(data)",
-                       HttpMethod = "GET"
-                   },
-                   new { @class = "btn" })        
-        </div>
-    }
+    <div id="questionText">
+        <span style="font-size: 0.85em; font-weight:bold">Otázka: </span>
+        @Html.DisplayFor(model => model.QuestionText)
+        @if (Model.Hint != null)
+        {
+            <div id="hint"> @Ajax.ActionLink("Zobraziť nápovedu", "GetHint", "QuestionsAndAnswers", new { questionId = Model.QuestionId }, new AjaxOptions
+                       {
+                           OnSuccess = "showHint(data)",
+                           HttpMethod = "GET"
+                       },
+                       new { @class = "btn" })        
+            </div>
+        }
+    </div>
 </div>
 
-<div id="answer" style="display:none">Vaša odpoveď:
-    <h3></h3>
+<div class="answer" style="display:none">
+    <div id="answerText">
+    <span style="font-size: 0.85em; font-weight:bold">Vaša odpoveď: </span>
+    </div>
 </div>
 
 <div class="alert alert-success" style="display:none">
@@ -38,6 +42,7 @@
 </div>
 
  @{Html.RenderPartial("_CreateAnswerForm", new CQA.Models.CreateAnswer(Model.QuestionId));}
+<a href="href="@Url.Action("AnswerAndEvaluate", new { setupId = Model.SetupId})" id="next" class="btn" style="display:none">Ďalšia otázka/hodnotenie</a>
 
 @section Scripts {
 
@@ -50,9 +55,10 @@
             })
 
             function AnswerCreated(data) {
-                $("#answer").children("h3").append(data.answerText);
+                $("#answerText").prepend(data.answerText);
                 $("#next").fadeIn();
                 $("#newAnswer").fadeOut();
+                $('#submit').attr('disabled', 'disabled');
                 $("#answer").fadeIn();
                 $(".alert").fadeIn();
             }

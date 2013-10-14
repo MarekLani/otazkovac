@@ -30,7 +30,7 @@ body {
 
 .accountWrap
 {
-	line-height:50px;
+	line-height:42px;
 	color:white !important;
 	vertical-align: bottom !important;
 	margin: 10px;
@@ -834,7 +834,7 @@ tr.pager td {
 
 #hint
 {
-	font-size:16px;
+	font-size:15px;
 	text-align: center;
 }
 
@@ -845,13 +845,46 @@ tr.pager td {
   text-align:center;
   width: 100%;
   margin: 10px;
+  margin-bottom: 60px;
+  margin-top: 20px;
 	
+}
+
+#crowdEvaluationText
+{
+	width:100px;
+	margin-top: 5px;
+	text-align:center
 }
 
 #sliderInlineWrap
 {
 	display: inline-block;
 	width: 80%
+}
+
+#crowdEvaluation
+{
+	position: relative;
+	display: none;
+
+}
+
+#crowdSliderWrap
+{
+	position:absolute;
+	text-align:center
+}
+
+#crowdSlider
+{
+	background:#003399;
+	width: 30px;
+	height: 30px;
+	margin-top: -10px;
+	margin-left: 30px;
+	-moz-border-radius: 17px !important;
+	border-radius: 17px !important;
 }
 
 .ui-slider-handle
@@ -881,12 +914,14 @@ tr.pager td {
 
 	-moz-border-radius: 10px !important;
 	 border-radius: 10px !important;
+	 position: relative;
 }
 
 .thumb
 {
 	float: left;
 	width: 40px;
+	cursor:pointer;
 }
 
 #textValue
@@ -894,6 +929,20 @@ tr.pager td {
 	margin: 10px;
 	font-size: 18px;
 	font-weight: 500;
+}
+
+#questionText
+{
+	margin-top: 15px;
+	margin-bottom: 10px;
+	font-size: 15px;
+}
+
+#answerText
+{
+	margin-top: 15px;
+	margin-bottom: 10px;
+	font-size: 15px;
 }
 
 @media (max-width: 979px)
@@ -918,6 +967,11 @@ tr.pager td {
 		float: left;
 		width: 30px;
 	}
+
+	#crowdSlider
+	{
+		margin-left: 24px;
+	}
 }
 
 @media (max-width: 750px)
@@ -933,7 +987,6 @@ tr.pager td {
 		width: 80%;
 	}
 
-	
 }
 
 @media (max-width: 610px)
@@ -948,18 +1001,38 @@ tr.pager td {
 	{
 		width: 72%;
 	}
+
+	#crowdSlider
+	{
+		margin-left: 18px;
+	}
 }
 
 @media (max-width: 450px)
 {
-	ui-widget-content-wrapper
+	.ui-widget-content-wrapper
 	{
 		width: 50%;
-		margin-top:-10px !important;
-		padding-right: 25px;
+		margin-top:5px !important;
+		padding-right: 15px;
 		padding-left: 7px;
-		-moz-border-radius: 10px !important;
-		 border-radius: 10px !important;
+		-moz-border-radius: 18px !important;
+		 border-radius: 18px !important;
+	}
+
+	#crowdSlider
+	{
+		-moz-border-radius: 5px !important;
+		 border-radius: 5px !important;
+		 width: 20px;
+		 heigth: 20px;
+		 margin-left: 0px;
+
+	}
+
+	#crowdEvaluation
+	{
+		margin-top: -5px;
 	}
 
     .thumb

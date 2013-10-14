@@ -56,6 +56,13 @@ namespace CQA
         private void AddTask(string name, int seconds)
         {
             OnCacheRemove = new CacheItemRemovedCallback(CacheItemRemoved);
+
+            //Midnight task
+            //HttpRuntime.Cache.Insert(name, null, null,
+            //    DateTime.Today.AddDays(1),
+            //    Cache.NoSlidingExpiration,
+            //    CacheItemPriority.Normal, null);
+
             HttpRuntime.Cache.Insert(name, seconds, null,
                 DateTime.Now.AddSeconds(seconds), Cache.NoSlidingExpiration,
                 CacheItemPriority.NotRemovable, OnCacheRemove);
@@ -65,7 +72,7 @@ namespace CQA
         {
             // do stuff here if it matches our taskname, like WebRequest
             // re-add our task so it recurs
-            SetupStatistics.SaveSetupStats();
+            SetupsStatistics.SaveSetupStats();
             AddTask(k, Convert.ToInt32(v));
         }
         #endregion

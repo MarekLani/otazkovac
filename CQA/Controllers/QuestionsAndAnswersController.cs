@@ -104,7 +104,7 @@ namespace CQA.Controllers
                 db.SaveChanges();
 
                 //Check if we already have 3 evaluations and if the evaluated answer can be shown to answer
-                var answer = db.Answers.Find(answerId);
+                Answer answer = db.Answers.Find(answerId);
                 if (answer.Evaluations.Count == MyConsts.MinEvaluationLimit)
                 {
                     answer.SeenEvaluation = false;
@@ -119,9 +119,11 @@ namespace CQA.Controllers
                 UserSeenQuestion(answer.QuestionId);
                 
                 db.SaveChanges();
+                return Json(new {avgEval = answer.GetAvgEvaluation(), evalsCount = answer.Evaluations.Count()} );
             }
 
-            return Json(true);
+            Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            return Json(false);
         }
 
         /// <summary>
@@ -181,6 +183,14 @@ namespace CQA.Controllers
                 us.SetupId = setupId;
                 db.UsersSetups.Add(us);
             }
+
+            //ForTesting
+
+                var answerss = db.Answers
+                            .Where(a => !a.Evaluations.Where(e => e.UserId == WebSecurity.CurrentUserId).Any()
+                                && a.Question.SetupId == setupId
+                                && a.Question.IsActive).ToList();
+                 return View("Evaluate", answerss.First());
 
             Random rand = new Random();
 

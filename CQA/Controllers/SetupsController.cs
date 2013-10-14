@@ -169,7 +169,7 @@ namespace CQA.Controllers
 
             }
 
-            return RedirectToAction("Details", new { id=setupId });
+            return RedirectToAction("Questions", new { id=setupId });
         }
 
         private void FillupQuestion(ref Question q, string[] values)

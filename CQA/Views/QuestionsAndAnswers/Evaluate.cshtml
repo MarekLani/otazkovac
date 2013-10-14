@@ -7,15 +7,15 @@
         @Styles.Render("~/Content/themes/base/css")
 }
 
-<h3>Ohodnotťe správnosť odpovede</h3>
+<h4>Ohodnotťe správnosť odpovede</h4>
 
 <div class="question">
     
-    <h3> <span style="font-size: 0.7em;">Otázka: </span> @Html.DisplayFor(model => model.Question.QuestionText) </h3>
+    <div id="questionText"> <span style="font-size: 0.85em; font-weight:bold">Otázka: </span> @Html.DisplayFor(model => model.Question.QuestionText) </div>
     @if (Model.Question.Hint != null)
     {
 
-        <div id="hint"> @Ajax.ActionLink("Zobraziť nápovedu", "GetHint", "Questions", new { questionId = Model.QuestionId }, new AjaxOptions
+        <div id="hint"> @Ajax.ActionLink("Zobraziť nápovedu", "GetHint", "QuestionsAndAnswers", new { questionId = Model.QuestionId }, new AjaxOptions
                     {
                         OnSuccess = "showHint(data)",
                         HttpMethod = "GET"
@@ -26,36 +26,49 @@
     }
 </div>
 <div class="answer"> 
-    <h3><span style="font-size: 0.7em;">Odpoveď: </span>@Html.DisplayFor(model => model.Text)</h3>
-
+  <div id="answerText"> <span style="font-size: 0.85em; font-weight:bold">Odpoveď: </span>@Html.DisplayFor(model => model.Text)</div>
 </div>
 
 <div style="text-align:center">
-        @using (Ajax.BeginForm(new AjaxOptions()
+        @using (Ajax.BeginForm(null, null, new AjaxOptions()
         {
             HttpMethod = "POST",
-            OnBegin = "onAnswerCreation",
-            Url = Url.Action("CreateEvaluation", "Questions")
-        }))
+            Url = Url.Action("CreateEvaluation", "QuestionsAndAnswers"),
+            OnSuccess = "EvaluationCreated(data)"
+        },
+        new { autocomplete = "off" }))
         {
             <input name="answerId" type="hidden" value="@Html.DisplayFor(model => model.AnswerId)" />
-            <input type="hidden" id="value" name="value" value="50" />
-            <div id="textValue">Čiastočne správne</div>
+            <input type="hidden" value="50" id="value" name="value" />
+            
             <div id="sliderWrap">
+                <div id="textValue">Čiastočne správne</div>
                 <div id="sliderInlineWrap">
                 <img src="~/Images/thumbDown.png" class="thumb" id="thumbDown"/>
                 <div class="ui-widget-content-wrapper">
+                    <div id="crowdEvaluation"> 
+                        <div id="crowdSliderWrap">
+                            <div id="crowdSlider"></div>
+                            <div id="crowdEvaluationText"> </div>
+                         </div>
+                    </div>
                     <div class="slider-range" style=""></div>
                 </div> 
-                <img src="~/Images/thumbUp.png" class="thumb" id="thumbUp"/>
-                <div style="clear:both" />
+                <img id="thumbUp" src="~/Images/thumbUp.png" class="thumb"/>
+                <div style="clear:both"></div>
                 </div>
             </div>
-  
-            <a href="#" class="btn skip">Preskočiť</a>
-            <button type="submit" class="btn btn-primary">Ohodnotiť</button>
+         <div style="clear:both"></div>
+            <div class="alert alert-success" style="display:none">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                Ďakujeme za hodnotenie. Vyššie si môžete pozreť priemernú odpoveď davu
+            </div>
+            <a href="@Url.Action("AnswerAndEvaluate", new { setupId = Model.Question.SetupId })" id="next" class="btn" style="display:none">Ďalšia otázka/hodnotenie</a>
+            <a href="@Url.Action("SkipEvaluation", new { anwerId = Model.AnswerId })" id="newAnswer" style="margin:0" class="btn skip">Preskočiť</a>
+            <button type="submit" id="submit" class="btn btn-primary">Ohodnotiť</button>   
         }
     </div>
+ 
 
 
 @section Scripts {
@@ -67,10 +80,24 @@
 
    <script src="~/Scripts/AnswerAndEvaluateCommon.js"></script>  
    <script>
-       jQuery.noConflict();
+       function EvaluationCreated(data)
+       {
+           $("#crowdEvaluationText").html("Odpoveď davu z " + data.evalsCount+" hodnotení")
+           $("#crowdSliderWrap").css("margin-left", data.avgEval*100-6 + "%");
+           $(".slider-range").slider('disable');
+           $("#crowdEvaluation").fadeIn();
+           $("#next").fadeIn();
+           $("#newAnswer").fadeOut();
+           $('#submit').attr('disabled', 'disabled');
+           $(".alert").fadeIn();
+          
+           //TODO move crowd slider and display it
+       }
+
        jQuery('#widget').draggable();
        jQuery(document).ready(function ($) {
            $("#MenuSetupItem"+@(Model.Question.SetupId)).addClass("activeMenuItem");
+
         })
 
        jQuery(function ($) {
@@ -104,22 +131,33 @@
                    }
                });
 
-               //Moving sliding by icons  TODO check if the value field is also changed 
+               
                $("#thumbDown").click(function(){
-                   var val = $("#value").val();
-                   if(val < 5)
-                       $(".slider-range").slider('value',0);
-                   else
-                       $(".slider-range").slider('value',val-5);
+                   if($('#submit').attr('disabled') != "disabled"){
+                       var val = parseInt($("#value").val());
+                       if(val < 5){
+                           $(".slider-range").slider('value',0);
+                           $("#value").val(0);
+                       }
+                       else{
+                           $(".slider-range").slider('value',val-5);
+                           $("#value").val(val-5);
+                       }
+                   }
                });
                $("#thumbUp").click(function(){
-                   var val = $("#value").val();
-                   if(val > 95)
-                       $(".slider-range").slider('value',100);
-                   else
-                       $(".slider-range").slider('value',val+5);
-                      
-                   
+                   if($('#submit').attr('disabled') != "disabled"){
+                       var val = parseInt($("#value").val());
+                       if(val > 95){
+                           $(".slider-range").slider('value',100);
+                           $("#value").val(100);
+                       }
+                       else{
+                           $(".slider-range").slider('value',val+5);
+                           $("#value").val(val+5);
+                       }
+                   }
+  
                });
            });
 

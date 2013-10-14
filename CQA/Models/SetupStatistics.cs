@@ -9,9 +9,9 @@ namespace CQA.Models
     /// SetupStatistics are periodically saved to show us progress of evaluation
     /// and ratio between count of evaluations and answers
     /// </summary>
-    public class SetupStatistics
+    public class SetupsStatistics
     {
-        public int SetupStatisticsId { get; set; }
+        public int SetupsStatisticsId { get; set; }
 
         public int SetupId { get; set; }
         public virtual Setup Setup { get; set; }
@@ -28,7 +28,7 @@ namespace CQA.Models
             CQADBContext db = new CQADBContext();
             foreach (Setup s in db.Setups.Where(s => s.Active))
             {
-                var setupStats = new SetupStatistics();
+                var setupStats = new SetupsStatistics();
                 //setupStats.EvaluatedAnswersForUsersCount = 
                 
                 setupStats.FullyEvaluatedAnswersCount =  

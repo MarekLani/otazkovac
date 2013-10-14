@@ -12,6 +12,7 @@ namespace CQA.Models
     public class CQADBContext : DbContext
     {
 
+        
         public DbSet<UserProfile> UserProfiles { get; set; }
         public DbSet<UploadedImage> UploadedImages { get; set; }
         public DbSet<Question> Questions { get; set; }
@@ -23,14 +24,14 @@ namespace CQA.Models
         public DbSet<UsersSetup> UsersSetups { get; set; }
         public DbSet<UsersAction> UsersActions { get; set; }
         public DbSet<QuestionView> QuestionViews { get; set; }
-        public DbSet<SetupStatistics> SetupsStatistics { get; set; }
+        public DbSet<SetupsStatistics> SetupsStatistics { get; set; }
+        
         // <summary>
         /// The below Method is used to define the Maping
         /// </summary>
         /// <param name="modelBuilder"></param>
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
-
 
             modelBuilder.Entity<UploadedImage>()
                 .HasRequired(i => i.Owner)

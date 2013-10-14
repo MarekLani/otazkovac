@@ -64,4 +64,3 @@ E:\Marek\Develop\CQA\CQA\obj\Debug\CQA.csproj.GenerateResource.Cache
 E:\Marek\Develop\CQA\CQA\obj\Debug\sk-SK\CQA.resources.dll
 E:\Marek\Develop\CQA\CQA\obj\Debug\CQA.dll
 E:\Marek\Develop\CQA\CQA\obj\Debug\CQA.pdb
-E:\Marek\Develop\CQA\CQA\obj\Debug\CQA.csprojResolveAssemblyReference.cache

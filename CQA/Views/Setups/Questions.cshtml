@@ -26,8 +26,17 @@
                else{
                     @Html.Raw("Odpovedí")
                } 
-           </div> </div> 
-       
+           </div>
+       </div> 
+       <span style="line-height:40px; font-size:10px; vertical-align:central">@if (@item.IsActive)
+                {
+                    @("Aktívna")
+                }
+               else
+               {
+                    @("Neaktívna")
+               }
+           </span>
        <span style="line-height:40px; font-size:20px; vertical-align:central">@item.QuestionText </span>
    </div>
 }

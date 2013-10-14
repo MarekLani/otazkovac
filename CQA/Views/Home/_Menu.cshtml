@@ -2,7 +2,7 @@
 <!-- Start: Navigation wrapper -->
         <div class="navbar navbar-fixed-top">
             <div class="navbar-inner">
-                <div class="container" style="height:auto; padding:0;">
+                <div class="container">
                     
                     <!-- Below button used for responsive navigation -->
                     <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
@@ -21,13 +21,17 @@
                     <!-- Start: Primary navigation -->
                     <div class="nav-collapse collapse">
                         <ul class="nav pull-right">
-                            @if(User.Identity.IsAuthenticated){
+                            @if (User.Identity.IsAuthenticated)
+                            {
                                 <li>@Html.ActionLink("Moje odpovede "+Model.UnseenEvaluatedAnswersCount,"EvaluatedAnswers","Users")</li>
-                                <li>@Html.ActionLink("Predmety", "Index", "Subjects")</li>
-                                if(Model.SubjectsNotEmpty){
-                                    <li>@Html.ActionLink("Setups", "Index", "Setups")</li>
+                                if(User.IsInRole("Admin")){
+                                    <li>@Html.ActionLink("Predmety", "Index", "Subjects")</li>
+                                    <li>@Html.ActionLink("Administrátory", "AddAdmin", "Users")</li>
+                                    if(Model.SubjectsNotEmpty){
+                                        <li>@Html.ActionLink("Setups", "Index", "Setups")</li>
+                                    }
                                 }
-                                 @Html.Partial("_LoginPartial")
+                                @Html.Partial("_LoginPartial")
                             }
                         </ul>
 
