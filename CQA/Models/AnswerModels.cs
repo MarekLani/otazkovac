@@ -67,4 +67,11 @@ namespace CQA.Models
         public string Text { get; set; }
 
     }
+
+    public class EvaluatedAnswers
+    {
+        public Setup Setup { get; set; }
+        public ICollection<Answer> Answers { get; set; }
+        public int UnseenCount {get;set;}
+    }
 }

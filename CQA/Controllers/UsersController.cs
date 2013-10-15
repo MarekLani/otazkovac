@@ -22,15 +22,26 @@ namespace CQA.Controllers
             return View();
         }
 
-        public ActionResult EvaluatedAnswers(int id)
+        public ActionResult EvaluatedAnswers()
         {
-            var evaluatedAnswers = db.Answers.Where(a => a.UserId == id && a.Evaluations.Count() > 2).OrderByDescending(a => a.DateCreated);
-            foreach(var a in evaluatedAnswers.Where(a => a.SeenEvaluation == false))
+            List<EvaluatedAnswers> evaluatedAnswers = new List<Models.EvaluatedAnswers>();
+            var setupsWithEvaluatedAnswers = db.Answers.Where(a => a.UserId == WebSecurity.CurrentUserId )
+                .OrderByDescending(a => a.DateCreated).GroupBy(a => a.Question.Setup);
+            foreach(var s in setupsWithEvaluatedAnswers) //.Where(a => a SeenEvaluation == false))
             {
-                a.SeenEvaluation = true;
-                db.Entry(a).State = EntityState.Modified;
-                db.SaveChanges();
+                EvaluatedAnswers ea = new EvaluatedAnswers();
+                ea.Answers = new List<Answer>();
+                ea.Setup = s.Key;
+                ea.UnseenCount = s.Count();
+                foreach(Answer a in s)
+                {
+                    ea.Answers.Add(a);
+                    a.SeenEvaluation = true;
+                    db.Entry(a).State = EntityState.Modified;
+                }
+                evaluatedAnswers.Add(ea);
             }
+            db.SaveChanges();
             return View(evaluatedAnswers);
         }
 

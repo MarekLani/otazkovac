@@ -24,8 +24,8 @@ namespace CQA
 
             routes.MapRoute(
              "AnswerAndEvaluate",
-             "Questions/{action}/{setupId}",
-             new { Controller="Questions", action = "AnswerAndEvaluate", setupId = UrlParameter.Optional }
+             "QuestionsAndAnswers/{action}/{setupId}",
+             new { Controller="QuestionsAndAnswers", action = "AnswerAndEvaluate", setupId = UrlParameter.Optional }
              );
 
             routes.MapRoute(

@@ -17,8 +17,10 @@
         <div class="editor-field">
             @Html.TextAreaFor(model => model.Text, new { @class= "questionText", autocomplete="off" })
         </div>
-        <a href="@Url.Action("SkipAnswer", new { questionId = Model.QuestionId })" id="skip" class="btn">Preskočiť</a>
-        <button type="submit" id="submit" class="btn btn-primary"> Odpovedať </button> 
-    }
+        <div style="text-align:center">
+            <a href="@Url.Action("SkipAnswer", new { questionId = Model.QuestionId })" id="skip" class="btn">Preskočiť</a>
+            <button type="submit" id="submit" class="btn btn-primary"> Odpovedať </button> 
+        </div>    
+      }
     </div>
    

@@ -90,7 +90,7 @@ namespace CQA.Controllers
                 {
                     ModelState.AddModelError("", ErrorCodeToString(e.StatusCode));
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     ModelState.AddModelError("", "Nesprávne meno alebo heslo");
                     return View(model);

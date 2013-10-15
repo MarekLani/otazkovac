@@ -1,15 +1,20 @@
-﻿@model ICollection<CQA.Models.Answer>
+﻿@model ICollection<CQA.Models.EvaluatedAnswers>
 @{
-    ViewBag.Title = "EvaluatedAnswers";
+    ViewBag.Title = "Ohodnotené odpovede";
 }
 
-<h3>EvaluatedAnswers</h3>
+<h3>Vaše ohodnotené odpovede</h3>
 
-@foreach (var a in Model)
+@foreach (var ea in Model)
 {
-    <div class="evaluatedAnswer">
-        <div>@(a.Question.QuestionText)</div>
-        <div>@(a.Text)</div>
-        <div>@(a.GetAvgEvaluation();)</div>
+    <div id="setup">@(ea.Setup.Subject.Name + " " + ea.Setup.Name + 
+        "Počet nových ohodnotených odpovedí:" + ea.UnseenCount)
     </div>
+    foreach(var a in ea.Answers){
+        <div class="evaluatedAnswer">
+            <div>@(a.Question.QuestionText)</div>
+            <div>@(a.Text)</div>
+            <div>@(a.GetAvgEvaluation())</div>
+        </div>
+    }
 }

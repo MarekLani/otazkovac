@@ -64,7 +64,7 @@
                 Ďakujeme za hodnotenie. Vyššie si môžete pozreť priemernú odpoveď davu
             </div>
             <a href="@Url.Action("AnswerAndEvaluate", new { setupId = Model.Question.SetupId })" id="next" class="btn" style="display:none">Ďalšia otázka/hodnotenie</a>
-            <a href="@Url.Action("SkipEvaluation", new { anwerId = Model.AnswerId })" id="newAnswer" style="margin:0" class="btn skip">Preskočiť</a>
+            <a href="@Url.Action("SkipEvaluation", new { anwerId = Model.AnswerId, setupId = Model.Question.SetupId })" id="newAnswer" style="margin:0" class="btn skip">Preskočiť</a>
             <button type="submit" id="submit" class="btn btn-primary">Ohodnotiť</button>   
         }
     </div>

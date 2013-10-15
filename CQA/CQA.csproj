@@ -204,7 +204,7 @@
     <Compile Include="Membership\ExtendedSimpleMembershipProvider.cs" />
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountModels.cs" />
-    <Compile Include="Models\Answer.cs" />
+    <Compile Include="Models\AnswerModels.cs" />
     <Compile Include="Models\Comment.cs" />
     <Compile Include="Models\FileModels.cs" />
     <Compile Include="Models\CQADBContext.cs" />
