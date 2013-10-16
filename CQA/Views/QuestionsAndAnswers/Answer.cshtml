@@ -17,7 +17,7 @@
         @Html.DisplayFor(model => model.QuestionText)
         @if (Model.Hint != null)
         {
-            <div id="hint"> @Ajax.ActionLink("Zobraziť nápovedu", "GetHint", "QuestionsAndAnswers", new { questionId = Model.QuestionId }, new AjaxOptions
+            <div id="hint"> @Ajax.ActionLink("Napovedať", "GetHint", "QuestionsAndAnswers", new { objectId = Model.QuestionId, evaluating=false }, new AjaxOptions
                        {
                            OnSuccess = "showHint(data)",
                            HttpMethod = "GET"
@@ -36,9 +36,7 @@
 
 <div class="alert alert-success" style="display:none">
     <button type="button" class="close" data-dismiss="alert">&times;</button>
-    Ďakujeme za odpoveď. Po dosiahnutí minimálneho potrebného množstva hodnotení Vás notifikujeme
-    a hodnotenie správnosti Vašej odpovede si budete môcť pozreť cez odkaz Moje odpovede v menu.
-    <br/> ( Hodnotenie však nebude konečné a časom sa môže zmeniť )
+    Ďakujeme za odpoveď. Akonáhle bude k dispozícií spätná väzba, budete notifikovaný.
 </div>
 
  @{Html.RenderPartial("_CreateAnswerForm", new CQA.Models.CreateAnswer(Model.QuestionId));}

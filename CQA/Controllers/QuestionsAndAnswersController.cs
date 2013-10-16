@@ -16,15 +16,6 @@ using System.DirectoryServices;
 namespace CQA.Controllers
 {
 
-    public enum UserActionType
-    {
-        Evaluation = 1,
-        Answering,
-        ShowHint,
-        SkippedAnswering,
-        SkippedEvaluation
-
-    }
 
     [Authorize]
     public class QuestionsAndAnswersController : Controller
@@ -53,7 +44,7 @@ namespace CQA.Controllers
                 db.Answers.Add(answer);
                 db.SaveChanges();
 
-                UserMadeAction((int)UserActionType.Answering, 0,questionId);
+                UserMadeAction(UserActionType.Answering, 0,questionId);
 
                 UserSeenQuestion(questionId);
 
@@ -68,22 +59,36 @@ namespace CQA.Controllers
         }
 
         [HttpGet]
-        public ActionResult GetHint(int questionId)
+        public ActionResult GetHint(int objectId, bool evaluating)
         {
-            Question q = db.Questions.Find(questionId);
-            if(q != null && q.Hint != null){
-
-                if (!db.UsersActions.Where(usa => usa.UserId == WebSecurity.CurrentUserId && usa.QuestionId == questionId).Any())
+            if (!evaluating)
+            {
+                Question q = db.Questions.Find(objectId);
+                if (q != null && q.Hint != null)
                 {
-                    UserMadeAction((int)UserActionType.ShowHint, 0,questionId);
-                }
 
-                return Json(new { Hint = db.Questions.Find(questionId).Hint }, JsonRequestBehavior.AllowGet);
+                    if (!db.UsersActions.Where(usa => usa.UserId == WebSecurity.CurrentUserId && usa.QuestionId == objectId).Any())
+                    {
+                        UserMadeAction(UserActionType.ViewedHintWhenAnswering, 0, objectId);
+                    }
+
+                    return Json(new { Hint = db.Questions.Find(objectId).Hint }, JsonRequestBehavior.AllowGet);
+                }
             }
-            else{
-                Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                return Json(false, JsonRequestBehavior.AllowGet);
+            else
+            {
+                Answer a = db.Answers.Find(objectId);
+                if (a != null && a.Question.Hint != null)
+                {
+                    UserMadeAction(UserActionType.ViewedHintWhenEvaluating, objectId, 0);
+                }
+                    
+                return Json(new { Hint = db.Questions.Find(objectId).Hint }, JsonRequestBehavior.AllowGet);
             }
+
+            Response.StatusCode = (int)HttpStatusCode.BadRequest;
+            return Json(false, JsonRequestBehavior.AllowGet);
+            
         }
 
         [HttpPost]
@@ -109,7 +114,7 @@ namespace CQA.Controllers
 
                 //Check if we already have 3 evaluations and if the evaluated answer can be shown to answer
                 Answer answer = db.Answers.Find(answerId);
-                if (answer.Evaluations.Count == MyConsts.MinEvaluationLimit)
+                if (answer.Evaluations.Count == 1)
                 {
                     answer.SeenEvaluation = false;
                     db.Entry(answer).State = EntityState.Modified;
@@ -117,7 +122,7 @@ namespace CQA.Controllers
                 }
 
                 //Mark action
-                UserMadeAction((int)UserActionType.Evaluation, answerId,0);
+                UserMadeAction(UserActionType.Evaluation, answerId,0);
 
                 //Mark question as seen
                 UserSeenQuestion(answer.QuestionId);
@@ -162,7 +167,7 @@ namespace CQA.Controllers
         /// <param name="action"></param>
         /// <param name="answerId"></param>
         /// <param name="questionId"></param>
-        private void UserMadeAction(int action, int answerId, int questionId)
+        private void UserMadeAction(UserActionType action, int answerId, int questionId)
         {
             UsersAction ua = new UsersAction();
             ua.UserId = WebSecurity.CurrentUserId;
@@ -214,11 +219,11 @@ namespace CQA.Controllers
             }
 
             //ForTesting
-            var answerss = db.Answers
-                        .Where(a => !a.Evaluations.Where(e => e.UserId == WebSecurity.CurrentUserId).Any()
-                            && a.Question.SetupId == setupId
-                            && a.Question.IsActive).ToList();
-            return View("Evaluate", answerss.First());
+            //var answerss = db.Answers
+            //            .Where(a => !a.Evaluations.Where(e => e.UserId == WebSecurity.CurrentUserId).Any()
+            //                && a.Question.SetupId == setupId
+            //                && a.Question.IsActive).ToList();
+            //return View("Evaluate", answerss.First());
 
             Random rand = new Random();
 
@@ -321,14 +326,14 @@ namespace CQA.Controllers
         public void SkipAnswer(int questionId)
         {
             int setupId = db.Questions.Find(questionId).SetupId;
-            UserMadeAction((int)UserActionType.SkippedAnswering, 0, questionId);
+            UserMadeAction(UserActionType.SkippedAnswering, 0, questionId);
             RemoveHandledObjectFromSession(false);
             RedirectToAction("AnswerAndEvaluate", new { setupId = setupId });
         }
 
         public void SkipEvaluation(int answerId, int setupId)
         {
-            UserMadeAction((int)UserActionType.SkippedAnswering, answerId, 0);
+            UserMadeAction(UserActionType.SkippedAnswering, answerId, 0);
             RemoveHandledObjectFromSession(false);
             RedirectToAction("AnswerAndEvaluate", new { setupId = setupId });
         }

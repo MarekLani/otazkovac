@@ -15,7 +15,7 @@
     @if (Model.Question.Hint != null)
     {
 
-        <div id="hint"> @Ajax.ActionLink("Zobraziť nápovedu", "GetHint", "QuestionsAndAnswers", new { questionId = Model.QuestionId }, new AjaxOptions
+        <div id="hint"> @Ajax.ActionLink("Napovedať", "GetHint", "QuestionsAndAnswers", new { objectId = Model.AnswerId, evaluating=true }, new AjaxOptions
                     {
                         OnSuccess = "showHint(data)",
                         HttpMethod = "GET"
@@ -61,7 +61,7 @@
          <div style="clear:both"></div>
             <div class="alert alert-success" style="display:none">
                 <button type="button" class="close" data-dismiss="alert">&times;</button>
-                Ďakujeme za hodnotenie. Vyššie si môžete pozreť priemernú odpoveď davu
+                Ďakujeme za hodnotenie. Vyššie si môžete pozrieť priemerné hodnotenie odpovede.
             </div>
             <a href="@Url.Action("AnswerAndEvaluate", new { setupId = Model.Question.SetupId })" id="next" class="btn" style="display:none">Ďalšia otázka/hodnotenie</a>
             <a href="@Url.Action("SkipEvaluation", new { anwerId = Model.AnswerId, setupId = Model.Question.SetupId })" id="newAnswer" style="margin:0" class="btn skip">Preskočiť</a>
@@ -118,13 +118,13 @@
                            $(this).parent().css("background", "rgba(143, 20, 20, " + (50 - ui.value) * 2 / 100 + ")");
                        }
                        var el = $(this).parent().parent().siblings("#textValue");
-                       if (ui.value < 11)
+                       if (ui.value < 8)
                            el.html("Úplne nesprávne")
-                       else if (ui.value < 37)
-                           el.html("Čiastočne nesprávne")
-                       else if (ui.value < 63)
+                       else if (ui.value < 36)
+                           el.html("Takmer nesprávne")
+                       else if (ui.value < 64)
                            el.html("Čiastočne správne")
-                       else if (ui.value < 89)
+                       else if (ui.value < 92)
                            el.html("Takmer správne")
                        else el.html("Úplne správne");
                            

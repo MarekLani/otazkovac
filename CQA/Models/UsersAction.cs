@@ -6,7 +6,7 @@ using System.Web;
 
 namespace CQA.Models
 {
-    public class UsersAction 
+    public class UsersAction : DateCreatedModel
     {
         [Key]
         public int UsersActionId { get; set; }
@@ -20,7 +20,18 @@ namespace CQA.Models
         public int? QuestionId { get; set; }
         public virtual Question Question { get; set; }
 
-        public int Action { get; set; }
+        public virtual UserActionType Action { get; set; }
+
+    }
+
+    public enum UserActionType
+    {
+        Evaluation = 1,
+        Answering,
+        ViewedHintWhenAnswering,
+        ViewedHintWhenEvaluating,
+        SkippedAnswering,
+        SkippedEvaluation
 
     }
 }

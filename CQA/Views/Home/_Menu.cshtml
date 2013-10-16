@@ -23,10 +23,14 @@
                         <ul class="nav pull-right">
                             @if (User.Identity.IsAuthenticated)
                             {
-                                <li>@Html.ActionLink("Moje odpovede "+Model.UnseenEvaluatedAnswersCount,"EvaluatedAnswers","Users")</li>
+                                <li><a href="@Url.Action("EvaluatedAnswers","Users")">Moje odpovede
+                                    @if(Model.UnseenEvaluatedAnswersCount > 0){
+                                        <span class="badge badge-success"> @(Model.UnseenEvaluatedAnswersCount)  </span>
+                                    }
+                                    </a> </li>
                                 if(User.IsInRole("Admin")){
                                     <li>@Html.ActionLink("Predmety", "Index", "Subjects")</li>
-                                    <li>@Html.ActionLink("Administrátory", "AddAdmin", "Users")</li>
+                                    <li>@Html.ActionLink("Administrátori", "AddAdmin", "Users")</li>
                                     if(Model.SubjectsNotEmpty){
                                         <li>@Html.ActionLink("Setups", "Index", "Setups")</li>
                                     }

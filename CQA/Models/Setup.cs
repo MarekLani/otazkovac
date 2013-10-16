@@ -8,8 +8,14 @@ using System.Web;
 
 namespace CQA.Models
 {
-    public class Setup
+    public class Setup //: DateCreatedModel  //INotifyPropertyChanged
     {
+        //public event PropertyChangedEventHandler PropertyChanged;
+
+        public Setup(){
+            
+        }
+
         [Key]
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
         public int SetupId { get; set; }
@@ -25,17 +31,45 @@ namespace CQA.Models
         public int SubjectId { get; set; }
         [DisplayName("Meno predmetu")]
         public virtual Subject Subject { get; set; }
-
+        
+        // private int _answeringProbability;
         [DisplayName("Počet hodnotení na jednu odpoveď")]
         [Required]
-        [Range(1,50)]
-        public int AnsweringProbability { get; set; }
-
+        [Range(1, 50)]
+        public int AnsweringProbability {get; set;}
+        //{ 
+        //    get { return _answeringProbability; }
+        //    set {
+        //        _answeringProbability = value;
+        //        OnPropertyChanged("AnsweringProbability"); } 
+        //}
         public virtual ICollection<Question> Questions { get; set; }
 
         public virtual ICollection<UsersSetup> UsersSetups { get; set; }
 
         public virtual ICollection<SetupsStatistics> SetupsStatistics { get; set; }
 
+        public virtual ICollection<SetupsProbabilityChange> SetupsProbabilityChanges { get; set; }
+
+
+        // Create the OnPropertyChanged method to raise the event 
+        //protected void OnPropertyChanged(string name)
+        //{
+        //    PropertyChangedEventHandler handler = PropertyChanged;
+        //    if (handler != null)
+        //    {
+        //        handler(this, new PropertyChangedEventArgs(name));
+        //    }
+        //}
+
+        public void CreateSetupsProbabilityChange()
+        {
+            SetupsProbabilityChange spc = new SetupsProbabilityChange();
+            spc.Setup = this;
+            spc.Value = this.AnsweringProbability;
+            CQADBContext db = new CQADBContext();
+            db.SetupsProbabilityChanges.Add(spc);
+            db.SaveChanges();
+        }
     }
 }

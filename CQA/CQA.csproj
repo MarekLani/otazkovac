@@ -193,6 +193,7 @@
     <Compile Include="Controllers\UsersController.cs" />
     <Compile Include="Models\DateCreatedModel.cs" />
     <Compile Include="Models\MyConsts.cs" />
+    <Compile Include="Models\SetupsProbabilityChanges.cs" />
     <Compile Include="Models\SetupStatistics.cs" />
     <Compile Include="Models\UsersSetup.cs" />
     <Compile Include="Filters\InitializeSimpleMembershipAttribute.cs" />
