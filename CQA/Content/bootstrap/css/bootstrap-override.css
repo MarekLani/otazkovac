@@ -16,7 +16,7 @@
 {
 	margin: 0;
 	padding: 0;
-	background-color:#219452;
+	background-color:#336699;
 	/*box-shadow: 0px 0px 7px #000;
 	border-bottom: 1px #183867 solid;*/
 	/*height:70px !important;*/
@@ -303,6 +303,13 @@
 .btn-google:hover, .btn-github:hover {
   text-decoration: none;
 }
+
+.btn
+{
+	font-size: 16px !important;
+	padding: 10px;
+}
+
 .form-signin-signup input[type="text"],
 .form-signin-signup input[type="password"] {
   width: 70%;

@@ -192,12 +192,12 @@ namespace CQA.Controllers
             //Do not allow user to change answered question or evaluated answer by refresh
             if (Session != null && Session["IsUserEvaluating"] != null)
             {
-                if ((bool)Session["IsUserEvaluating"] == true)
+                if ((bool)Session["IsUserEvaluating"])
                 {
                     Answer a = db.Answers.Find((int)Session["AnswerId"]);
                     return View("Evaluate", a);
                 }
-                else if ((bool)Session["IsUserEvaluating"] == true)
+                else
                 {
                     Question q = db.Questions.Find((int)Session["QuestionId"]);
                     return View("Answer", q);

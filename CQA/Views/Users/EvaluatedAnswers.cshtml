@@ -1,20 +1,131 @@
 ﻿@model ICollection<CQA.Models.EvaluatedAnswers>
+
+@section Styles{
+    @Styles.Render("~/Content/themes/base/css")
+}
+
 @{
     ViewBag.Title = "Ohodnotené odpovede";
 }
 
 <h3>Vaše ohodnotené odpovede</h3>
-
 @foreach (var ea in Model)
 {
-    <div id="setup">@(ea.Setup.Subject.Name + " " + ea.Setup.Name + 
-        "Počet nových ohodnotených odpovedí:" + ea.UnseenCount)
+    <div class="setup" >@Html.Raw("<span style=\"font-size: 24px\">" + ea.Setup.Subject.Name + " " + ea.Setup.Name + " </span>" +
+        "Počet nových ohodnotených odpovedí:" + "<b>" + ea.UnseenCount +
+        " </b>"+
+        "Počet Vašich odpovedí: " + "<b>" + ea.Answers.Count() + "</b>" )
     </div>
-    foreach(var a in ea.Answers){
-        <div class="evaluatedAnswer">
-            <div>@(a.Question.QuestionText)</div>
-            <div>@(a.Text)</div>
-            <div>@(a.GetAvgEvaluation())</div>
-        </div>
+  
+    
+    {
+        int i = 0;      
+        foreach(var a in ea.Answers){
+            i++;
+            
+            <div class="myAnswer @if(i%2 == 0){@("greyBackground")}" @if(i == 1){@Html.Raw("style=\"border-top: 1px solid lightgrey;\"")} >
+                <div class="evalValue"><span class="cleanValue">@((double)(a.GetAvgEvaluation()*100))</span>%</div>
+            
+                <div class="qaText que"><b>Otázka: </b>@(a.Question.QuestionText)</div>
+                <div class="qaText ans"><b>Odpoveď: </b>@(a.Text)</div>
+                <input class="evalsCount" type="hidden" value="@(a.Evaluations.Count())" />        
+                <div class="detail btn" title="Zobraziť detail">
+                    <a href="#" >››</a>
+                </div>
+                <div style="clear:both"></div>
+             </div>
+        }
     }
+    
+    
+    <div id="dialog" title="Detail odpovede">
+        <div class="dialogQaText" id="que"></div>
+        <div class="dialogQaText" id="ans"> </div>
+        <div class="sliderWrap">
+            <div id="textValue"> </div>
+            <div class="ui-widget-content-wrapper" style="width: 100%;">
+                <div class="slider-range" ></div>
+            </div> 
+        </div>
+        <div style="clear: both"></div>
+        <div style="text-align: center; width: 100%"> Počet hodnotení odpovede: <b id="evalsCount">12</b></div>
+        
+    </div>
 }
+
+@section Scripts{
+
+     @Scripts.Render("~/bundles/jqueryui")
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+        
+        $(".slider-range").slider({
+            range: false,
+            min: 0,
+            max: 100,
+            value: 50,
+        });
+        $(".slider-range").slider('disable');
+
+        $("#dialog").dialog({
+            autoOpen: false,
+            resizable: false,
+            modal: true,
+            width: 'auto'
+        });
+
+        $(".detail").click(function () {
+            var val = $(this).siblings(".evalValue").children(".cleanValue").text();
+            val = parseFloat(val.replace(/\s/g, "").replace(",", "."));
+            $(".slider-range").slider('value', val);
+            $("#que").prepend($(this).siblings(".que").html());
+            $("#ans").prepend($(this).siblings(".ans").html());
+            $("#evalsCount").text($(this).siblings(".evalsCount").val());
+            if (val > 50) {
+                $(".ui-widget-content-wrapper").css("background", "rgba(22, 149, 49, " + (val - 50) * 2 / 100 + ")");
+            }
+            else {
+                $(".ui-widget-content-wrapper").css("background", "rgba(143, 20, 20, " + (50 - val) * 2 / 100 + ")");
+            }
+            var el = $("#textValue");
+            if (val < 8)
+                el.html("Úplne nesprávne")
+            else if (val < 36)
+                el.html("Takmer nesprávne")
+            else if (val < 64)
+                el.html("Čiastočne správne")
+            else if (val < 92)
+                el.html("Takmer správne")
+            else el.html("Úplne správne");
+            $("#dialog").dialog("open");
+        });
+
+        $(".cleanValue").each(function () {
+            var val = parseFloat($(this).text().replace(/\s/g, "").replace(",", "."));
+            hex = hexFromRGB(10, 10, val);
+            if (val > 50) {
+                $(this).parent().css("background", "rgba(22, 149, 49, " + (val - 50) * 2 / 100 + ")");
+            }
+            else {
+                $(this).parent().css("background", "rgba(143, 20, 20, " + (50 - val) * 2 / 100 + ")");
+            }
+        });
+
+        function hexFromRGB(r, g, b) {
+            var hex = [
+            r.toString(16),
+            g.toString(16),
+            b.toString(16)
+            ];
+            jQuery.each(hex, function (nr, val) {
+                if (val.length === 1) {
+                    hex[nr] = "0" + val;
+                }
+            });
+            return hex.join("").toUpperCase();
+        }
+    });
+    </script>
+    }

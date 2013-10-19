@@ -1,11 +1,11 @@
 ﻿html {
-    background-color: #e2e2e2;
+    background-color: #fff !important;
     margin: 0;
     padding: 0;
 }
 
 body {
-    background-color: #fff;
+    background-color: #fff !important;
     color: #333;
     font-size: .85em;
     font-family: "Segoe UI", Verdana, Helvetica, Sans-Serif;
@@ -797,7 +797,8 @@ tr.pager td {
 }
 
 
-/*Answer Detail ----*/
+/*Answer Detail 
+	-----------*/
 #newAnswer
 {
 	margin-top: 20px;
@@ -1056,6 +1057,104 @@ tr.pager td {
 		 background: white !important;
 	}
 }
+
+/*Answers list
+	----------*/
+
+.myAnswer
+{
+	line-height: 40px;
+	vertical-align: middle;
+	clear: both;
+	height: auto;
+	border-bottom: 1px solid lightgrey;
+}
+
+.greyBackground
+{
+	background-color: #f2f4f5;
+}
+
+.setup
+{
+	margin-bottom: 10px;
+}
+
+.evalValue
+{
+  font-size: 24px;
+  width: auto;
+  float: left;
+  padding: 2px;
+  padding-left: 5px;
+  padding-right: 5px;
+  line-height: 40px;
+  color: black;
+}
+
+.myAnswer .qaText
+{
+	white-space: nowrap;
+	width: 40%;
+	overflow: hidden;
+	text-overflow:ellipsis;
+	float: left;
+	padding-left: 10px;
+	font-size: 16px;
+}
+
+.myAnswer .detail
+{
+	float: right;
+	vertical-align: middle;
+}
+
+#dialog.ui-widget-content
+{
+	background-color: white !important;
+
+}
+
+#dialog .ui-slider-handle
+{
+	background: #003399 !important;
+	border: none !important;
+
+}
+
+#dialog #textValue
+{
+	text-align: center;
+	width: 100%;
+	margin-top:20px;
+	margin-bottom: 0px;
+}
+
+
+#dialog .dialogQaText
+{
+	max-width: auto%;
+	padding-left: 10px;
+	margin-top: 5px;
+	font-size: 16px;
+}
+
+#dialog .sliderWrap
+{
+	width: 80%;
+	 margin: 0 auto;
+	 margin-top: 10px;
+	 position: relative;
+	 left: -25px;
+
+}
+
+#dialog .ui-state-disabled {
+   background-image:none;
+   opacity:0.99 !important;
+   
+}
+
 
 /*Forms*/
 textarea

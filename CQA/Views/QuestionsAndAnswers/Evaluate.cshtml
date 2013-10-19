@@ -117,7 +117,7 @@
                        else {
                            $(this).parent().css("background", "rgba(143, 20, 20, " + (50 - ui.value) * 2 / 100 + ")");
                        }
-                       var el = $(this).parent().parent().siblings("#textValue");
+                       var el = $("#textValue");
                        if (ui.value < 8)
                            el.html("Úplne nesprávne")
                        else if (ui.value < 36)

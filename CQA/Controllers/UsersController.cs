@@ -32,12 +32,16 @@ namespace CQA.Controllers
                 EvaluatedAnswers ea = new EvaluatedAnswers();
                 ea.Answers = new List<Answer>();
                 ea.Setup = s.Key;
-                ea.UnseenCount = s.Count();
+                ea.UnseenCount = 0;
                 foreach(Answer a in s)
                 {
                     ea.Answers.Add(a);
-                    a.SeenEvaluation = true;
-                    db.Entry(a).State = EntityState.Modified;
+                    if (!(bool)a.SeenEvaluation)
+                    {
+                        ea.UnseenCount++;
+                        a.SeenEvaluation = true;
+                        db.Entry(a).State = EntityState.Modified;
+                    }
                 }
                 evaluatedAnswers.Add(ea);
             }
