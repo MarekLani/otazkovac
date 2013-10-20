@@ -12,7 +12,6 @@ body {
 
 }
 
-
 .nav a
 {
 	color:white !important;
@@ -837,6 +836,7 @@ tr.pager td {
 {
 	font-size:15px;
 	text-align: center;
+	margin-top: 10px;
 }
 
 
@@ -1070,6 +1070,11 @@ tr.pager td {
 	border-bottom: 1px solid lightgrey;
 }
 
+	.myAnswer .btn
+	{
+		margin-top: 1px;
+	}
+
 .greyBackground
 {
 	background-color: #f2f4f5;
@@ -1090,6 +1095,8 @@ tr.pager td {
   padding-right: 5px;
   line-height: 40px;
   color: black;
+  width: 55px;
+  text-align: center;
 }
 
 .myAnswer .qaText
@@ -1121,6 +1128,7 @@ tr.pager td {
 	border: none !important;
 
 }
+
 
 #dialog #textValue
 {

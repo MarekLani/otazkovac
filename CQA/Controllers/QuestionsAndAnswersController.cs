@@ -187,10 +187,10 @@ namespace CQA.Controllers
         }
 
         [HttpGet]
-        public ActionResult AnswerAndEvaluate(int setupId)
+        public ActionResult AnswerAndEvaluate(int setupId, int skippedAnsId = 0, int skippedQueId = 0)
         {
             //Do not allow user to change answered question or evaluated answer by refresh
-            if (Session != null && Session["IsUserEvaluating"] != null)
+            if (Session != null && Session["SetupId"] != null && (int)Session["SetupId"] == setupId)
             {
                 if ((bool)Session["IsUserEvaluating"])
                 {
@@ -258,12 +258,18 @@ namespace CQA.Controllers
                                 .Where(a => a.Question.QuestionViews.Where(qv => qv.UserId == WebSecurity.CurrentUserId)
                                     .DefaultIfEmpty(defaultQuestionView).Single().ViewDate.AddDays(1) < DateTime.Now
                                     && a.Evaluations.Count < MyConsts.MinEvaluationLimit).OrderByDescending(a => a.Evaluations.Count()).ToList();
+                    //Remove skipped answer (if was)
+                    if (skippedAnsId != 0)
+                    {
+                        Answer delAns = bottomGreedy.Find(a => a.AnswerId == skippedAnsId);
+                        bottomGreedy.Remove(delAns);
+                    }
                     if (bottomGreedy.Any())
                     {
                         int n = bottomGreedy.First().Evaluations.Count();
                         var bestEvaluatedAnswers = bottomGreedy.Where(a => a.Evaluations.Count() == n);
                         Answer ans = bestEvaluatedAnswers.ElementAt(rand.Next(bestEvaluatedAnswers.Count()));
-                        AddHandledObjectToSession(ans.AnswerId, true);
+                        AddHandledObjectToSession(ans.AnswerId, true, setupId);
                         return View("Evaluate", ans );
                     }
                     else
@@ -272,6 +278,14 @@ namespace CQA.Controllers
                         var upperGreedy = answers
                             .Where(a => a.Evaluations.Count < MyConsts.FullEvaluationLimit)
                             .OrderByDescending(a => a.Evaluations.Count()).ToList();
+
+                        //Remove skipped answer (if was)
+                        if (skippedAnsId != 0)
+                        {
+                            Answer delAns = upperGreedy.Find(a => a.AnswerId == skippedAnsId);
+                            if(delAns != null)
+                                upperGreedy.Remove(delAns);
+                        }
                         if (upperGreedy.Any())
                         {
                             var UnseenAnswers = upperGreedy.Where(a => a.Question.QuestionViews.Where(qv => qv.QuestionId == a.QuestionId && qv.UserId == WebSecurity.CurrentUserId)
@@ -281,7 +295,7 @@ namespace CQA.Controllers
                             int n = upperGreedy.First().Evaluations.Count();
                             var bestEvaluatedAnswers = upperGreedy.Where(a => a.Evaluations.Count() == n);
                             Answer ans = bestEvaluatedAnswers.ElementAt(rand.Next(bestEvaluatedAnswers.Count()));
-                            AddHandledObjectToSession(ans.AnswerId, true);
+                            AddHandledObjectToSession(ans.AnswerId, true, setupId);
                             return View("Evaluate", ans);
                         }
                     }
@@ -309,33 +323,41 @@ namespace CQA.Controllers
                 //Step3 if there are no questions from step2 we have to ignore 2 days rule
                 if (!questions.Any())
                     questions = tempQuestions;
-                
+
+                if (skippedQueId != 0)
+                {
+                    Question delQue = questions.Find(q => q.QuestionId == skippedQueId);
+                    if (delQue != null)
+                        questions.Remove(delQue);
+                }
                 //Check if there is any question to be answered
                 if(questions.Any()){
                     int n = questions.First().Answers.Count();
                     var worstAnsweredQuestions = questions.Where(a => a.Answers.Count() == n);
                     Question q = worstAnsweredQuestions.ElementAt(rand.Next(worstAnsweredQuestions.Count()));
-                    AddHandledObjectToSession(q.QuestionId, false);
+                    AddHandledObjectToSession(q.QuestionId, false, setupId);
                     return View("Answer",q );
                 }
             }
-
-            return View("NothingToDoHere");
+            if (skippedAnsId == 0 && skippedQueId == 0)
+                return View("NothingToDoHere");
+            else
+                return RedirectToAction("AnswerAndEvaluate", new { setupId = setupId });
         }
 
-        public void SkipAnswer(int questionId)
+        public ActionResult SkipAnswer(int questionId)
         {
             int setupId = db.Questions.Find(questionId).SetupId;
             UserMadeAction(UserActionType.SkippedAnswering, 0, questionId);
             RemoveHandledObjectFromSession(false);
-            RedirectToAction("AnswerAndEvaluate", new { setupId = setupId });
+            return RedirectToAction("AnswerAndEvaluate", new { setupId = setupId, skippedQueId = questionId });
         }
 
-        public void SkipEvaluation(int answerId, int setupId)
+        public ActionResult SkipEvaluation(int answerId, int setupId)
         {
             UserMadeAction(UserActionType.SkippedAnswering, answerId, 0);
             RemoveHandledObjectFromSession(false);
-            RedirectToAction("AnswerAndEvaluate", new { setupId = setupId });
+            return RedirectToAction("AnswerAndEvaluate", new { setupId = setupId, skippedAnsId = answerId });
         }
 
         /// <summary>
@@ -343,8 +365,9 @@ namespace CQA.Controllers
         /// </summary>
         /// <param name="handledObjectId"></param>
         /// <param name="evaluating"></param>
-        private void AddHandledObjectToSession(int handledObjectId,bool evaluating)
+        private void AddHandledObjectToSession(int handledObjectId,bool evaluating, int setupId)
         {
+            Session["SetupId"] = setupId;
             if (evaluating)
             {
                 Session["IsUserEvaluating"] = true;
@@ -363,6 +386,7 @@ namespace CQA.Controllers
         /// <param name="evaluating"></param>
         private void RemoveHandledObjectFromSession(bool evaluating)
         {
+            Session.Remove("SetupId");
             Session.Remove("IsUserEvaluating");
             if (evaluating)
             {

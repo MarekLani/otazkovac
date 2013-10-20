@@ -182,13 +182,13 @@ namespace CQA.Controllers
         private void FillupQuestion(ref Question q, string[] values)
         {
             q.QuestionId = Convert.ToInt32(values[0]);
-            q.QuestionText = values[1];
+            q.QuestionText = values[2];
             //If hint is present
-            if (values[2] != "")
-                q.Hint = values[2];
+            if (values[4] != "")
+                q.Hint = values[4];
             else
                 q.Hint = null;
-            q.IsActive = (1 == Convert.ToInt32(values[3]));
+            q.IsActive = (1 == Convert.ToInt32(values[5]));
         }
 
         protected override void Dispose(bool disposing)

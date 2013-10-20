@@ -16,6 +16,7 @@ using WebMatrix.WebData;
 
 namespace CQA.Controllers
 {
+    [Authorize(Roles = "Admin")] 
     public class SavedImage
     {
         public string Name { get; set; }

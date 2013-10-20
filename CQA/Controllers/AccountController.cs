@@ -44,57 +44,58 @@ namespace CQA.Controllers
                 string surName = " ";
                 string firstName = "";
                 int uisId = 0;
+                //commented out for testing
                 //Attempt to register the user
-                try
-                {
-                    string sDomain = "LDAP://ldap.stuba.sk:389/uid=xlanim,ou=People,dc=stuba,dc=sk";
-                    string sServiceUser = "uid="+model.UserName+",ou=People,dc=stuba,dc=sk";
-                    string sServicePassword = model.Password;
-                    DirectoryEntry de = new DirectoryEntry(sDomain, sServiceUser, sServicePassword, AuthenticationTypes.None);
-                    DirectorySearcher ds = new DirectorySearcher(de);
-                    ds.Filter = "(&" +
-                                 "(uid=" + model.UserName +")" +
-                                  ")";
+                //try
+                //{
+                //    string sDomain = "LDAP://ldap.stuba.sk:389/uid=xlanim,ou=People,dc=stuba,dc=sk";
+                //    string sServiceUser = "uid="+model.UserName+",ou=People,dc=stuba,dc=sk";
+                //    string sServicePassword = model.Password;
+                //    DirectoryEntry de = new DirectoryEntry(sDomain, sServiceUser, sServicePassword, AuthenticationTypes.None);
+                //    DirectorySearcher ds = new DirectorySearcher(de);
+                //    ds.Filter = "(&" +
+                //                 "(uid=" + model.UserName +")" +
+                //                  ")";
                     
  
-                    SearchResult sr = ds.FindOne();
+                //    SearchResult sr = ds.FindOne();
 
 
-                    foreach (string PropertyName in sr.Properties.PropertyNames)
-                    {
-                        try
-                        {
-                            foreach (Object key in sr.GetDirectoryEntry().Properties[PropertyName])
-                            {
-                                switch (PropertyName.ToLower())
-                                {
-                                    case "sn":
-                                        surName += key.ToString();
-                                        break;
-                                    case "givenname":
-                                        firstName += key.ToString();
-                                        break;
-                                    case "uisid":
-                                        uisId = Convert.ToInt32(key.ToString());
-                                        break;
-                                    default:
-                                        break;
-                                }
-                            }
-                        }
-                        catch { }
-                    }
+                //    foreach (string PropertyName in sr.Properties.PropertyNames)
+                //    {
+                //        try
+                //        {
+                //            foreach (Object key in sr.GetDirectoryEntry().Properties[PropertyName])
+                //            {
+                //                switch (PropertyName.ToLower())
+                //                {
+                //                    case "sn":
+                //                        surName += key.ToString();
+                //                        break;
+                //                    case "givenname":
+                //                        firstName += key.ToString();
+                //                        break;
+                //                    case "uisid":
+                //                        uisId = Convert.ToInt32(key.ToString());
+                //                        break;
+                //                    default:
+                //                        break;
+                //                }
+                //            }
+                //        }
+                //        catch { }
+                //    }
                    
-                }
-                catch (MembershipCreateUserException e)
-                {
-                    ModelState.AddModelError("", ErrorCodeToString(e.StatusCode));
-                }
-                catch (Exception)
-                {
-                    ModelState.AddModelError("", "Nesprávne meno alebo heslo");
-                    return View(model);
-                }
+                //}
+                //catch (MembershipCreateUserException e)
+                //{
+                //    ModelState.AddModelError("", ErrorCodeToString(e.StatusCode));
+                //}
+                //catch (Exception)
+                //{
+                //    ModelState.AddModelError("", "Nesprávne meno alebo heslo");
+                //    return View(model);
+                //}
                 // Using Hack with password, because we really do not need it
 
                 //If user was not logged before
@@ -117,6 +118,7 @@ namespace CQA.Controllers
         public ActionResult LogOff()
         {
             WebSecurity.Logout();
+            Session.Abandon();
            // Session.Remove("facebooktoken");
             return RedirectToAction("Index", "Home");
         }

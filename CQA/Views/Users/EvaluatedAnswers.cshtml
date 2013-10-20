@@ -30,7 +30,7 @@
                 <div class="qaText ans"><b>Odpoveď: </b>@(a.Text)</div>
                 <input class="evalsCount" type="hidden" value="@(a.Evaluations.Count())" />        
                 <div class="detail btn" title="Zobraziť detail">
-                    <a href="#" >››</a>
+                    ››
                 </div>
                 <div style="clear:both"></div>
              </div>
@@ -71,7 +71,7 @@
 
         $("#dialog").dialog({
             autoOpen: false,
-            resizable: false,
+            resizable: true,
             modal: true,
             width: 'auto'
         });
@@ -80,8 +80,8 @@
             var val = $(this).siblings(".evalValue").children(".cleanValue").text();
             val = parseFloat(val.replace(/\s/g, "").replace(",", "."));
             $(".slider-range").slider('value', val);
-            $("#que").prepend($(this).siblings(".que").html());
-            $("#ans").prepend($(this).siblings(".ans").html());
+            $("#que").html($(this).siblings(".que").html());
+            $("#ans").html($(this).siblings(".ans").html());
             $("#evalsCount").text($(this).siblings(".evalsCount").val());
             if (val > 50) {
                 $(".ui-widget-content-wrapper").css("background", "rgba(22, 149, 49, " + (val - 50) * 2 / 100 + ")");

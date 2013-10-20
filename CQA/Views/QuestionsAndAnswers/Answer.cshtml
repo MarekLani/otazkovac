@@ -34,14 +34,15 @@
     </div>
 </div>
 
-<div class="alert alert-success" style="display:none">
+<div class="alert alert-success" style="display:none; text-align:center">
     <button type="button" class="close" data-dismiss="alert">&times;</button>
     Ďakujeme za odpoveď. Akonáhle bude k dispozícií spätná väzba, budete notifikovaný.
 </div>
 
  @{Html.RenderPartial("_CreateAnswerForm", new CQA.Models.CreateAnswer(Model.QuestionId));}
-<a href="href="@Url.Action("AnswerAndEvaluate", new { setupId = Model.SetupId})" id="next" class="btn" style="display:none">Ďalšia otázka/hodnotenie</a>
-
+<div style="text-align:center; width: 100%">
+    <a href="@Url.Action("AnswerAndEvaluate", new { setupId = Model.SetupId})" id="next" class="btn" style="display:none">Ďalšia otázka/hodnotenie</a>
+</div>
 @section Scripts {
 
     @Scripts.Render("~/bundles/jqueryval")

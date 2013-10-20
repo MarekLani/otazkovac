@@ -9,6 +9,7 @@ using CQA.Models;
 
 namespace CQA.Controllers
 {
+    [Authorize(Roles = "Admin")] 
     public class SubjectsController : Controller
     {
         private CQADBContext db = new CQADBContext();
