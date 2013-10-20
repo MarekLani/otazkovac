@@ -25,7 +25,7 @@ namespace CQA.Controllers
         public ActionResult EvaluatedAnswers()
         {
             List<EvaluatedAnswers> evaluatedAnswers = new List<Models.EvaluatedAnswers>();
-            var setupsWithEvaluatedAnswers = db.Answers.Where(a => a.UserId == WebSecurity.CurrentUserId )
+            var setupsWithEvaluatedAnswers = db.Answers.Where(a => a.UserId == WebSecurity.CurrentUserId && a.SeenEvaluation != null )
                 .OrderByDescending(a => a.DateCreated).GroupBy(a => a.Question.Setup);
             foreach(var s in setupsWithEvaluatedAnswers) //.Where(a => a SeenEvaluation == false))
             {

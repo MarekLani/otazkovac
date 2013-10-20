@@ -11,10 +11,10 @@
 <h3>Vaše ohodnotené odpovede</h3>
 @foreach (var ea in Model)
 {
-    <div class="setup" >@Html.Raw("<span style=\"font-size: 24px\">" + ea.Setup.Subject.Name + " " + ea.Setup.Name + " </span>" +
+    <div class="setup" >@Html.Raw("<span style=\"font-size: 24px\">" + ea.Setup.Subject.Name + " " + ea.Setup.Name + " </span><br/>" +
         "Počet nových ohodnotených odpovedí:" + "<b>" + ea.UnseenCount +
-        " </b>"+
-        "Počet Vašich odpovedí: " + "<b>" + ea.Answers.Count() + "</b>" )
+        " </b> | "+
+        "Počet všetkých ohodnotených odpovedí: " + "<b>" + ea.Answers.Count() + "</b>" )
     </div>
   
     

@@ -28,21 +28,15 @@
     </div>
 </div>
 
-<div class="answer" style="display:none">
-    <div id="answerText">
-    <span style="font-size: 0.85em; font-weight:bold">Vaša odpoveď: </span>
-    </div>
-</div>
-
+ @{Html.RenderPartial("_CreateAnswerForm", new CQA.Models.CreateAnswer(Model.QuestionId));}
 <div class="alert alert-success" style="display:none; text-align:center">
     <button type="button" class="close" data-dismiss="alert">&times;</button>
     Ďakujeme za odpoveď. Akonáhle bude k dispozícií spätná väzba, budete notifikovaný.
 </div>
-
- @{Html.RenderPartial("_CreateAnswerForm", new CQA.Models.CreateAnswer(Model.QuestionId));}
 <div style="text-align:center; width: 100%">
     <a href="@Url.Action("AnswerAndEvaluate", new { setupId = Model.SetupId})" id="next" class="btn" style="display:none">Ďalšia otázka/hodnotenie</a>
 </div>
+
 @section Scripts {
 
     @Scripts.Render("~/bundles/jqueryval")
@@ -55,11 +49,11 @@
 
             function AnswerCreated(data) {
                 $("#answerText").prepend(data.answerText);
+                $("#hint").fadeOut();
+                $("#skip").fadeOut();
                 $("#next").fadeIn();
-                $("#newAnswer").fadeOut();
-                $('#submit').attr('disabled', 'disabled');
-                $("#answer").fadeIn();
-                $(".alert").fadeIn();
+                $('#submit').fadeOut();
+                $(".alert").fadeIn();              
             }
     </script>
     <script src="~/Scripts/AnswerAndEvaluateCommon.js"></script>

@@ -85,9 +85,10 @@
            $("#crowdEvaluationText").html("Odpoveď davu z " + data.evalsCount+" hodnotení")
            $("#crowdSliderWrap").css("margin-left", data.avgEval*100-6 + "%");
            $(".slider-range").slider('disable');
+           $("#hint").fadeOut;
            $("#crowdEvaluation").fadeIn();
-           $("#next").fadeIn();
            $("#newAnswer").fadeOut();
+           $("#next").fadeIn(); 
            $('#submit').attr('disabled', 'disabled');
            $(".alert").fadeIn();
           
