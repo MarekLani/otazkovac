@@ -87,14 +87,7 @@ namespace CQA.Controllers
         public ActionResult Edit(Setup setup)
         {
             if (ModelState.IsValid)
-            {
-                Setup s = db.Setups.Find(setup.SetupId);
-                if (s.AnsweringProbability != setup.AnsweringProbability)
-                    setup.CreateSetupsProbabilityChange();
-                //setup.PropertyChanged += (o, p) =>
-                //{
-                //    setup.CreateSetupsProbabilityChange();
-                //};
+            {                
                 db.Entry(setup).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");

@@ -46,7 +46,8 @@ namespace CQA
             BundleConfig.RegisterBundles(BundleTable.Bundles);
             AuthConfig.RegisterAuth();
 
-            AddTask("DoStuff", 10);
+            //Repetitive task, not needed right now
+            //AddTask("DoStuff", 10);
         }
 
         #region Scheduled tasks
@@ -72,7 +73,7 @@ namespace CQA
         {
             // do stuff here if it matches our taskname, like WebRequest
             // re-add our task so it recurs
-            SetupsStatistics.SaveSetupStats();
+            //SetupsStatistics.SaveSetupStats();
             AddTask(k, Convert.ToInt32(v));
         }
         #endregion

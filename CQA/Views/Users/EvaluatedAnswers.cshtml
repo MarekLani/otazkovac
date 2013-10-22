@@ -24,11 +24,20 @@
             i++;
             
             <div class="myAnswer @if(i%2 == 0){@("greyBackground")}" @if(i == 1){@Html.Raw("style=\"border-top: 1px solid lightgrey;\"")} >
-                <div class="evalValue"><span class="cleanValue">@((double)(a.GetAvgEvaluation()*100))</span>%</div>
-            
-                <div class="qaText que"><b>Otázka: </b>@(a.Question.QuestionText)</div>
-                <div class="qaText ans"><b>Odpoveď: </b>@(a.Text)</div>
-                <input class="evalsCount" type="hidden" value="@(a.Evaluations.Count())" />        
+                <div class="evalValue">
+                    <div class="evalValueBg">
+                        <span class="cleanValue">@((int)(a.GetAvgEvaluation()*100))</span>%
+                        <div style="font-size: 11px; line-height: 11px">@(a.Evaluations.Count()) hod.</div>
+                    </div>
+                </div>
+
+                <b style="float:left; width: 60px; margin-left: 5px;"> Otázka: </b> 
+                <div class="elipsis">@(a.Question.QuestionText)</div>
+               <b style="float:left; width: 80px;margin-left: 5px;"> Odpoveď: </b> 
+                <div class="elipsis">@(a.Text)</div>
+                <input type="hidden" value="@(a.Question.QuestionText)" name="que" class="que" />
+                <input type="hidden" value="@(a.Text)" name="ans" class="ans" />
+                <input type="hidden" value="@(a.Evaluations.Count())" name="count" class="count" />
                 <div class="detail btn" title="Zobraziť detail">
                     ››
                 </div>
@@ -54,12 +63,13 @@
 }
 
 @section Scripts{
-
+     @Scripts.Render("~/Scripts/jquery.dotdotdot.min.js")
      @Scripts.Render("~/bundles/jqueryui")
 <script type="text/javascript">
 
     $(document).ready(function () {
 
+        $(".elipsis").dotdotdot();
         
         $(".slider-range").slider({
             range: false,
@@ -77,12 +87,31 @@
         });
 
         $(".detail").click(function () {
-            var val = $(this).siblings(".evalValue").children(".cleanValue").text();
+            var val = $(this).siblings(".evalValue").children(".evalValueBg").children(".cleanValue").text();
             val = parseFloat(val.replace(/\s/g, "").replace(",", "."));
             $(".slider-range").slider('value', val);
-            $("#que").html($(this).siblings(".que").html());
-            $("#ans").html($(this).siblings(".ans").html());
-            $("#evalsCount").text($(this).siblings(".evalsCount").val());
+            $("#que").html("<b>Otázka: </b>");
+            $("#ans").html("<b>Odpoveď: </b>");
+            $("#que").append($(this).siblings(".que").val());
+            $("#ans").append($(this).siblings(".ans").val());
+            $("#evalsCount").text($(this).siblings(".count").val());
+            setSlider(val)
+        });
+
+        $(".myAnswer").click(function () {
+            var val = $(this).children(".evalValue").children(".evalValueBg").children(".cleanValue").text();
+            val = parseFloat(val.replace(/\s/g, "").replace(",", "."));
+            $(".slider-range").slider('value', val);
+            $("#que").html("<b>Otázka: </b>");
+            $("#ans").html("<b>Odpoveď: </b>");
+            $("#que").append($(this).children(".que").val());
+            $("#ans").append($(this).children(".ans").val());
+            $("#evalsCount").text($(this).children(".count").val());
+            setSlider(val)
+            
+        });
+
+        function setSlider(val) {
             if (val > 50) {
                 $(".ui-widget-content-wrapper").css("background", "rgba(22, 149, 49, " + (val - 50) * 2 / 100 + ")");
             }
@@ -100,9 +129,9 @@
                 el.html("Takmer správne")
             else el.html("Úplne správne");
             $("#dialog").dialog("open");
-        });
+        }
 
-        $(".cleanValue").each(function () {
+        $(".evalValueBg").each(function () {
             var val = parseFloat($(this).text().replace(/\s/g, "").replace(",", "."));
             hex = hexFromRGB(10, 10, val);
             if (val > 50) {

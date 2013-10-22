@@ -23,36 +23,36 @@ namespace CQA.Models
         /// <summary>
         /// Save statistics for each active setup such as answer counts evaluation, count evaluated answers
         /// </summary>
-        public static void SaveSetupStats()
-        {
-            CQADBContext db = new CQADBContext();
-            foreach (Setup s in db.Setups.Where(s => s.Active))
-            {
-                var setupStats = new SetupsStatistics();
-                //setupStats.EvaluatedAnswersForUsersCount = 
+        //public static void SaveSetupStats()
+        //{
+        //    CQADBContext db = new CQADBContext();
+        //    foreach (Setup s in db.Setups.Where(s => s.Active))
+        //    {
+        //        var setupStats = new SetupsStatistics();
+        //        //setupStats.EvaluatedAnswersForUsersCount = 
                 
-                setupStats.FullyEvaluatedAnswersCount =  
-                    (from q in s.Questions
-                     from a in q.Answers
-                        .Where(ans => ans.Evaluations.Count == MyConsts.FullEvaluationLimit)
-                     select(a.AnswerId)).Count();
+        //        setupStats.FullyEvaluatedAnswersCount =  
+        //            (from q in s.Questions
+        //             from a in q.Answers
+        //                .Where(ans => ans.Evaluations.Count == MyConsts.FullEvaluationLimit)
+        //             select(a.AnswerId)).Count();
 
-                setupStats.EvaluatedAnswersForUsersCount =
-                    (from q in s.Questions
-                     from a in q.Answers
-                        .Where(ans => ans.Evaluations.Count >= MyConsts.MinEvaluationLimit)
-                     select (a.AnswerId)).Count();
+        //        setupStats.EvaluatedAnswersForUsersCount =
+        //            (from q in s.Questions
+        //             from a in q.Answers
+        //                .Where(ans => ans.Evaluations.Count >= MyConsts.MinEvaluationLimit)
+        //             select (a.AnswerId)).Count();
 
-                setupStats.AnswersCount =
-                    (from q in s.Questions
-                     from a in q.Answers
-                     select (a.AnswerId)).Count();
+        //        setupStats.AnswersCount =
+        //            (from q in s.Questions
+        //             from a in q.Answers
+        //             select (a.AnswerId)).Count();
 
-                setupStats.Setup = s;
-                db.SetupsStatistics.Add(setupStats);
-                db.SaveChanges();
+        //        setupStats.Setup = s;
+        //        db.SetupsStatistics.Add(setupStats);
+        //        db.SaveChanges();
 
-            }
-        }
+        //    }
+        //}
     }
 }

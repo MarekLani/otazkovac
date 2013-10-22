@@ -1068,6 +1068,7 @@ tr.pager td {
 	clear: both;
 	height: auto;
 	border-bottom: 1px solid lightgrey;
+	cursor: pointer;
 }
 
 	.myAnswer .btn
@@ -1087,27 +1088,27 @@ tr.pager td {
 
 .evalValue
 {
-  font-size: 24px;
+  font-size: 20px;
   width: auto;
   float: left;
   padding: 2px;
   padding-left: 5px;
   padding-right: 5px;
-  line-height: 40px;
+  line-height: 28px;
   color: black;
   width: 55px;
   text-align: center;
+  border-right: 1px grey solid;
 }
 
-.myAnswer .qaText
+
+.elipsis
 {
-	white-space: nowrap;
-	width: 40%;
-	overflow: hidden;
-	text-overflow:ellipsis;
+	width: 36%;
+    font-size: 14px;
 	float: left;
-	padding-left: 10px;
-	font-size: 16px;
+	line-height: 20px !important;
+	height: 40px;
 }
 
 .myAnswer .detail
@@ -1120,6 +1121,13 @@ tr.pager td {
 {
 	background-color: white !important;
 
+}
+
+.ui-dialog
+{
+	border: 1px solid grey !important;
+	max-width: 800px !important;
+	background: white !important;
 }
 
 #dialog .ui-slider-handle

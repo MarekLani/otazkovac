@@ -73,7 +73,7 @@ namespace CQA.Models
         [Display(Name = "Prihlasovacie meno")]
         public string UserName { get; set; }
 
-        [Required]
+        [Required(ErrorMessage="Prosím zadajte heslo")]
         [DataType(DataType.Password)]
         [Display(Name = "Heslo")]
         public string Password { get; set; }

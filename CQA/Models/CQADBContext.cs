@@ -24,8 +24,13 @@ namespace CQA.Models
         public DbSet<UsersSetup> UsersSetups { get; set; }
         public DbSet<UsersAction> UsersActions { get; set; }
         public DbSet<QuestionView> QuestionViews { get; set; }
-        public DbSet<SetupsStatistics> SetupsStatistics { get; set; }
+        
+        //Not needed right now
+        //public DbSet<SetupsStatistics> SetupsStatistics { get; set; }
+        
         public DbSet<SetupsProbabilityChange> SetupsProbabilityChanges { get; set; }
+        
+        
         // <summary>
         /// The below Method is used to define the Maping
         /// </summary>
@@ -165,9 +170,9 @@ namespace CQA.Models
                 if (!WebSecurity.UserExists("user3"))
                     WebSecurity.CreateUserAndAccount("user3", "pass", new { RealName = "user3" });
 
-                if (!roles.GetRolesForUser("xlanim").Contains("Admin"))
+                if (roles.GetRolesForUser("xlanim").Contains("Admin"))
                 {
-                       roles.AddUsersToRoles(new[] { "xlanim" }, new[] { "Admin" });
+                    roles.RemoveUsersFromRoles(new[] { "xlanim" }, new[] { "Admin" });
                 }
                 //if (!roles.GetRolesForUser("Trainer").Contains("Trainer"))
                 //{

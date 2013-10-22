@@ -20,15 +20,16 @@
             @Html.ValidationMessageFor(model => model.Name)
         </div>
 
-        <div class="editor-label" style="float:left; margin-right: 15px; margin-top: 3px;; margin-bottom: 10px;">
+        <div class="editor-label" style="float:left; margin-right: 15px; margin-top: 3px; margin-bottom: 10px;">
             @Html.LabelFor(model => model.Active)
         </div>
         <div class="editor-field">
             @Html.EditorFor(model => model.Active)
             @Html.ValidationMessageFor(model => model.Active)
         </div>
+        <div style="clear:both"/>
 
-        <div class="editor-label" style="float:left; margin-right: 15px; margin-top: 3px;; margin-bottom: 10px;">
+        <div class="editor-label">
             @Html.LabelFor(model => model.AnsweringProbability)
         </div>
         <div class="editor-field">
