@@ -1,0 +1,76 @@
+﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!-- Import MSBuildExtensionsPack -->
+  <Import Project="$(MSBuildExtensionsPath64)\ExtensionPack\4.0\MSBuild.ExtensionPack.tasks"/>
+  <!-- Names of all projects -->
+  <PropertyGroup>
+    <CQA>CQA</CQA>
+    <!--<MyAppTests>MyApp.Tests</MyAppTests>-->
+    <Configuration Condition="$(Configuration) == ''">Release</Configuration>
+    <PublishProfile Condition="$(PublishProfile) == ''">Test</PublishProfile>
+    <OutputDir>.out</OutputDir>
+    <NUnitConsole>packages\NUnit.Runners.2.6.1\tools\nunit-console.exe</NUnitConsole>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- All projects -->
+    <Projects Include="$(CQA)" />
+    <!-- Test projects 
+    <TestProjects Include="$(MyAppTests)" />-->
+  </ItemGroup>
+
+  <Target Name="CreateDirectories">
+    <MakeDir Directories="$(OutputDir)"/>
+    <MakeDir Directories="$(OutputDir)\packages"/>
+    <MakeDir Directories="$(CQA)\obj\packages"/>
+  </Target>
+
+  <Target Name="Clean" DependsOnTargets="CreateDirectories">
+    <MSBuild.ExtensionPack.FileSystem.Folder
+    TaskAction="RemoveContent"
+    Path="$(OutputDir)"/>
+    <MSBuild.ExtensionPack.FileSystem.Folder
+    TaskAction="RemoveContent"
+    Path="$(CQA)\obj\Package"/>
+  </Target>
+  <!-- Compiles and Cleans all projects (if named correctly) -->
+  <Target Name="Build" DependsOnTargets="Clean">
+    <PropertyGroup>
+      <CurrentProject>%(Projects.Identity)</CurrentProject>
+    </PropertyGroup>
+
+    <MSBuild Projects="$(CurrentProject)\$(CurrentProject).csproj"
+    Targets="Clean;Build" Properties="Configuration=$(Configuration)"/>
+  </Target>
+  <!-- Run NUnit Tests
+  <Target Name="Test" DependsOnTargets="Build">
+    <PropertyGroup>
+      <CurrentProject>%(TestProjects.Identity)</CurrentProject>
+    </PropertyGroup>
+    <Message Text="$(CurrentProject)\$(CurrentProject).csproj"></Message>
+    <MSBuild Projects="$(CurrentProject)\$(CurrentProject).csproj"
+    Targets="Build"
+    Properties="Configuration=$(Configuration)" />
+    <CreateItem Include="$(CurrentProject)\bin\$(Configuration)\$(CurrentProject).dll">
+      <Output TaskParameter="Include" ItemName="TestAssembly" />
+    </CreateItem>
+    <PropertyGroup>
+      <NUNitOptions>/result="$(OutputDir)\$(CurrentProject).Results.xml"</NUNitOptions>
+      <NUNitCommand>$(NUnitConsole) $(NUNitOptions) @(TestAssembly)</NUNitCommand>
+    </PropertyGroup>
+    <Exec Command="$(NUnitCommand)">
+      <Output TaskParameter="ExitCode" ItemName="ExitCodes" />
+    </Exec>
+  </Target>-->
+  <Target Name="Package" DependsOnTargets="Build">
+    <MSBuild Projects="$(CQA)\$(CQA).csproj"
+    Properties="Configuration=$(Configuration);DeployOnBuild=True;PublishProfile=$(PublishProfile)" />
+    <ItemGroup>
+      <OutputFiles Include="$(CQA)\obj\Package\**\*.*"/>
+    </ItemGroup>
+    <Copy
+    SourceFiles="@(OutputFiles)"
+    DestinationFiles="@(OutputFiles->'.out\Package\%(RecursiveDir)%(Filename)%(Extension)')"
+/>
+  </Target>
+</Project>
