@@ -237,7 +237,6 @@
     <Compile Include="Validations\PlacesValidation.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="build.xml" />
     <Content Include="Content\bootstrapImageGallery\css\bootstrap-image-gallery.min.css" />
     <Content Include="Content\bootstrapImageGallery\css\style.css" />
     <Content Include="Content\bootstrapImageGallery\img\glyphicons-halflings-white.png" />
