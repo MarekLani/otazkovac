@@ -1,2 +1,7 @@
 /*.suo
 bin
+.*
+!.gitignore
+Debug
+Release
+Test
