@@ -192,6 +192,10 @@
     <Compile Include="Controllers\SetupsController.cs" />
     <Compile Include="Controllers\SubjectsController.cs" />
     <Compile Include="Controllers\UsersController.cs" />
+    <Compile Include="Migrations\201310251848222_initialMigration.cs" />
+    <Compile Include="Migrations\201310251848222_initialMigration.Designer.cs">
+      <DependentUpon>201310251848222_initialMigration.cs</DependentUpon>
+    </Compile>
     <Compile Include="Models\DateCreatedModel.cs" />
     <Compile Include="Models\MyConsts.cs" />
     <Compile Include="Models\SetupsProbabilityChanges.cs" />
@@ -399,15 +403,11 @@
     <Content Include="Views\Account\Register.cshtml" />
     <Content Include="Views\Account\ExternalLoginFailure.cshtml" />
     <Content Include="Views\Account\ExternalLoginConfirmation.cshtml" />
-    <Content Include="Views\Home\About.cshtml" />
-    <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
     <Content Include="Views\Shared\Error.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\Web.config" />
-    <Content Include="Views\HelloWorld\Index.cshtml" />
-    <Content Include="Views\HelloWorld\Welcome.cshtml" />
     <Content Include="Views\Account\RegisterUser.cshtml">
       <BrowseToURL>~/Account/_RegisterUser</BrowseToURL>
     </Content>
@@ -454,6 +454,9 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Migrations\201310251848222_initialMigration.resx">
+      <DependentUpon>201310251848222_initialMigration.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Resources\ErrorStrings.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>ErrorStrings.Designer.cs</LastGenOutput>

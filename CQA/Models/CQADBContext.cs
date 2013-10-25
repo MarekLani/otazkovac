@@ -163,22 +163,18 @@ namespace CQA.Models
                 if (!WebSecurity.UserExists("xlanim"))
                     WebSecurity.CreateUserAndAccount("xlanim", "pass", new { RealName = "Marek" });
 
-                if (!WebSecurity.UserExists("user1"))
-                    WebSecurity.CreateUserAndAccount("user1", "pass", new { RealName = "user1" });
+                //if (!WebSecurity.UserExists("user1"))
+                //    WebSecurity.CreateUserAndAccount("user1", "pass", new { RealName = "user1" });
 
-                if (!WebSecurity.UserExists("user2"))
-                    WebSecurity.CreateUserAndAccount("user2", "pass", new { RealName = "user2" });
+                //if (!WebSecurity.UserExists("user2"))
+                //    WebSecurity.CreateUserAndAccount("user2", "pass", new { RealName = "user2" });
 
-                if (!WebSecurity.UserExists("user3"))
-                    WebSecurity.CreateUserAndAccount("user3", "pass", new { RealName = "user3" });
+                //if (!WebSecurity.UserExists("user3"))
+                //    WebSecurity.CreateUserAndAccount("user3", "pass", new { RealName = "user3" });
 
-                if (roles.GetRolesForUser("xlanim").Contains("Admin"))
-                {
-                    roles.RemoveUsersFromRoles(new[] { "xlanim" }, new[] { "Admin" });
-                }
-                //if (!roles.GetRolesForUser("Trainer").Contains("Trainer"))
+                //if (roles.GetRolesForUser("xlanim").Contains("Admin"))
                 //{
-                //    roles.AddUsersToRoles(new[] { "Trainer" }, new[] { "Trainer" });
+                //    roles.RemoveUsersFromRoles(new[] { "xlanim" }, new[] { "Admin" });
                 //}
                 #endregion
 
