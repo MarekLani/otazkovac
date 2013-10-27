@@ -172,22 +172,21 @@ namespace CQA.Models
                 //if (!WebSecurity.UserExists("user3"))
                 //    WebSecurity.CreateUserAndAccount("user3", "pass", new { RealName = "user3" });
 
-                //if (roles.GetRolesForUser("xlanim").Contains("Admin"))
-                //{
-                //    roles.RemoveUsersFromRoles(new[] { "xlanim" }, new[] { "Admin" });
-                //}
+                if (!roles.GetRolesForUser("xlanim").Contains("Admin"))
+                {
+                    roles.AddUsersToRoles(new[] { "xlanim" }, new[] { "Admin" });
+                }
                 #endregion
 
                 if (context.Database.Exists() && !context.Database.CompatibleWithModel(false))
                     context.Database.Delete();
 
-                if (!context.Database.Exists())
-                {
-                    context.Database.Create();
-                    context.Database.ExecuteSqlCommand("ALTER TABLE UserProfile ADD CONSTRAINT U_email UNIQUE(Email)");
-                    context.Database.ExecuteSqlCommand("ALTER TABLE Articles ADD CONSTRAINT U_title UNIQUE(CleanTitle)");
-                    context.Database.ExecuteSqlCommand("CREATE INDEX IX_ArticleDescription ON Articles (Description)");
-                }
+                //Adding index
+                //if (!context.Database.Exists())
+                //{
+                //    context.Database.Create();
+                //    context.Database.ExecuteSqlCommand("ALTER TABLE UserProfile ADD CONSTRAINT U_email UNIQUE(Email)");
+                //}
 
 
             }
