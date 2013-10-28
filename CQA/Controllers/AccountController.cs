@@ -48,7 +48,8 @@ namespace CQA.Controllers
                 //Attempt to register the user
                 try
                 {
-                    string sDomain = "LDAP://ldap.stuba.sk:389/uid=xlanim,ou=People,dc=stuba,dc=sk";
+
+                    string sDomain = String.Format("LDAP://ldap.stuba.sk:389/uid={0},ou=People,dc=stuba,dc=sk",model.UserName);
                     string sServiceUser = "uid="+model.UserName+",ou=People,dc=stuba,dc=sk";
                     string sServicePassword = model.Password;
                     DirectoryEntry de = new DirectoryEntry(sDomain, sServiceUser, sServicePassword, AuthenticationTypes.None);

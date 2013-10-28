@@ -161,7 +161,10 @@ namespace CQA.Models
                 }
                
                 if (!WebSecurity.UserExists("xlanim"))
-                    WebSecurity.CreateUserAndAccount("xlanim", "pass", new { RealName = "Marek" });
+                    WebSecurity.CreateUserAndAccount("xlanim", "pass", new { RealName = "Marek Lani" });
+
+                if (!WebSecurity.UserExists("xsimkoj1"))
+                    WebSecurity.CreateUserAndAccount("xsimkoj1", "pass", new { RealName = "Jakub Šimko" });
 
                 //if (!WebSecurity.UserExists("user1"))
                 //    WebSecurity.CreateUserAndAccount("user1", "pass", new { RealName = "user1" });
@@ -175,6 +178,10 @@ namespace CQA.Models
                 if (!roles.GetRolesForUser("xlanim").Contains("Admin"))
                 {
                     roles.AddUsersToRoles(new[] { "xlanim" }, new[] { "Admin" });
+                }
+                if (!roles.GetRolesForUser("xsimkoj1").Contains("Admin"))
+                {
+                    roles.AddUsersToRoles(new[] { "xsimkoj1" }, new[] { "Admin" });
                 }
                 #endregion
 

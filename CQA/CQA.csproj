@@ -333,6 +333,7 @@
     <Content Include="Global.asax" />
     <Content Include="Images\banner12sharp.jpg" />
     <Content Include="Images\banner2.png" />
+    <Content Include="Images\crane_logo.png" />
     <Content Include="Images\favouriteIcon.png" />
     <Content Include="Images\favouriteIconIn.png" />
     <Content Include="Images\logo.png" />

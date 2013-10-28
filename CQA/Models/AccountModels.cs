@@ -69,11 +69,11 @@ namespace CQA.Models
 
     public class LoginModel
     {
-        [Required]
+        [Required(ErrorMessage = "Pole {0} nesmie byť prázdne")]
         [Display(Name = "Prihlasovacie meno")]
         public string UserName { get; set; }
 
-        [Required(ErrorMessage="Prosím zadajte heslo")]
+        [Required(ErrorMessage="Pole {0} nesmie byť prázdne")]
         [DataType(DataType.Password)]
         [Display(Name = "Heslo")]
         public string Password { get; set; }

@@ -8,58 +8,64 @@
     ViewBag.Title = "Ohodnotené odpovede";
 }
 
-<h3>Vaše ohodnotené odpovede</h3>
-@foreach (var ea in Model)
-{
-    <div class="setup" >@Html.Raw("<span style=\"font-size: 24px\">" + ea.Setup.Subject.Name + " " + ea.Setup.Name + " </span><br/>" +
-        "Počet nových ohodnotených odpovedí:" + "<b>" + ea.UnseenCount +
-        " </b> | "+
-        "Počet všetkých ohodnotených odpovedí: " + "<b>" + ea.Answers.Count() + "</b>" )
-    </div>
+
+@if(!Model.Any()){
+    <h4>Ľutujeme, zatiaľ pre Vás nie sú k dispozícii žiadne ohodnotené odpovede.</h4>
+}
+else{
+    <h3>Vaše ohodnotené odpovede</h3>
+    foreach (var ea in Model)
+    {
+        <div class="setup" >@Html.Raw("<span style=\"font-size: 24px\">" + ea.Setup.Subject.Name + " " + ea.Setup.Name + " </span><br/>" +
+            "Počet nových ohodnotených odpovedí:" + "<b>" + ea.UnseenCount +
+            " </b> | "+
+            "Počet všetkých ohodnotených odpovedí: " + "<b>" + ea.Answers.Count() + "</b>" )
+        </div>
   
     
-    {
-        int i = 0;      
-        foreach(var a in ea.Answers){
-            i++;
+        {
+            int i = 0;      
+            foreach(var a in ea.Answers){
+                i++;
             
-            <div class="myAnswer @if(i%2 == 0){@("greyBackground")}" @if(i == 1){@Html.Raw("style=\"border-top: 1px solid lightgrey;\"")} >
-                <div class="evalValue">
-                    <div class="evalValueBg">
-                        <span class="cleanValue">@((int)(a.GetAvgEvaluation()*100))</span>%
-                        <div style="font-size: 11px; line-height: 11px">@(a.Evaluations.Count()) hod.</div>
+                <div class="myAnswer @if(i%2 == 0){@("greyBackground")}" @if(i == 1){@Html.Raw("style=\"border-top: 1px solid lightgrey;\"")} >
+                    <div class="evalValue">
+                        <div class="evalValueBg">
+                            <span class="cleanValue">@((int)(a.GetAvgEvaluation()*100))</span>%
+                            <div style="font-size: 11px; line-height: 11px">@(a.Evaluations.Count()) hod.</div>
+                        </div>
                     </div>
-                </div>
 
-                <b style="float:left; width: 60px; margin-left: 5px;"> Otázka: </b> 
-                <div class="elipsis">@(a.Question.QuestionText)</div>
-               <b style="float:left; width: 80px;margin-left: 5px;"> Odpoveď: </b> 
-                <div class="elipsis">@(a.Text)</div>
-                <input type="hidden" value="@(a.Question.QuestionText)" name="que" class="que" />
-                <input type="hidden" value="@(a.Text)" name="ans" class="ans" />
-                <input type="hidden" value="@(a.Evaluations.Count())" name="count" class="count" />
-                <div class="detail btn" title="Zobraziť detail">
-                    ››
-                </div>
-                <div style="clear:both"></div>
-             </div>
+                    <b style="float:left; width: 60px; margin-left: 5px;"> Otázka: </b> 
+                    <div class="elipsis">@(a.Question.QuestionText)</div>
+                   <b style="float:left; width: 80px;margin-left: 5px;"> Odpoveď: </b> 
+                    <div class="elipsis">@(a.Text)</div>
+                    <input type="hidden" value="@(a.Question.QuestionText)" name="que" class="que" />
+                    <input type="hidden" value="@(a.Text)" name="ans" class="ans" />
+                    <input type="hidden" value="@(a.Evaluations.Count())" name="count" class="count" />
+                    <div class="detail btn" title="Zobraziť detail">
+                        ››
+                    </div>
+                    <div style="clear:both"></div>
+                 </div>
+            }
         }
-    }
     
     
-    <div id="dialog" title="Detail odpovede">
-        <div class="dialogQaText" id="que"></div>
-        <div class="dialogQaText" id="ans"> </div>
-        <div class="sliderWrap">
-            <div id="textValue"> </div>
-            <div class="ui-widget-content-wrapper" style="width: 100%;">
-                <div class="slider-range" ></div>
-            </div> 
-        </div>
-        <div style="clear: both"></div>
-        <div style="text-align: center; width: 100%"> Počet hodnotení odpovede: <b id="evalsCount">12</b></div>
+        <div id="dialog" title="Detail odpovede">
+            <div class="dialogQaText" id="que"></div>
+            <div class="dialogQaText" id="ans"> </div>
+            <div class="sliderWrap">
+                <div id="textValue"> </div>
+                <div class="ui-widget-content-wrapper" style="width: 100%;">
+                    <div class="slider-range" ></div>
+                </div> 
+            </div>
+            <div style="clear: both"></div>
+            <div style="text-align: center; width: 100%"> Počet hodnotení odpovede: <b id="evalsCount">12</b></div>
         
-    </div>
+        </div>
+    }
 }
 
 @section Scripts{

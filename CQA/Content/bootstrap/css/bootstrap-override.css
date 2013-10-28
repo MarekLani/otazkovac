@@ -73,6 +73,7 @@
 .dropdown-menu li > a:focus,
 .dropdown-submenu:hover > a {
 	background: #333333;
+	color: white !important;
 }
 
 .nav li
@@ -91,6 +92,11 @@
     top: 0;
     visibility: hidden;
     margin-top: -1px;
+}
+
+.dropdown-menu>li>a
+{
+	color: #333333 !important;
 }
 
 .dropdown-menu li:hover .sub-menu {
