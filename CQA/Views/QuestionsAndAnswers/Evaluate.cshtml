@@ -34,6 +34,7 @@
         {
             HttpMethod = "POST",
             Url = Url.Action("CreateEvaluation", "QuestionsAndAnswers"),
+            OnBegin = "CreateActivityLogData()",
             OnSuccess = "EvaluationCreated(data)"
         },
         new { autocomplete = "off" }))
@@ -97,11 +98,34 @@
 
        jQuery('#widget').draggable();
        jQuery(document).ready(function ($) {
+           
+           var start = new Date();
+           var totalIdle = 0;
+           var idleTime = 0;
+
+           function CreateActivityLogData()
+           {
+               //Set hidden fields in form for this values
+               elapsed = new Date() - start;
+               //set totalIdle
+           }
+
+
+           //Counting total idle time
+           setInterval(function(){
+               idleTime += 100
+           }, 100);
+           //Zero the idle timer on mouse movement.
+           $(this).mousemove(function (e) {
+               totalIdle += idleTime;
+               idleTime = 0;
+           });
+           $(this).keypress(function (e) {
+               totalIdle += idleTime;
+               idleTime = 0;
+           });
+
            $("#MenuSetupItem"+@(Model.Question.SetupId)).addClass("activeMenuItem");
-
-        })
-
-       jQuery(function ($) {
 
            $(".slider-range").each(function () { $(this).trigger('mySliderTrigger') })
                $(".slider-range").slider({
