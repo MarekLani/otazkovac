@@ -28,10 +28,9 @@ namespace CQA.Models
     {
         Evaluation = 1,
         Answering,
-        ViewedHintWhenAnswering,
-        ViewedHintWhenEvaluating,
         SkippedAnswering,
-        SkippedEvaluation
-
+        SkippedEvaluation,
+        ViewedHintWhenAnswering,
+        ViewedHintWhenEvaluating
     }
 }

@@ -97,9 +97,9 @@ else{
             val = parseFloat(val.replace(/\s/g, "").replace(",", "."));
             $(".slider-range").slider('value', val);
             $("#que").html("<b>Otázka: </b>");
-            $("#ans").html("<b>Odpoveď: </b>");
             $("#que").append($(this).siblings(".que").val());
-            $("#ans").append($(this).siblings(".ans").val());
+            $("#ans").text($(this).siblings(".ans").val());
+            $("#ans").prepend("<b>Odpoveď: </b>");
             $("#evalsCount").text($(this).siblings(".count").val());
             setSlider(val)
         });
@@ -108,10 +108,10 @@ else{
             var val = $(this).children(".evalValue").children(".evalValueBg").children(".cleanValue").text();
             val = parseFloat(val.replace(/\s/g, "").replace(",", "."));
             $(".slider-range").slider('value', val);
-            $("#que").html("<b>Otázka: </b>");
-            $("#ans").html("<b>Odpoveď: </b>");
+            $("#que").html("<b>Otázka: </b>"); 
             $("#que").append($(this).children(".que").val());
-            $("#ans").append($(this).children(".ans").val());
+            $("#ans").text($(this).children(".ans").val());
+            $("#ans").prepend("<b>Odpoveď: </b>");
             $("#evalsCount").text($(this).children(".count").val());
             setSlider(val)
             

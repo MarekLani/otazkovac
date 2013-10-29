@@ -12,7 +12,18 @@
 <div class="question">
     
     <div id="questionText"> <span style="font-size: 0.85em; font-weight:bold">Otázka: </span> @Html.DisplayFor(model => model.Question.QuestionText) </div>
+    @if (Model.Question.Hint != null)
+    {
 
+        <div id="hint"> @Ajax.ActionLink("Napovedať", "GetHint", "QuestionsAndAnswers", new { objectId = Model.AnswerId, evaluating=true }, new AjaxOptions
+                    {
+                        OnSuccess = "showHint(data)",
+                        HttpMethod = "GET"
+                    },
+                    new { @class = "btn" })        
+        </div>
+
+    }
 </div>
 <div class="answer"> 
   <div id="answerText"> <span style="font-size: 0.85em; font-weight:bold">Odpoveď: </span>@Html.DisplayFor(model => model.Text)</div>
@@ -23,7 +34,7 @@
         {
             HttpMethod = "POST",
             Url = Url.Action("CreateEvaluation", "QuestionsAndAnswers"),
-           // OnBegin = "CreateActivityLogData()",
+            OnBegin = "CreateActivityLogData()",
             OnSuccess = "EvaluationCreated(data)"
         },
         new { autocomplete = "off" }))
@@ -58,6 +69,8 @@
             <button type="submit" id="submit" class="btn btn-primary">Ohodnotiť</button>   
         }
     </div>
+ 
+
 
 @section Scripts {
 
@@ -65,48 +78,52 @@
     @Scripts.Render("~/bundles/jqueryui")
     @Scripts.Render("~/Scripts/jquery.ui.touch-punch.min.js")
 
+
+   <script src="~/Scripts/AnswerAndEvaluateCommon.js"></script>  
    <script>
        function EvaluationCreated(data)
        {
            $("#crowdEvaluationText").html("Odpoveď davu z " + data.evalsCount+" hodnotení")
            $("#crowdSliderWrap").css("margin-left", data.avgEval*100-6 + "%");
            $(".slider-range").slider('disable');
+           $("#hint").fadeOut;
            $("#crowdEvaluation").fadeIn();
            $("#newAnswer").fadeOut();
            $("#next").fadeIn(); 
            $('#submit').attr('disabled', 'disabled');
            $(".alert").fadeIn();
           
+           //TODO move crowd slider and display it
        }
 
        jQuery('#widget').draggable();
        jQuery(document).ready(function ($) {
            
-           //******** Activity logging sectio *********
-           //var start = new Date();
-           //var totalIdle = 0;
-           //var idleTime = 0;
+           var start = new Date();
+           var totalIdle = 0;
+           var idleTime = 0;
 
-           //function CreateActivityLogData()
-           //{
-           //    //Set hidden fields in form for this values
-           //    elapsed = new Date() - start;
-           //    //set totalIdle
-           //}
+           function CreateActivityLogData()
+           {
+               //Set hidden fields in form for this values
+               elapsed = new Date() - start;
+               //set totalIdle
+           }
 
-           ////Counting total idle time
-           //setInterval(function(){
-           //    idleTime += 100
-           //}, 100);
-           ////Zero the idle timer on mouse movement.
-           //$(this).mousemove(function (e) {
-           //    totalIdle += idleTime;
-           //    idleTime = 0;
-           //});
-           //$(this).keypress(function (e) {
-           //    totalIdle += idleTime;
-           //    idleTime = 0;
-           //});
+
+           //Counting total idle time
+           setInterval(function(){
+               idleTime += 100
+           }, 100);
+           //Zero the idle timer on mouse movement.
+           $(this).mousemove(function (e) {
+               totalIdle += idleTime;
+               idleTime = 0;
+           });
+           $(this).keypress(function (e) {
+               totalIdle += idleTime;
+               idleTime = 0;
+           });
 
            $("#MenuSetupItem"+@(Model.Question.SetupId)).addClass("activeMenuItem");
 

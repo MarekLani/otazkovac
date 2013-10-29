@@ -1111,6 +1111,38 @@ tr.pager td {
 	height: 40px;
 }
 
+@media (max-width: 979px)
+{
+	.elipsis
+	{
+		width: 30%;
+	}
+}
+
+@media (max-width: 700px)
+{
+	.elipsis
+	{
+		width: 25%;
+	}
+}
+
+@media (max-width: 600px)
+{
+	.elipsis
+	{
+		width: 20%;
+	}
+}
+
+@media (max-width: 500px)
+{
+	.elipsis
+	{
+		width: 10%;
+	}
+}
+
 .myAnswer .detail
 {
 	float: right;

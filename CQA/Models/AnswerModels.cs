@@ -61,10 +61,16 @@ namespace CQA.Models
         [HiddenInput(DisplayValue = false)]
         public int QuestionId { get; set; }
 
+        private string _text = "";
+        [AllowHtml]
         [DataType(DataType.MultilineText)]
         [DisplayName("Vaša odpoveď:")]
         [Required(ErrorMessageResourceType = typeof(ErrorStrings), ErrorMessageResourceName = "Required")]
-        public string Text { get; set; }
+        public string Text
+        {
+            get { return HttpUtility.HtmlEncode(_text); }
+            set { _text = value; }
+        }
 
     }
 

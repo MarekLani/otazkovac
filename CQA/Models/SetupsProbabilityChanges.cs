@@ -13,5 +13,15 @@ namespace CQA.Models
         public virtual Setup Setup { get; set; }
 
         public int Value { get; set; }
+
+        public static void CreateSetupsProbabilityChange(int setupId, int value)
+        {
+            SetupsProbabilityChange spc = new SetupsProbabilityChange();
+            spc.SetupId = setupId;
+            spc.Value = value;
+            CQADBContext db = new CQADBContext();
+            db.SetupsProbabilityChanges.Add(spc);
+            db.SaveChanges();
+        }
     }
 }

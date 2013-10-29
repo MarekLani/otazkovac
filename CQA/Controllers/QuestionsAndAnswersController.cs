@@ -24,6 +24,7 @@ namespace CQA.Controllers
         private CQADBContext db = new CQADBContext();
 
         [HttpPost]
+        [ValidateInput(false)]
         public ActionResult CreateAnswer(int questionId, string text)
         {
             if (ModelState.IsValid)
@@ -33,14 +34,13 @@ namespace CQA.Controllers
                 if (db.Answers.Where(a => a.QuestionId == questionId && a.UserId == WebSecurity.CurrentUserId).Any())
                 {
                     ModelState.AddModelError("", "Na otázku ste už odpovedali");
-                    Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                    return Json(false);
+                    return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest);
                 }
 
                 var answer = new Answer();
                 answer.UserId = WebSecurity.CurrentUserId;
                 answer.QuestionId = questionId;
-                answer.Text = text;
+                answer.Text = HttpUtility.HtmlDecode(text);
                 db.Answers.Add(answer);
                 db.SaveChanges();
 
@@ -53,43 +53,9 @@ namespace CQA.Controllers
             }
             else
             {
-                Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                return Json(false);
+                return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest);
             }
-        }
-
-        [HttpGet]
-        public ActionResult GetHint(int objectId, bool evaluating)
-        {
-            if (!evaluating)
-            {
-                Question q = db.Questions.Find(objectId);
-                if (q != null && q.Hint != null)
-                {
-
-                    if (!db.UsersActions.Where(usa => usa.UserId == WebSecurity.CurrentUserId && usa.QuestionId == objectId).Any())
-                    {
-                        UserMadeAction(UserActionType.ViewedHintWhenAnswering, 0, objectId);
-                    }
-
-                    return Json(new { Hint = db.Questions.Find(objectId).Hint }, JsonRequestBehavior.AllowGet);
-                }
-            }
-            else
-            {
-                Answer a = db.Answers.Find(objectId);
-                if (a != null && a.Question.Hint != null)
-                {
-                    UserMadeAction(UserActionType.ViewedHintWhenEvaluating, objectId, 0);
-                }
-                    
-                return Json(new { Hint = db.Questions.Find(objectId).Hint }, JsonRequestBehavior.AllowGet);
-            }
-
-            Response.StatusCode = (int)HttpStatusCode.BadRequest;
-            return Json(false, JsonRequestBehavior.AllowGet);
-            
-        }
+        }  
 
         [HttpPost]
         public ActionResult CreateEvaluation(int answerId, int value)
@@ -101,8 +67,7 @@ namespace CQA.Controllers
                 if (db.Ratings.Where(a => a.AnswerId == answerId && a.UserId == WebSecurity.CurrentUserId).Any())
                 {
                     ModelState.AddModelError("", "Odpoveď ste už hodnotili");
-                    Response.StatusCode = (int)HttpStatusCode.BadRequest;
-                    return Json(false);
+                    return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest);
                 }
 
                 var e = new Evaluation();
@@ -131,9 +96,42 @@ namespace CQA.Controllers
                 return Json(new {avgEval = answer.GetAvgEvaluation(), evalsCount = answer.Evaluations.Count()} );
             }
 
-            Response.StatusCode = (int)HttpStatusCode.BadRequest;
-            return Json(false);
+            return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest);
         }
+
+        //GetHint - not being used
+        //[HttpGet]
+        //public ActionResult GetHint(int objectId, bool evaluating)
+        //{
+        //    if (!evaluating)
+        //    {
+        //        Question q = db.Questions.Find(objectId);
+        //        if (q != null && q.Hint != null)
+        //        {
+
+        //            if (!db.UsersActions.Where(usa => usa.UserId == WebSecurity.CurrentUserId && usa.QuestionId == objectId).Any())
+        //            {
+        //                UserMadeAction(UserActionType.ViewedHintWhenAnswering, 0, objectId);
+        //            }
+
+        //            return Json(new { Hint = db.Questions.Find(objectId).Hint }, JsonRequestBehavior.AllowGet);
+        //        }
+        //    }
+        //    else
+        //    {
+        //        Answer a = db.Answers.Find(objectId);
+        //        if (a != null && a.Question.Hint != null)
+        //        {
+        //            UserMadeAction(UserActionType.ViewedHintWhenEvaluating, objectId, 0);
+        //        }
+
+        //        return Json(new { Hint = db.Questions.Find(objectId).Hint }, JsonRequestBehavior.AllowGet);
+        //    }
+
+        //    Response.StatusCode = (int)HttpStatusCode.BadRequest;
+        //    return Json(false, JsonRequestBehavior.AllowGet);
+
+        //}
 
         /// <summary>
         /// Finds and update/creates new record of viewed question by user
@@ -189,6 +187,12 @@ namespace CQA.Controllers
         [HttpGet]
         public ActionResult AnswerAndEvaluate(int setupId, int skippedAnsId = 0, int skippedQueId = 0)
         {
+            //check if setup is active
+            if (!db.Setups.Find(setupId).Active)
+            {
+                return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest);
+            }
+
             //Do not allow user to change answered question or evaluated answer by refresh
             if (Session != null && Session["SetupId"] != null && (int)Session["SetupId"] == setupId)
             {
@@ -311,14 +315,14 @@ namespace CQA.Controllers
             //Step 1 take active questions which user has not answered yet
             var tempQuestions = db.Questions.Where( q => !q.Answers.Where(r => r.UserId == WebSecurity.CurrentUserId).Any() &&
                 q.IsActive &&
-                q.SetupId == setupId).OrderByDescending(q => q.Answers.Count()).ToList();
+                q.SetupId == setupId).OrderBy(q => q.Answers.Count()).ToList();
 
             if (tempQuestions.Any())
             {
                 //Step2 Check if there are questions to be answered, which have not been seen by current user in last two days
                 //TODO check if the order of questions stays as it was
                 var questions = tempQuestions.Where(q => q.QuestionViews.Where(qv => qv.UserId == WebSecurity.CurrentUserId)
-                    .DefaultIfEmpty(defaultQuestionView).Single().ViewDate.AddDays(2) < DateTime.Now).OrderByDescending(q => q.Answers.Count()).ToList();
+                    .DefaultIfEmpty(defaultQuestionView).Single().ViewDate.AddDays(2) < DateTime.Now).ToList();
                 
                 //Step3 if there are no questions from step2 we have to ignore 2 days rule
                 if (!questions.Any())
@@ -355,8 +359,8 @@ namespace CQA.Controllers
 
         public ActionResult SkipEvaluation(int answerId, int setupId)
         {
-            UserMadeAction(UserActionType.SkippedAnswering, answerId, 0);
-            RemoveHandledObjectFromSession(false);
+            UserMadeAction(UserActionType.SkippedEvaluation, answerId, 0);
+            RemoveHandledObjectFromSession(true);
             return RedirectToAction("AnswerAndEvaluate", new { setupId = setupId, skippedAnsId = answerId });
         }
 
@@ -397,12 +401,6 @@ namespace CQA.Controllers
                 Session.Remove("QuestionId");
             }
 
-        }
-
-        public ActionResult MyEvaluatedAnswers()
-        {
-            var Answers = db.Answers.Where(a => a.SeenEvaluation != null && a.UserId == WebSecurity.CurrentUserId);
-            return View(Answers);
         }
 
         protected override void Dispose(bool disposing)

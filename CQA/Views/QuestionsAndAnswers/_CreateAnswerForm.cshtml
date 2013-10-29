@@ -16,6 +16,7 @@
         </div>
         <div class="editor-field">
             @Html.TextAreaFor(model => model.Text, new { @class= "questionText", autocomplete="off" })
+            @Html.ValidationMessageFor(model => model.Text)
         </div>
         <div style="text-align:center">
             <a href="@Url.Action("SkipAnswer", new { questionId = Model.QuestionId })" id="skip" class="btn">Preskočiť</a>

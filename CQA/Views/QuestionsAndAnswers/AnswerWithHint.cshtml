@@ -15,6 +15,16 @@
     <div id="questionText">
         <span style="font-size: 0.85em; font-weight:bold">Otázka: </span>
         @Html.DisplayFor(model => model.QuestionText)
+        @if (Model.Hint != null)
+        {
+            <div id="hint"> @Ajax.ActionLink("Napovedať", "GetHint", "QuestionsAndAnswers", new { objectId = Model.QuestionId, evaluating=false }, new AjaxOptions
+                       {
+                           OnSuccess = "showHint(data)",
+                           HttpMethod = "GET"
+                       },
+                       new { @class = "btn" })        
+            </div>
+        }
     </div>
 </div>
 
@@ -30,6 +40,8 @@
 @section Scripts {
 
     @Scripts.Render("~/bundles/jqueryval")
+
+    <script src="~/Scripts/AnswerAndEvaluateCommon.js"></script>   
         <script>
             jQuery(document).ready(function ($) {
                 $("#MenuSetupItem"+@(Model.SetupId)).addClass("activeMenuItem")
@@ -44,4 +56,5 @@
                 $(".alert").fadeIn();              
             }
     </script>
+    <script src="~/Scripts/AnswerAndEvaluateCommon.js"></script>
 }

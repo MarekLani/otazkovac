@@ -49,16 +49,16 @@ namespace CQA.Controllers
                 try
                 {
 
-                    string sDomain = String.Format("LDAP://ldap.stuba.sk:389/uid={0},ou=People,dc=stuba,dc=sk",model.UserName);
-                    string sServiceUser = "uid="+model.UserName+",ou=People,dc=stuba,dc=sk";
+                    string sDomain = String.Format("LDAP://ldap.stuba.sk:389/uid={0},ou=People,dc=stuba,dc=sk", model.UserName);
+                    string sServiceUser = "uid=" + model.UserName + ",ou=People,dc=stuba,dc=sk";
                     string sServicePassword = model.Password;
                     DirectoryEntry de = new DirectoryEntry(sDomain, sServiceUser, sServicePassword, AuthenticationTypes.None);
                     DirectorySearcher ds = new DirectorySearcher(de);
                     ds.Filter = "(&" +
-                                 "(uid=" + model.UserName +")" +
+                                 "(uid=" + model.UserName + ")" +
                                   ")";
-                    
- 
+
+
                     SearchResult sr = ds.FindOne();
 
 
@@ -86,7 +86,7 @@ namespace CQA.Controllers
                         }
                         catch { }
                     }
-                   
+
                 }
                 catch (MembershipCreateUserException e)
                 {
@@ -97,8 +97,8 @@ namespace CQA.Controllers
                     ModelState.AddModelError("", "Nesprávne meno alebo heslo");
                     return View(model);
                 }
-                // Using Hack with password, because we really do not need it
 
+                // Using Hack with password, because we really do not need it
                 //If user was not logged before
                 if (!db.UserProfiles.Where(u => u.UserName == model.UserName).Any())
                     WebSecurity.CreateUserAndAccount(model.UserName, "pass", new { RealName = firstName + surName });

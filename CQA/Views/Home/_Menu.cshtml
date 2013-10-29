@@ -3,7 +3,7 @@
         <div class="navbar navbar-fixed-top">
             <div class="navbar-inner">
                 <div class="container">
-                    <img class="brand brand-bootbus" style="margin-top: -6px" src="~/Images/crane_logo.png" />
+                    <img class="brand brand-bootbus" style="margin-top: -6px; margin-right: 5px;" src="~/Images/crane_logo.png" />
                     <!-- Below button used for responsive navigation -->
                     <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
                         <span class="icon-bar"></span>
@@ -33,10 +33,10 @@
                                       <a href="#" class="dropdown-toggle" data-toggle="dropdown">Admin<b class="caret"></b></a>
                                       <ul class="dropdown-menu">
                                         <li>@Html.ActionLink("Predmety", "Index", "Subjects")</li>
-                                        <li>@Html.ActionLink("Administrátori", "AddAdmin", "Users")</li>
-                                        @if(Model.SubjectsNotEmpty){
+                                           @if(Model.SubjectsNotEmpty){
                                             <li>@Html.ActionLink("Setups", "Index", "Setups")</li>
                                           }
+                                        <li>@Html.ActionLink("Administrátori", "AddAdmin", "Users")</li>
                                       </ul>
                                     </li>
                                     

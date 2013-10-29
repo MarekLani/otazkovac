@@ -192,9 +192,9 @@
     <Compile Include="Controllers\SetupsController.cs" />
     <Compile Include="Controllers\SubjectsController.cs" />
     <Compile Include="Controllers\UsersController.cs" />
-    <Compile Include="Migrations\201310251848222_initialMigration.cs" />
-    <Compile Include="Migrations\201310251848222_initialMigration.Designer.cs">
-      <DependentUpon>201310251848222_initialMigration.cs</DependentUpon>
+    <Compile Include="Migrations\201310291729401_InitialMigration.cs" />
+    <Compile Include="Migrations\201310291729401_InitialMigration.Designer.cs">
+      <DependentUpon>201310291729401_InitialMigration.cs</DependentUpon>
     </Compile>
     <Compile Include="Models\DateCreatedModel.cs" />
     <Compile Include="Models\MyConsts.cs" />
@@ -331,14 +331,8 @@
     <Content Include="Content\themes\base\minified\jquery.ui.tooltip.min.css" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
-    <Content Include="Images\banner12sharp.jpg" />
-    <Content Include="Images\banner2.png" />
     <Content Include="Images\crane_logo.png" />
-    <Content Include="Images\favouriteIcon.png" />
-    <Content Include="Images\favouriteIconIn.png" />
-    <Content Include="Images\logo.png" />
     <Content Include="Images\Nothing_2479d8_2822723.gif" />
-    <Content Include="Images\placeholder-360x200.jpg" />
     <Content Include="Images\thumbDown.png" />
     <Content Include="Images\thumbUp.png" />
     <Content Include="Images\zoomIcon.png" />
@@ -382,18 +376,6 @@
     <Content Include="Content\Site.css" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Images\accent.png" />
-    <Content Include="Images\bullet.png" />
-    <Content Include="Images\heroAccent.png" />
-    <Content Include="Images\orderedList0.png" />
-    <Content Include="Images\orderedList1.png" />
-    <Content Include="Images\orderedList2.png" />
-    <Content Include="Images\orderedList3.png" />
-    <Content Include="Images\orderedList4.png" />
-    <Content Include="Images\orderedList5.png" />
-    <Content Include="Images\orderedList6.png" />
-    <Content Include="Images\orderedList7.png" />
-    <Content Include="Images\orderedList8.png" />
-    <Content Include="Images\orderedList9.png" />
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Account\_ChangePasswordPartial.cshtml" />
     <Content Include="Views\Account\_ExternalLoginsListPartial.cshtml" />
@@ -441,6 +423,8 @@
     <Content Include="Views\Users\AddAdmin.cshtml" />
     <Content Include="Views\Users\EvaluatedAnswers.cshtml" />
     <Content Include="Views\QuestionsAndAnswers\NothingToDoHere.cshtml" />
+    <Content Include="Views\QuestionsAndAnswers\EvaluateWithHint.cshtml" />
+    <Content Include="Views\QuestionsAndAnswers\AnswerWithHint.cshtml" />
     <None Include="Web.Production.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -455,8 +439,8 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201310251848222_initialMigration.resx">
-      <DependentUpon>201310251848222_initialMigration.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201310291729401_InitialMigration.resx">
+      <DependentUpon>201310291729401_InitialMigration.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\ErrorStrings.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>

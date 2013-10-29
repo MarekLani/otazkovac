@@ -5,13 +5,13 @@ namespace CQA.Migrations
     using System.Data.Entity.Migrations.Infrastructure;
     using System.Resources;
     
-    public sealed partial class initialMigration : IMigrationMetadata
+    public sealed partial class InitialMigration : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(initialMigration));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(InitialMigration));
         
         string IMigrationMetadata.Id
         {
-            get { return "201310251848222_initialMigration"; }
+            get { return "201310291729401_InitialMigration"; }
         }
         
         string IMigrationMetadata.Source

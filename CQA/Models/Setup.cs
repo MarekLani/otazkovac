@@ -9,14 +9,14 @@ using System.Web;
 
 namespace CQA.Models
 {
-    public class Setup //: DateCreatedModel  //INotifyPropertyChanged
+    public class Setup : DateCreatedModel //: INotifyPropertyChanged
     {
-        public event PropertyChangedEventHandler PropertyChanged;
-        private bool isDirty = false;
+        //public event PropertyChangedEventHandler PropertyChanged;
 
-        public Setup(){
-            
-        }
+        //public Setup()
+        //{
+        //    this.PropertyChanged += new PropertyChangedEventHandler(CreateSetupsProbabilityChange);
+        //}
 
         [Key]
         [DatabaseGeneratedAttribute(DatabaseGeneratedOption.Identity)]
@@ -34,7 +34,7 @@ namespace CQA.Models
         [DisplayName("Meno predmetu")]
         public virtual Subject Subject { get; set; }
         
-        private int _answeringProbability;
+        private int _answeringProbability = 0;
         [DisplayName("Počet hodnotení na jednu odpoveď")]
         [Required]
         [Range(1, 50)]
@@ -43,40 +43,25 @@ namespace CQA.Models
             get { return _answeringProbability; }
             set {
                 _answeringProbability = value;
-                if (isDirty)
-                    OnPropertyChanged("AnsweringProbability");
-                else
-                    isDirty = true;
+                //OnPropertyChanged("AnsweringProbability"); 
             } 
         }
         public virtual ICollection<Question> Questions { get; set; }
-
         public virtual ICollection<UsersSetup> UsersSetups { get; set; }
-
-        public virtual ICollection<SetupsStatistics> SetupsStatistics { get; set; }
-
+        //not needed right now
+        //public virtual ICollection<SetupsStatistics> SetupsStatistics { get; set; }
         public virtual ICollection<SetupsProbabilityChange> SetupsProbabilityChanges { get; set; }
 
 
         // Create the OnPropertyChanged method to raise the event 
-        protected void OnPropertyChanged(string name)
-        {
-            PropertyChangedEventHandler handler = PropertyChanged;
-            if (handler != null)
-            {
-                handler(this, new PropertyChangedEventArgs(name));
-            }
-        }
+        //protected void OnPropertyChanged(string name)
+        //{
+        //    PropertyChangedEventHandler handler = PropertyChanged;
+        //    if (handler != null)
+        //    {
+        //        handler(this, new PropertyChangedEventArgs(name));
+        //    }
+        //}
 
-        public void CreateSetupsProbabilityChange()
-        {
-            SetupsProbabilityChange spc = new SetupsProbabilityChange();
-            spc.Setup = this;
-            spc.Value = this.AnsweringProbability;
-            CQADBContext db = new CQADBContext();
-            db.Entry(this).State = EntityState.Modified;
-            db.SetupsProbabilityChanges.Add(spc);
-            db.SaveChanges();
-        }
     }
 }

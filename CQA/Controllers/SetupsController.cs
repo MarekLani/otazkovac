@@ -46,7 +46,10 @@ namespace CQA.Controllers
         public ActionResult Create()
         {
             ViewBag.SubjectId = new SelectList(db.Subjects, "SubjectId", "Name");
-            return View();
+            Setup s = new Setup();
+            s.AnsweringProbability = 10;
+            s.Active = true;
+            return View(s);
         }
 
         //
@@ -86,10 +89,18 @@ namespace CQA.Controllers
         [HttpPost]
         public ActionResult Edit(Setup setup)
         {
+            Setup original = db.Setups.Find(setup.SetupId);
             if (ModelState.IsValid)
-            {                
-                db.Entry(setup).State = EntityState.Modified;
+            {
+                int originValue = original.AnsweringProbability;
+
+                setup.DateCreated = original.DateCreated;
+                db.Entry(original).CurrentValues.SetValues(setup);
                 db.SaveChanges();
+
+                if (setup.AnsweringProbability != originValue)
+                    SetupsProbabilityChange.CreateSetupsProbabilityChange(setup.SetupId,setup.AnsweringProbability);
+
                 return RedirectToAction("Index");
             }
             ViewBag.SubjectId = new SelectList(db.Subjects, "SubjectId", "Name", setup.SubjectId);

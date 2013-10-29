@@ -3,7 +3,7 @@ namespace CQA.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class initialMigration : DbMigration
+    public partial class InitialMigration : DbMigration
     {
         public override void Up()
         {
@@ -57,6 +57,7 @@ namespace CQA.Migrations
                         Active = c.Boolean(nullable: false),
                         SubjectId = c.Int(nullable: false),
                         AnsweringProbability = c.Int(nullable: false),
+                        DateCreated = c.DateTime(),
                     })
                 .PrimaryKey(t => t.SetupId)
                 .ForeignKey("dbo.Subjects", t => t.SubjectId, cascadeDelete: true)
@@ -85,20 +86,6 @@ namespace CQA.Migrations
                 .ForeignKey("dbo.UserProfile", t => t.UserId, cascadeDelete: true)
                 .Index(t => t.SetupId)
                 .Index(t => t.UserId);
-            
-            CreateTable(
-                "dbo.SetupsStatistics",
-                c => new
-                    {
-                        SetupsStatisticsId = c.Int(nullable: false, identity: true),
-                        SetupId = c.Int(nullable: false),
-                        AnswersCount = c.Int(nullable: false),
-                        EvaluatedAnswersForUsersCount = c.Int(nullable: false),
-                        FullyEvaluatedAnswersCount = c.Int(nullable: false),
-                    })
-                .PrimaryKey(t => t.SetupsStatisticsId)
-                .ForeignKey("dbo.Setups", t => t.SetupId, cascadeDelete: true)
-                .Index(t => t.SetupId);
             
             CreateTable(
                 "dbo.SetupsProbabilityChanges",
@@ -210,7 +197,6 @@ namespace CQA.Migrations
             DropIndex("dbo.Answers", new[] { "UserId" });
             DropIndex("dbo.Answers", new[] { "QuestionId" });
             DropIndex("dbo.SetupsProbabilityChanges", new[] { "SetupId" });
-            DropIndex("dbo.SetupsStatistics", new[] { "SetupId" });
             DropIndex("dbo.UsersSetups", new[] { "UserId" });
             DropIndex("dbo.UsersSetups", new[] { "SetupId" });
             DropIndex("dbo.Setups", new[] { "SubjectId" });
@@ -229,7 +215,6 @@ namespace CQA.Migrations
             DropForeignKey("dbo.Answers", "UserId", "dbo.UserProfile");
             DropForeignKey("dbo.Answers", "QuestionId", "dbo.Questions");
             DropForeignKey("dbo.SetupsProbabilityChanges", "SetupId", "dbo.Setups");
-            DropForeignKey("dbo.SetupsStatistics", "SetupId", "dbo.Setups");
             DropForeignKey("dbo.UsersSetups", "UserId", "dbo.UserProfile");
             DropForeignKey("dbo.UsersSetups", "SetupId", "dbo.Setups");
             DropForeignKey("dbo.Setups", "SubjectId", "dbo.Subjects");
@@ -242,7 +227,6 @@ namespace CQA.Migrations
             DropTable("dbo.Evaluations");
             DropTable("dbo.Answers");
             DropTable("dbo.SetupsProbabilityChanges");
-            DropTable("dbo.SetupsStatistics");
             DropTable("dbo.UsersSetups");
             DropTable("dbo.Subjects");
             DropTable("dbo.Setups");
