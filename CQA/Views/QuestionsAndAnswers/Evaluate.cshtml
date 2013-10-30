@@ -23,7 +23,6 @@
         {
             HttpMethod = "POST",
             Url = Url.Action("CreateEvaluation", "QuestionsAndAnswers"),
-           // OnBegin = "CreateActivityLogData()",
             OnSuccess = "EvaluationCreated(data)"
         },
         new { autocomplete = "off" }))
@@ -61,9 +60,9 @@
 
 @section Scripts {
 
-    <script type="text/javascript" src="/Scripts/jquery.unobtrusive-ajax.min.js"></script>
     @Scripts.Render("~/bundles/jqueryui")
     @Scripts.Render("~/Scripts/jquery.ui.touch-punch.min.js")
+    @Scripts.Render("~/Scripts/jquery.unobtrusive-ajax.min.js")
 
    <script>
        function EvaluationCreated(data)
