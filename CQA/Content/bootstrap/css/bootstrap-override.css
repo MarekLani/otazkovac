@@ -21,7 +21,7 @@
 	border-bottom: 1px #183867 solid;*/
 	/*height:70px !important;*/
 }
-.navbar-inner, footer {
+.navbar-inner {
   border: none;
   line-height: 40px;
   background: url('../img/header-footer.png');
@@ -346,10 +346,6 @@
 }
 .form-contact-us textarea {
   height: 100px;
-}
-footer {
-  color: white;
-  padding-top: 20px;
 }
 .quick-links {
   list-style: none;

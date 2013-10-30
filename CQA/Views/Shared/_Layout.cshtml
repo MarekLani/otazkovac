@@ -30,6 +30,12 @@
                 link.css('background-color', "#2E3436");
                 link.css('color', 'white');
             });
+
+            var acc = "crane.fiit"
+            var prov = "gmail";
+            
+            $("footer").children("a").attr("href", "mailto:" + acc + "@@" + prov + ".com?Subject=Feedback")
+            $("#eadd").text(acc + "@@" + prov + ".com")
             /*End: Prevent the default white background on blur of top navigation */
             
         });
@@ -53,6 +59,6 @@
 
 
     
-    
+  <footer>Našli ste chybu alebo máte návrhy na zlepšenie, pošlite nám email na: <a href="#"><span id="eadd"><noscript>Musíte mať povolený javascript</noscript></span></a></footer>  
 </body>
 </html>

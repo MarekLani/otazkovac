@@ -49,7 +49,7 @@ td
 	font-size: 16px;
 }
 
-header, footer, hgroup,
+header, hgroup,
 nav, section {
     display: block;
 }
@@ -154,12 +154,6 @@ a.logo
      text-indent: -9999px; /* hides the link text */
 }
 
-footer {
-    clear: both;
-    background-color: #e2e2e2;
-    font-size: .8em;
-    height: 100px;
-}
 
 
 /* site title
@@ -627,6 +621,46 @@ tr.pager td {
     padding: 0 0.25em 0 0;
 }
 
+ /* footer
+    ----------------------------------------------------------*/
+    footer .float-left,
+    footer .float-right {
+        float: none;
+    }
+
+    footer {
+        text-align: center;
+        height: auto;
+		line-height: 15px;
+        width: 100%;
+		position: fixed;
+		bottom: 0;
+		background: #333333;
+		color: white;
+		padding: 5px;
+    }
+
+        footer p {
+            margin: 0;
+        }
+
+		footer a
+		{
+			color: white;
+			font-weight:700
+		}
+
+			footer a:hover
+			{
+				color: white;
+			}
+
+			footer a:focus
+			{
+				color: white;
+			}
+
+
 
 /********************
 *   Mobile Styles   *
@@ -777,22 +811,6 @@ tr.pager td {
         width: auto;
     }
 
-    /* footer
-    ----------------------------------------------------------*/
-    footer .float-left,
-    footer .float-right {
-        float: none;
-    }
-
-    footer {
-        text-align: center;
-        height: auto;
-        padding: 10px 0;
-    }
-
-        footer p {
-            margin: 0;
-        }
 }
 
 

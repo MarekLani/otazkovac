@@ -151,6 +151,8 @@
                            $(".slider-range").slider('value',val-5);
                            $("#value").val(val-5);
                        }
+                       val = $("#value") 
+                       changeColorAndText(val);
                    }
                });
                $("#thumbUp").click(function(){
@@ -164,9 +166,34 @@
                            $(".slider-range").slider('value',val+5);
                            $("#value").val(val+5);
                        }
+                       val = $("#value") 
+                       changeColorAndText(val);
                    }
+
   
                });
+
+               function changeColorAndText(val){
+                   var el = $("#textValue");
+                   var hex = hexFromRGB(10, 10, val);
+                   if (val > 50) {
+                       $(".slider-range").parent().css("background", "rgba(22, 149, 49, " + (val - 50) * 2 / 100 + ")");
+                   }
+                   else {
+                       $(".slider-range").parent().css("background", "rgba(143, 20, 20, " + (50 - val) * 2 / 100 + ")");
+                   }
+                   var el = $("#textValue");
+                   if (val < 8)
+                       el.html("Úplne nesprávne")
+                   else if (val < 36)
+                       el.html("Takmer nesprávne")
+                   else if (val < 64)
+                       el.html("Čiastočne správne")
+                   else if (val < 92)
+                       el.html("Takmer správne")
+                   else el.html("Úplne správne");
+               }
+
            });
 
        function hexFromRGB(r, g, b) {
