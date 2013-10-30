@@ -151,8 +151,7 @@
                            $(".slider-range").slider('value',val-5);
                            $("#value").val(val-5);
                        }
-                       val = $("#value") 
-                       changeColorAndText(val);
+                       changeColorAndText();
                    }
                });
                $("#thumbUp").click(function(){
@@ -166,14 +165,14 @@
                            $(".slider-range").slider('value',val+5);
                            $("#value").val(val+5);
                        }
-                       val = $("#value") 
-                       changeColorAndText(val);
+                       changeColorAndText();
                    }
 
   
                });
 
-               function changeColorAndText(val){
+               function changeColorAndText(){
+                   var val = parseInt($("#value").val());
                    var el = $("#textValue");
                    var hex = hexFromRGB(10, 10, val);
                    if (val > 50) {
