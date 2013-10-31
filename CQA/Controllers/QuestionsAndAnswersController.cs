@@ -185,8 +185,24 @@ namespace CQA.Controllers
         }
 
         [HttpGet]
-        public ActionResult AnswerAndEvaluate(int setupId, int skippedAnsId = 0, int skippedQueId = 0)
+        public ActionResult AnswerAndEvaluate(int setupId)
         {
+
+            int skippedAnswerId = 0;
+            int skippedQuestionId = 0;
+
+            if (Session["SkippedQuestionId"] != null)
+            {
+                skippedQuestionId = (int)Session["SkippedQuestionId"];
+                Session.Remove("SkippedQuestionId");
+            }
+
+            if (Session["SkippedAnswerId"] != null)
+            {
+                skippedAnswerId = (int)Session["SkippedAnswerId"];
+                Session.Remove("SkippedAnswerId");
+            }
+
             //check if setup is active
             if (!db.Setups.Find(setupId).Active)
             {
@@ -263,10 +279,11 @@ namespace CQA.Controllers
                                     .DefaultIfEmpty(defaultQuestionView).Single().ViewDate.AddDays(1) < DateTime.Now
                                     && a.Evaluations.Count < MyConsts.MinEvaluationLimit).OrderByDescending(a => a.Evaluations.Count()).ToList();
                     //Remove skipped answer (if was)
-                    if (skippedAnsId != 0)
+                    if (skippedAnswerId != 0)
                     {
-                        Answer delAns = bottomGreedy.Find(a => a.AnswerId == skippedAnsId);
-                        bottomGreedy.Remove(delAns);
+                        Answer delAns = bottomGreedy.Find(a => a.AnswerId == skippedAnswerId);
+                        if(delAns != null)
+                            bottomGreedy.Remove(delAns);
                     }
                     if (bottomGreedy.Any())
                     {
@@ -284,9 +301,9 @@ namespace CQA.Controllers
                             .OrderByDescending(a => a.Evaluations.Count()).ToList();
 
                         //Remove skipped answer (if was)
-                        if (skippedAnsId != 0)
+                        if (skippedAnswerId != 0)
                         {
-                            Answer delAns = upperGreedy.Find(a => a.AnswerId == skippedAnsId);
+                            Answer delAns = upperGreedy.Find(a => a.AnswerId == skippedAnswerId);
                             if(delAns != null)
                                 upperGreedy.Remove(delAns);
                         }
@@ -328,9 +345,9 @@ namespace CQA.Controllers
                 if (!questions.Any())
                     questions = tempQuestions;
 
-                if (skippedQueId != 0)
+                if (skippedQuestionId != 0)
                 {
-                    Question delQue = questions.Find(q => q.QuestionId == skippedQueId);
+                    Question delQue = questions.Find(q => q.QuestionId == skippedQuestionId);
                     if (delQue != null)
                         questions.Remove(delQue);
                 }
@@ -343,7 +360,7 @@ namespace CQA.Controllers
                     return View("Answer",q );
                 }
             }
-            if (skippedAnsId == 0 && skippedQueId == 0)
+            if (skippedAnswerId == 0 && skippedQuestionId == 0)
                 return View("NothingToDoHere");
             else
                 return RedirectToAction("AnswerAndEvaluate", new { setupId = setupId });
@@ -354,14 +371,16 @@ namespace CQA.Controllers
             int setupId = db.Questions.Find(questionId).SetupId;
             UserMadeAction(UserActionType.SkippedAnswering, 0, questionId);
             RemoveHandledObjectFromSession(false);
-            return RedirectToAction("AnswerAndEvaluate", new { setupId = setupId, skippedQueId = questionId });
+            Session["SkippedQuestionId"] = questionId;  
+            return RedirectToAction("AnswerAndEvaluate", new { setupId = setupId });
         }
 
         public ActionResult SkipEvaluation(int answerId, int setupId)
         {
             UserMadeAction(UserActionType.SkippedEvaluation, answerId, 0);
             RemoveHandledObjectFromSession(true);
-            return RedirectToAction("AnswerAndEvaluate", new { setupId = setupId, skippedAnsId = answerId });
+            Session["SkippedAnswerId"] = answerId; 
+            return RedirectToAction("AnswerAndEvaluate", new { setupId = setupId});
         }
 
         /// <summary>
