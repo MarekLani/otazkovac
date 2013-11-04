@@ -67,12 +67,16 @@
    <script>
        function EvaluationCreated(data)
        {
-           $("#crowdEvaluationText").html("Odpoveď davu z " + data.evalsCount+" hodnotení")
+           if(data.evalsCount > 1)
+               $("#crowdEvaluationText").html("Odpoveď davu z " + data.evalsCount+" hodnotení")
+           else
+               $("#crowdEvaluationText").html("Odpoveď davu z " + data.evalsCount+" hodnotena")
            $("#crowdSliderWrap").css("margin-left", data.avgEval*100-6 + "%");
            $(".slider-range").slider('disable');
            $("#crowdEvaluation").fadeIn();
            $("#newAnswer").fadeOut();
            $("#next").fadeIn(); 
+           $('#submit').fadeOut();
            $('#submit').attr('disabled', 'disabled');
            $(".alert").fadeIn();
           
@@ -116,25 +120,7 @@
                    max: 100,
                    value: 50,
                    slide: function (event, ui) {
-                       $("#value").val(ui.value);
-                       hex = hexFromRGB(10, 10, ui.value);
-                       if (ui.value > 50) {
-                           $(this).parent().css("background", "rgba(22, 149, 49, " + (ui.value - 50) * 2 / 100 + ")");
-                       }
-                       else {
-                           $(this).parent().css("background", "rgba(143, 20, 20, " + (50 - ui.value) * 2 / 100 + ")");
-                       }
-                       var el = $("#textValue");
-                       if (ui.value < 8)
-                           el.html("Úplne nesprávne")
-                       else if (ui.value < 36)
-                           el.html("Takmer nesprávne")
-                       else if (ui.value < 64)
-                           el.html("Čiastočne správne")
-                       else if (ui.value < 92)
-                           el.html("Takmer správne")
-                       else el.html("Úplne správne");
-                           
+                       changeColorAndText(); 
                    }
                });
 
@@ -175,38 +161,29 @@
                    var el = $("#textValue");
                    var hex = hexFromRGB(10, 10, val);
                    if (val > 50) {
-                       $(".slider-range").parent().css("background", "rgba(22, 149, 49, " + (val - 50) * 2 / 100 + ")");
+                       $(".slider-range").parent().css("background", "rgb(" + (220 - ((val - 50) * 4)) + ", 180, 20)");
                    }
                    else {
-                       $(".slider-range").parent().css("background", "rgba(143, 20, 20, " + (50 - val) * 2 / 100 + ")");
+                       $(".slider-range").parent().css("background", "rgb( 220, " + (180 - ((50 - val) * 3.5)) + ", 20)");
                    }
                    var el = $("#textValue");
-                   if (val < 8)
-                       el.html("Úplne nesprávne")
-                   else if (val < 36)
-                       el.html("Takmer nesprávne")
-                   else if (val < 64)
-                       el.html("Čiastočne správne")
-                   else if (val < 92)
-                       el.html("Takmer správne")
-                   else el.html("Úplne správne");
+                   if (val < 10)
+                       el.html("Silno nesúhlasím")
+                   else if (val < 26)
+                       el.html("Nesúhlasím")
+                   else if (val < 42)
+                       el.html("Skôr nesúhlasím")
+                   else if (val < 58)
+                       el.html("Čiastočne súhlasím")
+                   else if (val < 74)
+                       el.html("Skôr súhlasím")
+                   else if (val < 90)
+                       el.html("Súhlasím")
+                   else
+                       el.html("Silno súhlasím") 
                }
 
            });
-
-       function hexFromRGB(r, g, b) {
-           var hex = [
-           r.toString(16),
-           g.toString(16),
-           b.toString(16)
-           ];
-           jQuery.each(hex, function (nr, val) {
-               if (val.length === 1) {
-                   hex[nr] = "0" + val;
-               }
-           });
-           return hex.join("").toUpperCase();
-       }
     </script>
        
 }

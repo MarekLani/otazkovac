@@ -21,27 +21,57 @@ else{
             " </b> | "+
             "Počet všetkých ohodnotených odpovedí: " + "<b>" + ea.Answers.Count() + "</b>" )
         </div>
-  
+        
+        <div class="header">
+            <div class="header_value">
+                Hodnotenie
+            </div>
+            <div class="header_qa">Otázka</div>
+            <div class="header_qa">Odpoveď</div>
+
+            <div style="clear:both"></div>
+        </div>
     
         {
-            int i = 0;      
-            foreach(var a in ea.Answers){
+            int i = 0;
+            foreach (var a in ea.Answers)
+            {
                 i++;
             
-                <div class="myAnswer @if(i%2 == 0){@("greyBackground")}" @if(i == 1){@Html.Raw("style=\"border-top: 1px solid lightgrey;\"")} >
+                <div class="myAnswer 
+                    @if (i % 2 == 0)
+                        {@("greyBackground")}
+                    @if (a.SeenEvaluation == false)
+                       {@("empAnswer")}" 
+                    @if (i == 1)
+                       {@Html.Raw("style=\"border-top: 1px solid lightgrey;\"")} >
                     <div class="evalValue">
                         <div class="evalValueBg">
-                            <span class="cleanValue">@((int)(a.GetAvgEvaluation()*100))</span>%
-                            <div style="font-size: 11px; line-height: 11px">@(a.Evaluations.Count()) hod.</div>
+                            <div class="cleanValue"></div>
+                           
+                            @{
+                                int n =  a.Evaluations.Count(); 
+                                <div style="font-size: 11px; line-height: 13px">@(n) 
+                                    @if(n == 1){
+                                        @("hodnotenie");
+                                    }
+                                    else if( n < 5){
+                                         @("hodnotenie");
+                                    }
+                                    else{
+                                         @("hodnotení");
+                                    }
+                                 </div>
+                            }
+                            
                         </div>
                     </div>
-
-                    <b style="float:left; width: 60px; margin-left: 5px;"> Otázka: </b> 
+                    
                     <div class="elipsis">@(a.Question.QuestionText)</div>
-                   <b style="float:left; width: 80px;margin-left: 5px;"> Odpoveď: </b> 
-                    <div class="elipsis">@(a.Text)</div>
+                    <div class="elipsis" style="border-left: 1px solid lightgrey;">@(a.Text)</div>
                     <input type="hidden" value="@(a.Question.QuestionText)" name="que" class="que" />
-                    <input type="hidden" value="@(a.Text)" name="ans" class="ans" />
+                    <input type="hidden" value="@((int)(a.GetAvgEvaluation() * 100))" name="numValue" class="numValue" />
+                     <input type="hidden" value="@(a.Text)" name="ans" class="ans" />
                     <input type="hidden" value="@(a.Evaluations.Count())" name="count" class="count" />
                     <div class="detail btn" title="Zobraziť detail">
                         ››
@@ -51,13 +81,12 @@ else{
             }
         }
     
-    
         <div id="dialog" title="Detail odpovede">
             <div class="dialogQaText" id="que"></div>
             <div class="dialogQaText" id="ans"> </div>
             <div class="sliderWrap">
                 <div id="textValue"> </div>
-                <div class="ui-widget-content-wrapper" style="width: 100%;">
+                <div class="ui-widget-content-wrapper" style="width: 100%; margin-top: 25px;">
                     <div class="slider-range" ></div>
                 </div> 
             </div>
@@ -93,7 +122,7 @@ else{
         });
 
         $(".detail").click(function () {
-            var val = $(this).siblings(".evalValue").children(".evalValueBg").children(".cleanValue").text();
+            var val = $(this).siblings(".numValue").val();
             val = parseFloat(val.replace(/\s/g, "").replace(",", "."));
             $(".slider-range").slider('value', val);
             $("#que").html("<b>Otázka: </b>");
@@ -102,10 +131,11 @@ else{
             $("#ans").prepend("<b>Odpoveď: </b>");
             $("#evalsCount").text($(this).siblings(".count").val());
             setSlider(val)
+            $(this).parent().removeClass('empAnswer');
         });
 
         $(".myAnswer").click(function () {
-            var val = $(this).children(".evalValue").children(".evalValueBg").children(".cleanValue").text();
+            var val = $(this).children(".numValue").val();
             val = parseFloat(val.replace(/\s/g, "").replace(",", "."));
             $(".slider-range").slider('value', val);
             $("#que").html("<b>Otázka: </b>"); 
@@ -114,53 +144,70 @@ else{
             $("#ans").prepend("<b>Odpoveď: </b>");
             $("#evalsCount").text($(this).children(".count").val());
             setSlider(val)
+            $(this).removeClass('empAnswer');
             
         });
 
         function setSlider(val) {
             if (val > 50) {
-                $(".ui-widget-content-wrapper").css("background", "rgba(22, 149, 49, " + (val - 50) * 2 / 100 + ")");
+                //$(".ui-widget-content-wrapper").css("background", "rgba(22, 149, 49, " + (val - 50) * 2 / 100 + ")");
+                $(".ui-widget-content-wrapper").css("background", getColor(val));
             }
             else {
-                $(".ui-widget-content-wrapper").css("background", "rgba(143, 20, 20, " + (50 - val) * 2 / 100 + ")");
+                $(".ui-widget-content-wrapper").css("background", getColor(val));
             }
+
             var el = $("#textValue");
-            if (val < 8)
-                el.html("Úplne nesprávne")
-            else if (val < 36)
-                el.html("Takmer nesprávne")
-            else if (val < 64)
-                el.html("Čiastočne správne")
-            else if (val < 92)
-                el.html("Takmer správne")
-            else el.html("Úplne správne");
+            changeText(el, val);
             $("#dialog").dialog("open");
+        }
+        
+
+        function changeText(el, val) {
+            if (val < 10)
+                el.html("Silný nesúhlas")
+            else if (val < 26)
+                el.html("Nesúhlas")
+            else if (val < 42)
+                el.html("Skôr nesúhlas")
+            else if (val < 58)
+                el.html("Čiastočný súhlas")
+            else if (val < 74)
+                el.html("Skôr súhlas")
+            else if (val < 90)
+                el.html("Súhlas")
+            else
+                el.html("Silný súhlas")
         }
 
         $(".evalValueBg").each(function () {
-            var val = parseFloat($(this).text().replace(/\s/g, "").replace(",", "."));
-            hex = hexFromRGB(10, 10, val);
-            if (val > 50) {
-                $(this).parent().css("background", "rgba(22, 149, 49, " + (val - 50) * 2 / 100 + ")");
-            }
-            else {
-                $(this).parent().css("background", "rgba(143, 20, 20, " + (50 - val) * 2 / 100 + ")");
-            }
+            var val = parseFloat($(this).parent().siblings(".numValue").val().replace(/\s/g, "").replace(",", "."));
+            $(this).parent().css("background", getColorWithOpacity(val, 2));
         });
 
-        function hexFromRGB(r, g, b) {
-            var hex = [
-            r.toString(16),
-            g.toString(16),
-            b.toString(16)
-            ];
-            jQuery.each(hex, function (nr, val) {
-                if (val.length === 1) {
-                    hex[nr] = "0" + val;
-                }
-            });
-            return hex.join("").toUpperCase();
+        $(".cleanValue").each(function () {
+            changeText($(this), parseFloat($(this).parent().parent().siblings(".numValue").val().replace(/\s/g, "").replace(",", ".")));
+        });
+
+        function getColorWithOpacity(val, evalsCount)
+        {
+            if(evalsCount < 10)
+                opacity = 10-evalsCount;
+            else
+                opacity = 1;
+            if(val > 50)
+                return "rgba(" + (220 - ((val - 50) * 4)) + ", 180, 20, " + (0.5 + (0.5/opacity)) + ")"
+            else
+                return "rgba( 220, " + (180 - ((50 - val) * 3.5)) + ", 20, " + (0.5 + (0.5 / opacity)) + ")"
         }
+
+        function getColor(val) {
+            if (val > 50)
+                return "rgb(" + (220 - ((val - 50) * 4)) + ", 180, 20)"
+            else
+                return "rgb( 220, " + (180 - ((50 - val) * 3.5)) + ", 20)"
+        }
+     
     });
     </script>
     }

@@ -24,13 +24,16 @@ namespace CQA.Models
 
     }
 
+
     public enum UserActionType
     {
+        // !IMPORTANT whe adding new UserActionType, add it always to the end!!!
         Evaluation = 1,
         Answering,
         SkippedAnswering,
         SkippedEvaluation,
         ViewedHintWhenAnswering,
         ViewedHintWhenEvaluating
+        
     }
 }

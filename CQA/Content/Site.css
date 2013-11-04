@@ -1081,10 +1081,10 @@ tr.pager td {
 
 .myAnswer
 {
-	line-height: 40px;
+	line-height: 44px;
 	vertical-align: middle;
 	clear: both;
-	height: auto;
+	height: 44px;
 	border-bottom: 1px solid lightgrey;
 	cursor: pointer;
 }
@@ -1102,62 +1102,111 @@ tr.pager td {
 .setup
 {
 	margin-bottom: 10px;
+	border-bottom: 1px solid lightgrey;
 }
 
 .evalValue
 {
-  font-size: 20px;
-  width: auto;
+  font-size: 14px;
   float: left;
-  padding: 2px;
+  padding: 1px;
   padding-left: 5px;
   padding-right: 5px;
-  line-height: 28px;
+  line-height: 16px;
   color: black;
-  width: 55px;
+  width: 90px;
   text-align: center;
-  border-right: 1px grey solid;
+  border-left: 1px lightgrey solid;
+  border-right: 1px lightgrey solid;
+  font-weight: 500;
+  height: 42px;
+}
+
+.cleanValue
+{
+	min-height: 32px;
+}
+
+.empAnswer
+{
+	border: 1px solid #73aee1 !important;
+	box-shadow: 0px 0px 3px #73aee1;
 }
 
 
+.header
+{
+	margin-top: 15px;
+	margin-bottom: 5px;
+}
+
+.header_value
+{
+	width: 100px;
+	text-align: center;
+	font-weight: 700;
+	float: left;
+}
+
+.header_qa
+{
+	float: left;
+	width: 40%;
+	text-align: center;
+	font-weight: 700;
+	margin-left: 15px;
+}
+
 .elipsis
 {
-	width: 36%;
+	width: 40%;
     font-size: 14px;
 	float: left;
 	line-height: 20px !important;
 	height: 40px;
+	padding-left: 15px;
+	margin-top: 2px;
 }
+
+
 
 @media (max-width: 979px)
 {
-	.elipsis
+	.elipsis, .header_qa
 	{
-		width: 30%;
+		width: 36%;
 	}
 }
 
-@media (max-width: 700px)
+@media (max-width: 660px)
 {
-	.elipsis
+	.elipsis, .header_qa
 	{
-		width: 25%;
+		width: 34%;
 	}
 }
 
 @media (max-width: 600px)
 {
-	.elipsis
+	.elipsis, .header_qa
 	{
-		width: 20%;
+		width: 30%;
 	}
 }
 
 @media (max-width: 500px)
 {
-	.elipsis
+	.elipsis, .header_qa
 	{
-		width: 10%;
+		width: 24%;
+	}
+}
+
+@media (max-width: 380px)
+{
+	.elipsis, .header_qa
+	{
+		width: 18%;
 	}
 }
 

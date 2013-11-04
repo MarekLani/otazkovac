@@ -45,7 +45,6 @@ namespace CQA.Controllers
                 db.SaveChanges();
 
                 UserMadeAction(UserActionType.Answering, 0,questionId);
-
                 UserSeenQuestion(questionId);
 
                 object result = new { answerText = text };
@@ -77,18 +76,16 @@ namespace CQA.Controllers
                 db.Ratings.Add(e);
                 db.SaveChanges();
 
-                //Check if we already have 3 evaluations and if the evaluated answer can be shown to answer
+                //Check if we already have 1 evaluation and if the evaluated answer can be shown to answer
                 Answer answer = db.Answers.Find(answerId);
-                if (answer.Evaluations.Count == 1)
-                {
-                    answer.SeenEvaluation = false;
-                    db.Entry(answer).State = EntityState.Modified;
-                    db.SaveChanges();
-                }
+                
+                //We want to notify user after every new evaluation
+                answer.SeenEvaluation = false;
+                db.Entry(answer).State = EntityState.Modified;
+                db.SaveChanges();                
 
                 //Mark action
                 UserMadeAction(UserActionType.Evaluation, answerId,0);
-
                 //Mark question as seen
                 UserSeenQuestion(answer.QuestionId);
                 
@@ -204,7 +201,8 @@ namespace CQA.Controllers
             }
 
             //check if setup is active
-            if (!db.Setups.Find(setupId).Active)
+            Setup setup = db.Setups.Find(setupId);
+            if (setup == null || !setup.Active)
             {
                 return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest);
             }
@@ -225,7 +223,7 @@ namespace CQA.Controllers
             }
 
             //Hack for selecting when user has not seen the question so there is no record to be selected
-            //See selects lower
+            //See selects lower using DefaultIfEmpty
             var defaultQuestionView = new QuestionView();
             defaultQuestionView.ViewDate = DateTime.MinValue;
 
