@@ -78,6 +78,7 @@ namespace CQA.Models
     {
         public Setup Setup { get; set; }
         public ICollection<Answer> Answers { get; set; }
+        public ICollection<Answer> UnseenHighlightedAnswers { get; set; }
         public int UnseenCount {get;set;}
     }
 }

@@ -31,6 +31,7 @@ namespace CQA.Controllers
             {
                 EvaluatedAnswers ea = new EvaluatedAnswers();
                 ea.Answers = new List<Answer>();
+                ea.UnseenHighlightedAnswers = new List<Answer>();
                 ea.Setup = s.Key;
                 ea.UnseenCount = 0;
                 foreach(Answer a in s)
@@ -40,6 +41,7 @@ namespace CQA.Controllers
                     {
                         ea.UnseenCount++;
                         a.SeenEvaluation = true;
+                        ea.UnseenHighlightedAnswers.Add(a);
                         db.Entry(a).State = EntityState.Modified;
                     }
                 }

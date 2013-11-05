@@ -33,21 +33,21 @@
             <div id="sliderWrap">
                 <div id="textValue">Čiastočne správne</div>
                 <div id="sliderInlineWrap">
-                <img src="~/Images/thumbDown.png" class="thumb" id="thumbDown"/>
-                <div class="ui-widget-content-wrapper">
-                    <div id="crowdEvaluation"> 
-                        <div id="crowdSliderWrap">
-                            <div id="crowdSlider"></div>
-                            <div id="crowdEvaluationText"> </div>
-                         </div>
-                    </div>
-                    <div class="slider-range" style=""></div>
-                </div> 
-                <img id="thumbUp" src="~/Images/thumbUp.png" class="thumb"/>
-                <div style="clear:both"></div>
+                    <img src="~/Images/thumbDown.png" class="thumb" id="thumbDown"/>
+                    <div class="ui-widget-content-wrapper" style="background: rgb(220, 180, 20)">
+                        <div id="crowdEvaluation"> 
+                            <div id="crowdSliderWrap">
+                                <div id="crowdSlider"></div>
+                                <div id="crowdEvaluationText"> </div>
+                             </div>
+                        </div>
+                        <div class="slider-range" style=""></div>
+                    </div> 
+                    <img id="thumbUp" src="~/Images/thumbUp.png" class="thumb"/>
+                    <div style="clear:both"></div>
                 </div>
             </div>
-         <div style="clear:both"></div>
+            <div style="clear:both"></div>
             <div class="alert alert-success" style="display:none">
                 <button type="button" class="close" data-dismiss="alert">&times;</button>
                 Ďakujeme za hodnotenie. Vyššie si môžete pozrieť priemerné hodnotenie odpovede.
@@ -70,16 +70,28 @@
            if(data.evalsCount > 1)
                $("#crowdEvaluationText").html("Odpoveď davu z " + data.evalsCount+" hodnotení")
            else
-               $("#crowdEvaluationText").html("Odpoveď davu z " + data.evalsCount+" hodnotena")
+           {
+               //TODO Maybe change text when only one evaluation 
+               $("#crowdEvaluationText").html("Odpoveď davu z " + data.evalsCount+" hodnotenia")
+           }
+           
            $("#crowdSliderWrap").css("margin-left", data.avgEval*100-6 + "%");
            $(".slider-range").slider('disable');
            $("#crowdEvaluation").fadeIn();
+           $(".slider-range").parent().css("background", getColor(parseInt(data.avgEval*100)));
            $("#newAnswer").fadeOut();
            $("#next").fadeIn(); 
            $('#submit').fadeOut();
            $('#submit').attr('disabled', 'disabled');
-           $(".alert").fadeIn();
-          
+           $(".alert").fadeIn();         
+       }
+
+       function getColor(val) {
+           //alert(val)
+           if (val > 50)
+               return "rgb(" + (220 - ((val - 50) * 4)) + ", 180, 20)"
+           else
+               return "rgb( 220, " + (180 - ((50 - val) * 3.5)) + ", 20)"
        }
 
        jQuery('#widget').draggable();
@@ -120,10 +132,10 @@
                    max: 100,
                    value: 50,
                    slide: function (event, ui) {
+                       $("#value").val(ui.value);
                        changeColorAndText(); 
                    }
                });
-
                
                $("#thumbDown").click(function(){
                    if($('#submit').attr('disabled') != "disabled"){
@@ -152,20 +164,14 @@
                        }
                        changeColorAndText();
                    }
-
-  
                });
 
                function changeColorAndText(){
                    var val = parseInt($("#value").val());
+                   $(".slider-range").parent().css("background", getColor(val));
+
                    var el = $("#textValue");
-                   var hex = hexFromRGB(10, 10, val);
-                   if (val > 50) {
-                       $(".slider-range").parent().css("background", "rgb(" + (220 - ((val - 50) * 4)) + ", 180, 20)");
-                   }
-                   else {
-                       $(".slider-range").parent().css("background", "rgb( 220, " + (180 - ((50 - val) * 3.5)) + ", 20)");
-                   }
+
                    var el = $("#textValue");
                    if (val < 10)
                        el.html("Silno nesúhlasím")
@@ -182,6 +188,8 @@
                    else
                        el.html("Silno súhlasím") 
                }
+
+             
 
            });
     </script>

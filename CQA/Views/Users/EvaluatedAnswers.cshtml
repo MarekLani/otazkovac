@@ -40,9 +40,9 @@ else{
             
                 <div class="myAnswer 
                     @if (i % 2 == 0)
-                        {@("greyBackground")}
-                    @if (a.SeenEvaluation == false)
-                       {@("empAnswer")}" 
+                        {@(" greyBackground")}
+                    @if (ea.UnseenHighlightedAnswers.Contains(a))
+                       {@(" empAnswer")}" 
                     @if (i == 1)
                        {@Html.Raw("style=\"border-top: 1px solid lightgrey;\"")} >
                     <div class="evalValue">
@@ -196,9 +196,9 @@ else{
             else
                 opacity = 1;
             if(val > 50)
-                return "rgba(" + (220 - ((val - 50) * 4)) + ", 180, 20, " + (0.5 + (0.5/opacity)) + ")"
+                return "rgba(" + (220 - ((val - 50) * 4)) + ", 180, 20, " + (0.6 + (0.4/opacity)) + ")"
             else
-                return "rgba( 220, " + (180 - ((50 - val) * 3.5)) + ", 20, " + (0.5 + (0.5 / opacity)) + ")"
+                return "rgba( 220, " + (180 - ((50 - val) * 3.5)) + ", 20, " + (0.6 + (0.4 / opacity)) + ")"
         }
 
         function getColor(val) {
