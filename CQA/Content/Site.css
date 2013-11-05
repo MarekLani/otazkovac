@@ -928,8 +928,8 @@ tr.pager td {
 	float:left;
 	width:80% ;
 	margin:12px;
-	padding-right: 25px;
-	padding-left: 7px;
+	padding-right: 18px;
+	padding-left: 2px;
 
 	-moz-border-radius: 10px !important;
 	 border-radius: 10px !important;
@@ -1032,7 +1032,6 @@ tr.pager td {
 	.ui-widget-content-wrapper
 	{
 		width: 50%;
-		margin-top:5px !important;
 		padding-right: 15px;
 		padding-left: 7px;
 		-moz-border-radius: 18px !important;
@@ -1041,8 +1040,8 @@ tr.pager td {
 
 	#crowdSlider
 	{
-		-moz-border-radius: 5px !important;
-		 border-radius: 5px !important;
+		-moz-border-radius: 15px !important;
+		 border-radius: 15px !important;
 		 width: 20px;
 		 heigth: 20px;
 		 margin-left: 0px;
@@ -1053,6 +1052,14 @@ tr.pager td {
 	{
 		margin-top: -5px;
 	}
+
+	.crowdSlider
+{
+	width: 18px !important;
+	height: 18px !important;
+	top: -6px !important;
+	margin-left: -12px;
+}
 
     .thumb
 	{
@@ -1070,8 +1077,8 @@ tr.pager td {
 		 padding:4px;
 		 cursor: pointer !important;
 		 margin-top: -6px;
-		 -moz-border-radius: 8px !important;
-		 border-radius: 8px !important;
+		 -moz-border-radius: 18px !important;
+		 border-radius: 18px !important;
 		 background: white !important;
 	}
 }
@@ -1127,6 +1134,20 @@ tr.pager td {
 	min-height: 32px;
 }
 
+.crowdSlider
+{
+	position: absolute;
+	width: 22px;
+	height: 22px;
+	-moz-border-radius: 12px !important;
+	border-radius:12px !important;
+	background: #4a6eb3;
+	border:1px solid lightgrey;
+	top: -5px;
+	z-index: 100;
+	margin-left: -12px;
+}
+
 .empAnswer
 {
 	border: 1px solid #73aee1 !important;
@@ -1168,6 +1189,10 @@ tr.pager td {
 	margin-top: 2px;
 }
 
+#dialog
+{
+	min-width: 600px;
+}
 
 
 @media (max-width: 979px)
@@ -1175,6 +1200,11 @@ tr.pager td {
 	.elipsis, .header_qa
 	{
 		width: 36%;
+	}
+
+	#dialog
+	{
+		min-width: 80%;
 	}
 }
 
