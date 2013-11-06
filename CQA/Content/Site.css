@@ -1103,7 +1103,7 @@ tr.pager td {
 
 .greyBackground
 {
-	background-color: #f2f4f5;
+	background-color: #fafbfb;
 }
 
 .setup
@@ -1117,16 +1117,22 @@ tr.pager td {
   font-size: 14px;
   float: left;
   padding: 1px;
-  padding-left: 5px;
-  padding-right: 5px;
   line-height: 16px;
   color: black;
-  width: 90px;
+  width: 88px;
   text-align: center;
-  border-left: 1px lightgrey solid;
-  border-right: 1px lightgrey solid;
   font-weight: 500;
   height: 42px;
+}
+
+.evalValueWrap
+{
+  float: left;
+  color: black;
+  width: 90px;
+  border-left: 1px lightgrey solid;
+  border-right: 1px lightgrey solid;
+  height: 44px;
 }
 
 .cleanValue
@@ -1150,8 +1156,10 @@ tr.pager td {
 
 .empAnswer
 {
-	border: 1px solid #73aee1 !important;
-	box-shadow: 0px 0px 3px #73aee1;
+	box-shadow: inset 0px 0px 4px #73aee1;
+	background: #d3edfb;
+	border-color: white !important;
+	
 }
 
 
@@ -1186,6 +1194,7 @@ tr.pager td {
 	line-height: 20px !important;
 	height: 40px;
 	padding-left: 15px;
+	padding-right: 10px;
 	margin-top: 2px;
 }
 

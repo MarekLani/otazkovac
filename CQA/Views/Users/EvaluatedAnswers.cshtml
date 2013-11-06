@@ -38,20 +38,22 @@ else{
             {
                 i++;
             
-                <div class="myAnswer 
+                <div class="myAnswer
                     @if (i % 2 == 0)
                         {@(" greyBackground")}
                     @if (ea.UnseenHighlightedAnswers.Contains(a))
                        {@(" empAnswer")}" 
                     @if (i == 1)
                        {@Html.Raw("style=\"border-top: 1px solid lightgrey;\"")} >
+                    
+                    <div class="evalValueWrap" style="background: white">
                     <div class="evalValue">
                         <div class="evalValueBg">
                             <div class="cleanValue"></div>
                            
                             @{
                                 int n =  a.Evaluations.Count(); 
-                                <div style="font-size: 11px; line-height: 13px">@(n) 
+                                <div style="font-size: 11px; line-height: 12px">@(n) 
                                     @if(n == 1){
                                         @("hodnotenie");
                                     }
@@ -66,6 +68,8 @@ else{
                             
                         </div>
                     </div>
+                    </div>
+                    
                     
                     <div class="elipsis">@(a.Question.QuestionText)</div>
                     <div class="elipsis" style="border-left: 1px solid lightgrey;">@(a.Text)</div>
@@ -79,12 +83,13 @@ else{
                     <input type="hidden" value="@(s)" name="evaluations" class="evaluations" />
                     <input type="hidden" value="@(a.Question.QuestionText)" name="que" class="que" />
                     <input type="hidden" value="@((int)(a.GetAvgEvaluation() * 100))" name="numValue" class="numValue" />
-                     <input type="hidden" value="@(a.Text)" name="ans" class="ans" />
+                        <input type="hidden" value="@(a.Text)" name="ans" class="ans" />
                     <input type="hidden" value="@(a.Evaluations.Count())" name="count" class="count" />
                     <div class="detail btn" title="Zobraziť detail">
                         ››
                     </div>
                     <div style="clear:both"></div>
+                     
                  </div>
             }
         }
@@ -199,12 +204,12 @@ else{
         }
 
         $(".evalValueBg").each(function () {
-            var val = parseFloat($(this).parent().siblings(".numValue").val().replace(/\s/g, "").replace(",", "."));
+            var val = parseFloat($(this).parent().parent().siblings(".numValue").val().replace(/\s/g, "").replace(",", "."));
             $(this).parent().css("background", getColorWithOpacity(val, 2));
         });
 
         $(".cleanValue").each(function () {
-            changeText($(this), parseFloat($(this).parent().parent().siblings(".numValue").val().replace(/\s/g, "").replace(",", ".")));
+            changeText($(this), parseFloat($(this).parent().parent().parent().siblings(".numValue").val().replace(/\s/g, "").replace(",", ".")));
         });
 
         function getColorWithOpacity(val, evalsCount)
@@ -214,9 +219,9 @@ else{
             else
                 opacity = 1;
             if(val > 50)
-                return "rgba(" + (220 - ((val - 50) * 4)) + ", 180, 20, " + (0.6 + (0.4/opacity)) + ")"
+                return "rgba(" + (220 - ((val - 50) * 4)) + ", 180, 20, " + (0.2 + (0.8/opacity)) + ")"
             else
-                return "rgba( 220, " + (180 - ((50 - val) * 3.5)) + ", 20, " + (0.6 + (0.4 / opacity)) + ")"
+                return "rgba( 220, " + (180 - ((50 - val) * 3.5)) + ", 20, " + (0.2 + (0.8 / opacity)) + ")"
         }
 
         function getColor(val) {
