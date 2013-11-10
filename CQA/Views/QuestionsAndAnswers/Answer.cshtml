@@ -39,6 +39,8 @@
                 $("#answerText").prepend(data.answerText);
                 $("#hint").fadeOut();
                 $("#skip").fadeOut();
+                $("#createdAnswer").append($("#questionField").val());
+                $("#questionField").hide();
                 $("#next").fadeIn();
                 $('#submit').fadeOut();
                 $(".alert").fadeIn();              

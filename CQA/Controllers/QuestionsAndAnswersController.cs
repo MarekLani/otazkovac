@@ -12,6 +12,7 @@ using System.DirectoryServices.Protocols;
 using System.Security.Permissions;
 using System.DirectoryServices.AccountManagement;
 using System.DirectoryServices;
+using System.Web.Script.Serialization;
 
 namespace CQA.Controllers
 {
@@ -25,6 +26,7 @@ namespace CQA.Controllers
 
         [HttpPost]
         [ValidateInput(false)]
+        [ValidateAntiForgeryToken]
         public ActionResult CreateAnswer(int questionId, string text)
         {
             if (ModelState.IsValid)
@@ -57,6 +59,7 @@ namespace CQA.Controllers
         }  
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult CreateEvaluation(int answerId, int value)
         {
             if (ModelState.IsValid)
@@ -90,7 +93,53 @@ namespace CQA.Controllers
                 UserSeenQuestion(answer.QuestionId);
                 
                 db.SaveChanges();
-                return Json(new {avgEval = answer.GetAvgEvaluation(), evalsCount = answer.Evaluations.Count()} );
+
+                List<Comment> comments = db.Answers.Find(answerId).Comments.ToList();
+                List<ViewComment> viewComments = new List<ViewComment>();
+                foreach (Comment c in comments)
+                {
+                    ViewComment vc;
+                    if (c.Anonymous)
+                        vc = new ViewComment(c.Text, "Anonym");
+                    else
+                        vc = new ViewComment(c.Text, db.UserProfiles.Find(c.UserId).RealName);
+                    viewComments.Add(vc);
+                }
+                var jsonSerialiser = new JavaScriptSerializer();
+                var commentsInJson = jsonSerialiser.Serialize(viewComments);
+
+                return Json(new { avgEval = answer.GetAvgEvaluation(), evalsCount = answer.Evaluations.Count(), comments = commentsInJson });
+            }
+
+            return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult CreateComment(Comment comment)
+        {
+            if (ModelState.IsValid)
+            {
+                //if (db.Comments.Where(a => a.AnswerId == answerId && a.UserId == WebSecurity.CurrentUserId).Any())
+                //{
+                //    ModelState.AddModelError("", "Odpoveď ste už hodnotili");
+                //    return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest);
+                //}
+
+                comment.UserId = WebSecurity.CurrentUserId;
+                db.Comments.Add(comment);
+                db.SaveChanges();
+
+                //Mark action
+                UserMadeAction(UserActionType.Commented, comment.AnswerId, 0);
+                ViewComment vc;
+                if(comment.Anonymous)
+                    vc = new ViewComment( comment.Text, "Anonym");
+                else
+                    vc = new ViewComment(comment.Text, db.UserProfiles.Find(comment.UserId).RealName);
+                var jsonSerialiser = new JavaScriptSerializer();
+                return Json(jsonSerialiser.Serialize(vc));
+
             }
 
             return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest);

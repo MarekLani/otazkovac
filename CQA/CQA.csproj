@@ -196,6 +196,14 @@
     <Compile Include="Migrations\201310291729401_InitialMigration.Designer.cs">
       <DependentUpon>201310291729401_InitialMigration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201311091546039_AddedAnonymousOptionToCommentMigration.cs" />
+    <Compile Include="Migrations\201311091546039_AddedAnonymousOptionToCommentMigration.Designer.cs">
+      <DependentUpon>201311091546039_AddedAnonymousOptionToCommentMigration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201311101005156_CommentTextFixedToBeTypeOfStringMigration.cs" />
+    <Compile Include="Migrations\201311101005156_CommentTextFixedToBeTypeOfStringMigration.Designer.cs">
+      <DependentUpon>201311101005156_CommentTextFixedToBeTypeOfStringMigration.cs</DependentUpon>
+    </Compile>
     <Compile Include="Models\DateCreatedModel.cs" />
     <Compile Include="Models\MyConsts.cs" />
     <Compile Include="Models\SetupsProbabilityChanges.cs" />
@@ -211,7 +219,7 @@
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Models\AccountModels.cs" />
     <Compile Include="Models\AnswerModels.cs" />
-    <Compile Include="Models\Comment.cs" />
+    <Compile Include="Models\CommentModels.cs" />
     <Compile Include="Models\FileModels.cs" />
     <Compile Include="Models\CQADBContext.cs" />
     <Compile Include="Models\Question.cs" />
@@ -425,6 +433,7 @@
     <Content Include="Views\QuestionsAndAnswers\NothingToDoHere.cshtml" />
     <Content Include="Views\QuestionsAndAnswers\EvaluateWithHint.cshtml" />
     <Content Include="Views\QuestionsAndAnswers\AnswerWithHint.cshtml" />
+    <Content Include="Views\QuestionsAndAnswers\_CreateCommentForm.cshtml" />
     <None Include="Web.Production.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -441,6 +450,12 @@
   <ItemGroup>
     <EmbeddedResource Include="Migrations\201310291729401_InitialMigration.resx">
       <DependentUpon>201310291729401_InitialMigration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201311091546039_AddedAnonymousOptionToCommentMigration.resx">
+      <DependentUpon>201311091546039_AddedAnonymousOptionToCommentMigration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201311101005156_CommentTextFixedToBeTypeOfStringMigration.resx">
+      <DependentUpon>201311101005156_CommentTextFixedToBeTypeOfStringMigration.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\ErrorStrings.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>

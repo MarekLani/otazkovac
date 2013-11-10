@@ -6,16 +6,16 @@
     HttpMethod = "POST",
     Url = Url.Action("CreateAnswer", "QuestionsAndAnswers"),
     OnSuccess = "AnswerCreated(data)"})){
-
+        @Html.AntiForgeryToken()
         <div class="editor-field">
             @Html.EditorFor(model => model.QuestionId, new { @class= "questionId" })
         </div>
          <div class="editor-label">
-            @Html.LabelFor(model => model.Text)
+            @Html.LabelFor(model => model.Text, new { style="font-weight: bold;" }) <span id="createdAnswer"> </span>
             @Html.ValidationMessageFor(model => model.Text, String.Empty, new { @class="text-error"})
         </div>
         <div class="editor-field">
-            @Html.TextAreaFor(model => model.Text, new { @class= "questionText", autocomplete="off" })
+            @Html.TextAreaFor(model => model.Text, new { id="questionField", @class= "questionText", autocomplete="off" })
         </div>
         <div style="text-align:center">
             <a href="@Url.Action("SkipAnswer", new { questionId = Model.QuestionId })" id="skip" class="btn">Preskočiť</a>

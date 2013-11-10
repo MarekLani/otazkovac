@@ -35,6 +35,7 @@ namespace CQA.Models
 
         public virtual ICollection<Evaluation> Evaluations { get; set; }
         public virtual ICollection<UsersAction> UsersActions { get; set; }
+        public virtual ICollection<Comment> Comments { get; set; }
 
 
         public double GetAvgEvaluation()

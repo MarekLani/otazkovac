@@ -4,59 +4,68 @@
     ViewBag.Title = "Ohodnoťte odpoveď";
 }
 @section Styles {
-        @Styles.Render("~/Content/themes/base/css")
+    @Styles.Render("~/Content/themes/base/css")
 }
 
 <h4>Ohodnotťe správnosť odpovede</h4>
 
 <div class="question">
-    
-    <div id="questionText"> <span style="font-size: 0.85em; font-weight:bold">Otázka: </span> @Html.DisplayFor(model => model.Question.QuestionText) </div>
+
+    <div id="questionText"><span style="font-size: 0.85em; font-weight: bold">Otázka: </span>@Html.DisplayFor(model => model.Question.QuestionText) </div>
 
 </div>
-<div class="answer"> 
-  <div id="answerText"> <span style="font-size: 0.85em; font-weight:bold">Odpoveď: </span>@Html.DisplayFor(model => model.Text)</div>
+<div class="answer">
+    <div id="answerText"><span style="font-size: 0.85em; font-weight: bold">Odpoveď: </span>@Html.DisplayFor(model => model.Text)</div>
 </div>
 
-<div style="text-align:center">
-        @using (Ajax.BeginForm(null, null, new AjaxOptions()
+<div style="text-align: center">
+    @using (Ajax.BeginForm(null, null, new AjaxOptions()
         {
             HttpMethod = "POST",
             Url = Url.Action("CreateEvaluation", "QuestionsAndAnswers"),
             OnSuccess = "EvaluationCreated(data)"
         },
         new { autocomplete = "off" }))
-        {
-            <input name="answerId" type="hidden" value="@Html.DisplayFor(model => model.AnswerId)" />
-            <input type="hidden" value="50" id="value" name="value" />
+    {
+        @Html.AntiForgeryToken()
+        <input name="answerId" type="hidden" value="@Html.DisplayFor(model => model.AnswerId)" />
+        <input type="hidden" value="50" id="value" name="value" />
             
-            <div id="sliderWrap">
-                <div id="textValue">Čiastočne súhlasím</div>
-                <div id="sliderInlineWrap">
-                    <img src="~/Images/thumbDown.png" class="thumb" id="thumbDown"/>
-                    <div class="ui-widget-content-wrapper" style="background: rgb(220, 180, 20)">
-                        <div id="crowdEvaluation"> 
-                            <div id="crowdSliderWrap">
-                                <div id="crowdSlider"></div>
-                                <div id="crowdEvaluationText"> </div>
-                             </div>
+        <div id="sliderWrap">
+            <div id="textValue">Čiastočne súhlasím</div>
+            <div id="sliderInlineWrap">
+                <img src="~/Images/thumbDown.png" class="thumb" id="thumbDown" />
+                <div class="ui-widget-content-wrapper" style="background: rgb(220, 180, 20)">
+                    <div id="crowdEvaluation">
+                        <div id="crowdSliderWrap">
+                            <div id="crowdSlider"></div>
+                            <div id="crowdEvaluationText"></div>
                         </div>
-                        <div class="slider-range" style=""></div>
-                    </div> 
-                    <img id="thumbUp" src="~/Images/thumbUp.png" class="thumb"/>
-                    <div style="clear:both"></div>
+                    </div>
+                    <div class="slider-range" style=""></div>
                 </div>
+                <img id="thumbUp" src="~/Images/thumbUp.png" class="thumb" />
+                <div style="clear: both"></div>
             </div>
-            <div style="clear:both"></div>
-            <div class="alert alert-success" style="display:none">
-                <button type="button" class="close" data-dismiss="alert">&times;</button>
-                Ďakujeme za hodnotenie. Vyššie si môžete pozrieť priemerné hodnotenie odpovede.
-            </div>
-            <a href="@Url.Action("AnswerAndEvaluate", new { setupId = Model.Question.SetupId })" id="next" class="btn" style="display:none">Ďalšia otázka/hodnotenie</a>
-            <a href="@Url.Action("SkipEvaluation", new { answerId = Model.AnswerId, setupId = Model.Question.SetupId })" id="newAnswer" style="margin:0" class="btn skip">Preskočiť</a>
-            <button type="submit" id="submit" class="btn btn-primary">Ohodnotiť</button>   
-        }
+        </div>
+        <div style="clear: both"></div>
+        <div class="alert alert-success" style="display: none">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            Ďakujeme za hodnotenie. Vyššie si môžete pozrieť priemerné hodnotenie odpovede.
+        </div>
+        <a href="@Url.Action("AnswerAndEvaluate", new { setupId = Model.Question.SetupId })" id="next" class="btn" style="display:none">Ďalšia otázka/hodnotenie</a>
+        <a href="@Url.Action("SkipEvaluation", new { answerId = Model.AnswerId, setupId = Model.Question.SetupId })" id="newAnswer" style="margin:0" class="btn skip">Preskočiť</a>
+        <button type="submit" id="submit" class="btn btn-primary">Ohodnotiť</button>   
+    }
+    <div id="commentsSection">  
+        <div id="comments">
+            <h4>Komentáre:</h4>
+        </div>
+        <div id="commentForm">
+            @{Html.RenderPartial("_CreateCommentForm", new CQA.Models.Comment(Model.AnswerId));} 
+        </div>
     </div>
+</div>
 
 @section Scripts {
 
@@ -64,134 +73,160 @@
     @Scripts.Render("~/Scripts/jquery.ui.touch-punch.min.js")
     @Scripts.Render("~/Scripts/jquery.unobtrusive-ajax.min.js")
 
-   <script>
-       function EvaluationCreated(data)
-       {
-           if(data.evalsCount > 1)
-               $("#crowdEvaluationText").html("Odpoveď davu z " + data.evalsCount+" hodnotení")
-           else
-           {
-               //TODO Maybe change text when only one evaluation 
-               $("#crowdEvaluationText").html("Odpoveď davu z " + data.evalsCount+" hodnotenia")
-           }
+    <script>
+
+        function CommentCreated(data) {
+            $('#commentForm').fadeOut();
+            $('#noComments').hide();
+            data = $.parseJSON(data);
+            $("#comments").append('<div class="comment empAnswer"><b>'+ data.UserName +'</b> '+ data.Text +'</div>');
+
+        }
+
+        function EvaluationCreated(data)
+        {
+            if(data.evalsCount > 1)
+                $("#crowdEvaluationText").html("Odpoveď davu z " + data.evalsCount+" hodnotení")
+            else
+            {
+                //TODO Maybe change text when only one evaluation 
+                $("#crowdEvaluationText").html("Odpoveď davu z " + data.evalsCount+" hodnotenia")
+            }
            
-           $("#crowdSliderWrap").css("margin-left", data.avgEval*100-6 + "%");
-           $(".slider-range").slider('disable');
-           $("#crowdEvaluation").fadeIn();
-           $(".slider-range").parent().css("background", getColor(parseInt(data.avgEval*100)));
-           $("#newAnswer").fadeOut();
-           $("#next").fadeIn(); 
-           $('#submit').fadeOut();
-           $('#submit').attr('disabled', 'disabled');
-           $(".alert").fadeIn();         
-       }
+            $("#crowdSliderWrap").css("margin-left", data.avgEval*100-6 + "%");
+            $(".slider-range").slider('disable');
+            $("#crowdEvaluation").fadeIn();
+            $(".slider-range").parent().css("background", getColor(parseInt(data.avgEval*100)));
+            $("#newAnswer").fadeOut();
+            $("#next").fadeIn(); 
+            $('#submit').fadeOut();
+            $('#submit').attr('disabled', 'disabled');
+            $(".alert").fadeIn();  
 
-       function getColor(val) {
-           //alert(val)
-           if (val > 50)
-               return "rgb(" + (220 - ((val - 50) * 4)) + ", 180, 20)"
-           else
-               return "rgb( 220, " + (180 - ((50 - val) * 3.5)) + ", 20)"
-       }
+            commentsData = $.parseJSON(data["comments"]);
+            if(commentsData.length == 0)
+                $("#comments").append('<div id="noComments">Zatiaľ neboli vytvorené žiadne komentáre</div>');
+            else{
+                $.each(commentsData, function (index, value) {
+                    if(index % 2 == 1)
+                        $("#comments").append('<div class="comment greyBackground"><b>'+ value.UserName +'</b> '+ value.Text +'</div>');
+                    else
+                        $("#comments").append('<div class="comment"><b>'+ value.UserName +'</b> '+ value.Text +'</div>');
+                });
+            }
+            $("#commentsSection").fadeIn();
 
-       jQuery('#widget').draggable();
-       jQuery(document).ready(function ($) {
+            $('html, body').animate({
+                scrollTop: $("#commentsSection").offset().top - 80
+            }, 1500);
+        }
+
+        function getColor(val) {
+            //alert(val)
+            if (val > 50)
+                return "rgb(" + (220 - ((val - 50) * 4)) + ", 180, 20)"
+            else
+                return "rgb( 220, " + (180 - ((50 - val) * 3.5)) + ", 20)"
+        }
+
+        jQuery('#widget').draggable();
+        jQuery(document).ready(function ($) {
            
-           //******** Activity logging sectio *********
-           //var start = new Date();
-           //var totalIdle = 0;
-           //var idleTime = 0;
+            //******** Activity logging sectio *********
+            //var start = new Date();
+            //var totalIdle = 0;
+            //var idleTime = 0;
 
-           //function CreateActivityLogData()
-           //{
-           //    //Set hidden fields in form for this values
-           //    elapsed = new Date() - start;
-           //    //set totalIdle
-           //}
+            //function CreateActivityLogData()
+            //{
+            //    //Set hidden fields in form for this values
+            //    elapsed = new Date() - start;
+            //    //set totalIdle
+            //}
 
-           ////Counting total idle time
-           //setInterval(function(){
-           //    idleTime += 100
-           //}, 100);
-           ////Zero the idle timer on mouse movement.
-           //$(this).mousemove(function (e) {
-           //    totalIdle += idleTime;
-           //    idleTime = 0;
-           //});
-           //$(this).keypress(function (e) {
-           //    totalIdle += idleTime;
-           //    idleTime = 0;
-           //});
+            ////Counting total idle time
+            //setInterval(function(){
+            //    idleTime += 100
+            //}, 100);
+            ////Zero the idle timer on mouse movement.
+            //$(this).mousemove(function (e) {
+            //    totalIdle += idleTime;
+            //    idleTime = 0;
+            //});
+            //$(this).keypress(function (e) {
+            //    totalIdle += idleTime;
+            //    idleTime = 0;
+            //});
 
-           $("#MenuSetupItem"+@(Model.Question.SetupId)).addClass("activeMenuItem");
+            $("#MenuSetupItem"+@(Model.Question.SetupId)).addClass("activeMenuItem");
 
            $(".slider-range").each(function () { $(this).trigger('mySliderTrigger') })
-               $(".slider-range").slider({
-                   range: false,
-                   min: 0,
-                   max: 100,
-                   value: 50,
-                   slide: function (event, ui) {
-                       $("#value").val(ui.value);
-                       changeColorAndText(); 
-                   }
-               });
-               
-               $("#thumbDown").click(function(){
-                   if($('#submit').attr('disabled') != "disabled"){
-                       var val = parseInt($("#value").val());
-                       if(val < 5){
-                           $(".slider-range").slider('value',0);
-                           $("#value").val(0);
-                       }
-                       else{
-                           $(".slider-range").slider('value',val-5);
-                           $("#value").val(val-5);
-                       }
-                       changeColorAndText();
-                   }
-               });
-               $("#thumbUp").click(function(){
-                   if($('#submit').attr('disabled') != "disabled"){
-                       var val = parseInt($("#value").val());
-                       if(val > 95){
-                           $(".slider-range").slider('value',100);
-                           $("#value").val(100);
-                       }
-                       else{
-                           $(".slider-range").slider('value',val+5);
-                           $("#value").val(val+5);
-                       }
-                       changeColorAndText();
-                   }
-               });
-
-               function changeColorAndText(){
-                   var val = parseInt($("#value").val());
-                   $(".slider-range").parent().css("background", getColor(val));
-
-                   var el = $("#textValue");
-
-                   var el = $("#textValue");
-                   if (val < 10)
-                       el.html("Silno nesúhlasím")
-                   else if (val < 26)
-                       el.html("Nesúhlasím")
-                   else if (val < 42)
-                       el.html("Skôr nesúhlasím")
-                   else if (val < 58)
-                       el.html("Čiastočne súhlasím")
-                   else if (val < 74)
-                       el.html("Skôr súhlasím")
-                   else if (val < 90)
-                       el.html("Súhlasím")
-                   else
-                       el.html("Silno súhlasím") 
+           $(".slider-range").slider({
+               range: false,
+               min: 0,
+               max: 100,
+               value: 50,
+               slide: function (event, ui) {
+                   $("#value").val(ui.value);
+                   changeColorAndText(); 
                }
+           });
+               
+           $("#thumbDown").click(function(){
+               if($('#submit').attr('disabled') != "disabled"){
+                   var val = parseInt($("#value").val());
+                   if(val < 5){
+                       $(".slider-range").slider('value',0);
+                       $("#value").val(0);
+                   }
+                   else{
+                       $(".slider-range").slider('value',val-5);
+                       $("#value").val(val-5);
+                   }
+                   changeColorAndText();
+               }
+           });
+           $("#thumbUp").click(function(){
+               if($('#submit').attr('disabled') != "disabled"){
+                   var val = parseInt($("#value").val());
+                   if(val > 95){
+                       $(".slider-range").slider('value',100);
+                       $("#value").val(100);
+                   }
+                   else{
+                       $(".slider-range").slider('value',val+5);
+                       $("#value").val(val+5);
+                   }
+                   changeColorAndText();
+               }
+           });
+
+           function changeColorAndText(){
+               var val = parseInt($("#value").val());
+               $(".slider-range").parent().css("background", getColor(val));
+
+               var el = $("#textValue");
+
+               var el = $("#textValue");
+               if (val < 10)
+                   el.html("Silno nesúhlasím")
+               else if (val < 26)
+                   el.html("Nesúhlasím")
+               else if (val < 42)
+                   el.html("Skôr nesúhlasím")
+               else if (val < 58)
+                   el.html("Čiastočne súhlasím")
+               else if (val < 74)
+                   el.html("Skôr súhlasím")
+               else if (val < 90)
+                   el.html("Súhlasím")
+               else
+                   el.html("Silno súhlasím") 
+           }
 
              
 
-           });
+       });
     </script>
-       
+
 }

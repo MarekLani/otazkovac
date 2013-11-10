@@ -1,0 +1,32 @@
+﻿@model CQA.Models.Comment
+
+<div id="newComment">
+    @using (Ajax.BeginForm( new AjaxOptions(){
+    HttpMethod = "POST",
+    Url = Url.Action("CreateComment", "QuestionsAndAnswers"),
+    OnSuccess = "CommentCreated(data)"})){
+        @Html.AntiForgeryToken()
+        <div class="editor-field">
+            @Html.HiddenFor(model => model.AnswerId)
+        </div>
+         <div class="editor-label">
+            @Html.LabelFor(model => model.Text, new { style="font-weight: bold;" }) <span id="createdComment"> </span>
+            @Html.ValidationMessageFor(model => model.Text, String.Empty, new { @class="text-error"})
+        </div>
+        <div class="editor-field">
+            @Html.TextAreaFor(model => model.Text, new { id="commentTextField", autocomplete="off" })
+        </div>
+        <div class="editor-label" style="float:left">
+            @Html.LabelFor(model => model.Anonymous, new { style="font-weight: bold;" })
+            @Html.ValidationMessageFor(model => model.Anonymous, String.Empty, new { @class="text-error"})
+        </div>
+        <div class="editor-field" style="float:left; margin-left: 10px; margin-top: -2px;">
+            @Html.EditorFor(model => model.Anonymous)
+        </div>
+        <div class="clear"></div>
+        <div style="text-align:center">
+            <button type="submit" id="submitComment" class="btn btn-primary"> Pridať komentár </button> 
+        </div>    
+      }
+</div>
+   

@@ -33,7 +33,8 @@ namespace CQA.Models
         SkippedAnswering,
         SkippedEvaluation,
         ViewedHintWhenAnswering,
-        ViewedHintWhenEvaluating
+        ViewedHintWhenEvaluating,
+        Commented
         
     }
 }
