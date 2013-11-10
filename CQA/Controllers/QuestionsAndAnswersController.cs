@@ -120,11 +120,11 @@ namespace CQA.Controllers
         {
             if (ModelState.IsValid)
             {
-                //if (db.Comments.Where(a => a.AnswerId == answerId && a.UserId == WebSecurity.CurrentUserId).Any())
-                //{
-                //    ModelState.AddModelError("", "Odpoveď ste už hodnotili");
-                //    return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest);
-                //}
+                if (db.Comments.Where(a => a.AnswerId == comment.AnswerId && a.UserId == WebSecurity.CurrentUserId).Any())
+                {
+                    ModelState.AddModelError("", "K tejto odpovedi, ste u6 pridali komentár");
+                   return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest);
+                }
 
                 comment.UserId = WebSecurity.CurrentUserId;
                 db.Comments.Add(comment);

@@ -132,8 +132,11 @@ else{
             resizable: true,
             modal: true,
             width: 'auto'
-        });
+        })
 
+        $('body').on("click",'.ui-widget-overlay', function () {
+            $("#dialog").dialog("close");
+        });
        
 
         $(".myAnswer").click(function () {
