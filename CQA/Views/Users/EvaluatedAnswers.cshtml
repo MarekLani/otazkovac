@@ -89,6 +89,21 @@ else{
                         ››
                     </div>
                     <div style="clear:both"></div>
+                     <div style="display: none" id="commentsWrap">
+                        <div id="comments" style="margin-left:10px; margin-top: 5px; width: 100%; border-top: 1px solid #cccccc; max-height: 150px; overflow: auto; ">
+                            <h5 style="margin:0;margin-top:5px; margin-bottom:5px">Komentáre:</h5>
+                            @if(a.Comments.Any()){
+                                foreach(CQA.Models.Comment c in a.Comments)
+                                {
+                                    <div class="comment"><b>@(c.Author.RealName)</b> @(c.Text)</div>
+                                }
+                            }
+                            else
+                            {
+                                @("K odpovedi neboli zatiaľ vytvorené žiadne komentáre")
+                            } 
+                        </div>
+                    </div>
                      
                  </div>
             }
@@ -105,6 +120,7 @@ else{
             </div>
             <div style="clear: both"></div>
             <div style="text-align: center; width: 100%"> Počet hodnotení odpovede: <b id="evalsCount">12</b></div>
+            <div id="commentsDialogWrap"></div>
         
         </div>
     }
@@ -131,7 +147,8 @@ else{
             autoOpen: false,
             resizable: true,
             modal: true,
-            width: 'auto'
+            width: 'auto',
+            height: 'auto',
         })
 
         $('body').on("click",'.ui-widget-overlay', function () {
@@ -157,6 +174,7 @@ else{
             });
 
             $(this).removeClass('empAnswer');
+            $("#dialog").children("#commentsDialogWrap").html($(this).children("#commentsWrap").html())
             
         });
 
@@ -208,7 +226,7 @@ else{
 
         $(".evalValueBg").each(function () {
             var val = parseFloat($(this).parent().parent().siblings(".numValue").val().replace(/\s/g, "").replace(",", "."));
-            $(this).parent().css("background", getColorWithOpacity(val, 2));
+            $(this).parent().css("background", getColorWithOpacity(val, $(this).parent().parent().siblings(".count").val()));
         });
 
         $(".cleanValue").each(function () {
@@ -224,14 +242,16 @@ else{
             if(val > 50)
                 return "rgba(" + (220 - ((val - 50) * 4)) + ", 180, 20, " + (0.2 + (0.8/opacity)) + ")"
             else
-                return "rgba( 220, " + (180 - ((50 - val) * 3.5)) + ", 20, " + (0.2 + (0.8 / opacity)) + ")"
+                return "rgba( 220, " + (180 - Math.ceil((50 - val) * 3.5)) + ", 20, " + (0.2 + (0.8 / opacity)) + ")"
         }
 
         function getColor(val) {
-            if (val > 50)
+            if (val > 50) {
                 return "rgb(" + (220 - ((val - 50) * 4)) + ", 180, 20)"
-            else
-                return "rgb( 220, " + (180 - ((50 - val) * 3.5)) + ", 20)"
+            }
+            else {
+                return "rgb( 220, " + Math.ceil(180 - ((50 - val) * 3.5)) + ", 20)"
+            }
         }
      
     });
