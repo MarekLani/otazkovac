@@ -53,7 +53,7 @@ else{
                            
                             @{
                                 int n =  a.Evaluations.Count(); 
-                                <div style="font-size: 11px; line-height: 12px">@(n) 
+                                <div class="evalsCount">@(n) 
                                     @if(n == 1){
                                         @("hodnotenie");
                                     }
@@ -210,16 +210,23 @@ else{
         function changeText(el, val) {
             if (val < 10)
                 el.html("Silný nesúhlas")
-            else if (val < 26)
+            else if (val < 26) {
                 el.html("Nesúhlas")
+                el.addClass("evalValueOneRow")
+            }
             else if (val < 42)
                 el.html("Skôr nesúhlas")
-            else if (val < 58)
+            else if (val < 58) {
                 el.html("Čiastočný súhlas")
-            else if (val < 74)
+            }
+            else if (val < 74) {
                 el.html("Skôr súhlas")
-            else if (val < 90)
+                el.addClass("evalValueOneRow")
+            }
+            else if (val < 90) {
                 el.html("Súhlas")
+                el.addClass("evalValueOneRow")
+            }
             else
                 el.html("Silný súhlas")
         }

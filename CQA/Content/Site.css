@@ -961,17 +961,17 @@ tr.pager td {
 
 .myAnswer
 {
-	line-height: 44px;
+	line-height: 48px;
 	vertical-align: middle;
 	clear: both;
-	height: 44px;
+	height: 48px;
 	border-bottom: 1px solid lightgrey;
 	cursor: pointer;
 }
 
 	.myAnswer .btn
 	{
-		margin-top: 1px;
+		margin-top: 3px;
 	}
 
 .greyBackground
@@ -995,7 +995,19 @@ tr.pager td {
   width: 88px;
   text-align: center;
   font-weight: 500;
-  height: 42px;
+  height: 46px;
+}
+
+.evalValueOneRow
+{
+	max-height: 39px !important;
+	padding-top: 9px !important;
+}
+
+.evalsCount
+{
+	font-size: 11px;
+   line-height: 14px
 }
 
 .evalValueWrap
@@ -1005,12 +1017,12 @@ tr.pager td {
   width: 90px;
   border-left: 1px lightgrey solid;
   border-right: 1px lightgrey solid;
-  height: 44px;
+  height: 48px;
 }
 
 .cleanValue
 {
-	min-height: 32px;
+	  padding-top: 2px;
 }
 
 .crowdSlider
@@ -1064,8 +1076,8 @@ tr.pager td {
 	width: 40%;
     font-size: 14px;
 	float: left;
-	line-height: 20px !important;
-	height: 40px;
+	line-height: 22px !important;
+	height: 44px;
 	padding-left: 15px;
 	padding-right: 10px;
 	margin-top: 2px;
