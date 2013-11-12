@@ -823,11 +823,9 @@ tr.pager td {
 	display: none;
 }
 
-#
-
+#newComment
 {
-	margin-top: 5px;
-	margin-bottom: 20px;
+	margin-top: 10px;
 }
 
 .comment

@@ -46,57 +46,57 @@ namespace CQA.Controllers
                 int uisId = 0;
                 //comment it out for testing
                 //Attempt to register the user
-                //try
-                //{
+                try
+                {
 
-                //    string sDomain = String.Format("LDAP://ldap.stuba.sk:389/uid={0},ou=People,dc=stuba,dc=sk", model.UserName);
-                //    string sServiceUser = "uid=" + model.UserName + ",ou=People,dc=stuba,dc=sk";
-                //    string sServicePassword = model.Password;
-                //    DirectoryEntry de = new DirectoryEntry(sDomain, sServiceUser, sServicePassword, AuthenticationTypes.None);
-                //    DirectorySearcher ds = new DirectorySearcher(de);
-                //    ds.Filter = "(&" +
-                //                 "(uid=" + model.UserName + ")" +
-                //                  ")";
-
-
-                //    SearchResult sr = ds.FindOne();
+                    string sDomain = String.Format("LDAP://ldap.stuba.sk:389/uid={0},ou=People,dc=stuba,dc=sk", model.UserName);
+                    string sServiceUser = "uid=" + model.UserName + ",ou=People,dc=stuba,dc=sk";
+                    string sServicePassword = model.Password;
+                    DirectoryEntry de = new DirectoryEntry(sDomain, sServiceUser, sServicePassword, AuthenticationTypes.None);
+                    DirectorySearcher ds = new DirectorySearcher(de);
+                    ds.Filter = "(&" +
+                                 "(uid=" + model.UserName + ")" +
+                                  ")";
 
 
-                //    foreach (string PropertyName in sr.Properties.PropertyNames)
-                //    {
-                //        try
-                //        {
-                //            foreach (Object key in sr.GetDirectoryEntry().Properties[PropertyName])
-                //            {
-                //                switch (PropertyName.ToLower())
-                //                {
-                //                    case "sn":
-                //                        surName += key.ToString();
-                //                        break;
-                //                    case "givenname":
-                //                        firstName += key.ToString();
-                //                        break;
-                //                    case "uisid":
-                //                        uisId = Convert.ToInt32(key.ToString());
-                //                        break;
-                //                    default:
-                //                        break;
-                //                }
-                //            }
-                //        }
-                //        catch { }
-                //    }
+                    SearchResult sr = ds.FindOne();
 
-                //}
-                //catch (MembershipCreateUserException e)
-                //{
-                //    ModelState.AddModelError("", ErrorCodeToString(e.StatusCode));
-                //}
-                //catch (Exception)
-                //{
-                //    ModelState.AddModelError("", "Nesprávne meno alebo heslo");
-                //    return View(model);
-                //}
+
+                    foreach (string PropertyName in sr.Properties.PropertyNames)
+                    {
+                        try
+                        {
+                            foreach (Object key in sr.GetDirectoryEntry().Properties[PropertyName])
+                            {
+                                switch (PropertyName.ToLower())
+                                {
+                                    case "sn":
+                                        surName += key.ToString();
+                                        break;
+                                    case "givenname":
+                                        firstName += key.ToString();
+                                        break;
+                                    case "uisid":
+                                        uisId = Convert.ToInt32(key.ToString());
+                                        break;
+                                    default:
+                                        break;
+                                }
+                            }
+                        }
+                        catch { }
+                    }
+
+                }
+                catch (MembershipCreateUserException e)
+                {
+                    ModelState.AddModelError("", ErrorCodeToString(e.StatusCode));
+                }
+                catch (Exception)
+                {
+                    ModelState.AddModelError("", "Nesprávne meno alebo heslo");
+                    return View(model);
+                }
 
                 // Using Hack with password, because we really do not need it
                 //If user was not logged before

@@ -1,6 +1,6 @@
 ﻿@model CQA.Models.Comment
 
-<div id="newComment">
+<div id="newComment" style="margin-top: 10px;">
     @using (Ajax.BeginForm( new AjaxOptions(){
     HttpMethod = "POST",
     Url = Url.Action("CreateComment", "QuestionsAndAnswers"),

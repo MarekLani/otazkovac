@@ -22,7 +22,7 @@ namespace CQA.Models
         [Required(ErrorMessage = "Prosím zadajte text komentára")]
         public string Text { get; set; }
 
-        [DisplayName("Uložiť ako anonýmny komentár")]
+        [DisplayName("Uložiť ako anonymný komentár")]
         public bool Anonymous { get; set; }
 
         public Comment()

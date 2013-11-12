@@ -122,7 +122,7 @@ namespace CQA.Controllers
             {
                 if (db.Comments.Where(a => a.AnswerId == comment.AnswerId && a.UserId == WebSecurity.CurrentUserId).Any())
                 {
-                    ModelState.AddModelError("", "K tejto odpovedi, ste u6 pridali komentár");
+                    ModelState.AddModelError("", "K tejto odpovedi, ste už komentár pridali");
                    return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest);
                 }
 

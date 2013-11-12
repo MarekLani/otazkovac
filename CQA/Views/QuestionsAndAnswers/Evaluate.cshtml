@@ -81,7 +81,7 @@
             $('#commentForm').fadeOut();
             $('#noComments').hide();
             data = $.parseJSON(data);
-            $("#comments").append('<div class="comment empAnswer"><b>'+ data.UserName +'</b> '+ data.Text +'</div>');
+            $("#comments").append('<div class="comment empAnswer"><b>'+ data.UserName +':</b> '+ data.Text +'</div>');
 
         }
 
@@ -111,9 +111,9 @@
             else{
                 $.each(commentsData, function (index, value) {
                     if(index % 2 == 1)
-                        $("#comments").append('<div class="comment greyBackground"><b>'+ value.UserName +'</b> '+ value.Text +'</div>');
+                        $("#comments").append('<div class="comment greyBackground"><b>'+ value.UserName +':</b> '+ value.Text +'</div>');
                     else
-                        $("#comments").append('<div class="comment"><b>'+ value.UserName +'</b> '+ value.Text +'</div>');
+                        $("#comments").append('<div class="comment"><b>'+ value.UserName +':</b> '+ value.Text +'</div>');
                 });
             }
             $("#commentsSection").fadeIn();

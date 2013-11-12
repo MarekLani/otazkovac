@@ -95,7 +95,18 @@ else{
                             @if(a.Comments.Any()){
                                 foreach(CQA.Models.Comment c in a.Comments)
                                 {
-                                    <div class="comment"><b>@(c.Author.RealName)</b> @(c.Text)</div>
+                                    
+                                    <div class="comment">
+                                        <b>
+                                        @if(c.Anonymous){
+                                           @("Anonym:") 
+                                        }
+                                        else{
+                                            @(c.Author.RealName+":")
+                                        } 
+                                        </b> 
+                                        @(c.Text)
+                                    </div>
                                 }
                             }
                             else
