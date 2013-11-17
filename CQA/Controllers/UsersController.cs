@@ -51,6 +51,35 @@ namespace CQA.Controllers
             return View(evaluatedAnswers);
         }
 
+        public ActionResult MyEvaluations()
+        {
+            List<EvaluatedAnswers> evaluatedAnswers = new List<Models.EvaluatedAnswers>();
+            var setupsWithEvaluatedAnswers = db.Answers.Where(a => a.Evaluations.Where(e => e.UserId == WebSecurity.CurrentUserId).Any())
+                .OrderByDescending(a => a.DateCreated).GroupBy(a => a.Question.Setup);
+            foreach (var s in setupsWithEvaluatedAnswers) //.Where(a => a SeenEvaluation == false))
+            {
+                EvaluatedAnswers ea = new EvaluatedAnswers();
+                ea.Answers = new List<Answer>();
+                ea.UnseenHighlightedAnswers = new List<Answer>();
+                ea.Setup = s.Key;
+                ea.UnseenCount = 0;
+                foreach (Answer a in s)
+                {
+                    ea.Answers.Add(a);
+                    //if (!(bool)a.SeenEvaluation)
+                    //{
+                    //    ea.UnseenCount++;
+                    //    a.SeenEvaluation = true;
+                    //    ea.UnseenHighlightedAnswers.Add(a);
+                    //    db.Entry(a).State = EntityState.Modified;
+                    //}
+                }
+                evaluatedAnswers.Add(ea);
+            }
+            db.SaveChanges();
+            return View(evaluatedAnswers);
+        }
+
         // GET: /Account/RegisterUser
         //[Authorize(Roles = "Admin")]
         [HttpGet]

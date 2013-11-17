@@ -432,7 +432,8 @@
     <Content Include="Views\QuestionsAndAnswers\NothingToDoHere.cshtml" />
     <Content Include="Views\QuestionsAndAnswers\EvaluateWithHint.cshtml" />
     <Content Include="Views\QuestionsAndAnswers\AnswerWithHint.cshtml" />
-    <Content Include="Views\QuestionsAndAnswers\_CreateCommentForm.cshtml" />
+    <Content Include="Views\Shared\_CreateCommentForm.cshtml" />
+    <Content Include="Views\Users\MyEvaluations.cshtml" />
     <None Include="Web.Production.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -100,9 +100,9 @@ namespace CQA.Controllers
                 {
                     ViewComment vc;
                     if (c.Anonymous)
-                        vc = new ViewComment(c.Text, "Anonym");
+                        vc = new ViewComment(c.Text, "Anonym", answerId);
                     else
-                        vc = new ViewComment(c.Text, db.UserProfiles.Find(c.UserId).RealName);
+                        vc = new ViewComment(c.Text, db.UserProfiles.Find(c.UserId).RealName, answerId);
                     viewComments.Add(vc);
                 }
                 var jsonSerialiser = new JavaScriptSerializer();
@@ -120,12 +120,6 @@ namespace CQA.Controllers
         {
             if (ModelState.IsValid)
             {
-                if (db.Comments.Where(a => a.AnswerId == comment.AnswerId && a.UserId == WebSecurity.CurrentUserId).Any())
-                {
-                    ModelState.AddModelError("", "K tejto odpovedi, ste už komentár pridali");
-                   return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest);
-                }
-
                 comment.UserId = WebSecurity.CurrentUserId;
                 db.Comments.Add(comment);
                 db.SaveChanges();
@@ -134,9 +128,9 @@ namespace CQA.Controllers
                 UserMadeAction(UserActionType.Commented, comment.AnswerId, 0);
                 ViewComment vc;
                 if(comment.Anonymous)
-                    vc = new ViewComment( comment.Text, "Anonym");
+                    vc = new ViewComment( comment.Text, "Anonym", comment.AnswerId);
                 else
-                    vc = new ViewComment(comment.Text, db.UserProfiles.Find(comment.UserId).RealName);
+                    vc = new ViewComment(comment.Text, db.UserProfiles.Find(comment.UserId).RealName, comment.AnswerId);
                 var jsonSerialiser = new JavaScriptSerializer();
                 return Json(jsonSerialiser.Serialize(vc));
 

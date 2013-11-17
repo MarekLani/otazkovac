@@ -5,23 +5,21 @@
 }
 
 @{
-    ViewBag.Title = "Ohodnotené odpovede";
+    ViewBag.Title = "Moje hodnotenia";
 }
 
 
 @if (!Model.Any())
 {
-    <h4>Ľutujeme, zatiaľ pre Vás nie sú k dispozícii žiadne ohodnotené odpovede.</h4>
+    <h4>Zatiaľ ste nehodnotili žiadne odpovede</h4>
 }
 else
 {
     <h3>Vaše ohodnotené odpovede</h3>
     foreach (var ea in Model)
     {
-    <div class="setup">@Html.Raw("<span style=\"font-size: 24px\">" + ea.Setup.Subject.Name + " " + ea.Setup.Name + " </span><br/>" +
-            "Počet nových ohodnotených odpovedí:" + "<b>" + ea.UnseenCount +
-            " </b> | " +
-            "Počet všetkých ohodnotených odpovedí: " + "<b>" + ea.Answers.Count() + "</b>")
+    <div class="setup">@Html.Raw(
+            "Počet hodnotených odpovedí: " + "<b>" + ea.Answers.Count() + "</b>")
     </div>
         
     <div class="header">
@@ -97,11 +95,11 @@ else
                         int value = (int)(e.Value * 100);
                         if (value >= 50)
                         {
-                        <div class="crowdSlider" style="left:@(value)%; margin-left: -14px; "></div>
+                        <div class="crowdSlider @if(e.UserId == WebSecurity.CurrentUserId){@("myEvaluation")}" style="left:@(value)%; margin-left: -14px; "></div>
                         }
                         else
                         {
-                        <div class="crowdSlider" style="left:@(value)%; margin-left: -8px; "></div>
+                        <div class="crowdSlider  @if(e.UserId == WebSecurity.CurrentUserId){@("myEvaluation")}" style="left:@(value)%; margin-left: -8px; "></div>
                         }
 
                     }
