@@ -66,13 +66,6 @@ namespace CQA.Controllers
                 foreach (Answer a in s)
                 {
                     ea.Answers.Add(a);
-                    //if (!(bool)a.SeenEvaluation)
-                    //{
-                    //    ea.UnseenCount++;
-                    //    a.SeenEvaluation = true;
-                    //    ea.UnseenHighlightedAnswers.Add(a);
-                    //    db.Entry(a).State = EntityState.Modified;
-                    //}
                 }
                 evaluatedAnswers.Add(ea);
             }

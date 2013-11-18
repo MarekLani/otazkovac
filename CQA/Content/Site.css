@@ -643,7 +643,7 @@ tr.pager td {
 		background: #333333;
 		color: white;
 		padding: 5px;
-		z-index: 101;
+		z-index: 102;
     }
 
         footer p {
@@ -1170,6 +1170,35 @@ tr.pager td {
 {
 	background: #333333 !important;
 }
+
+.myEvaluationWrap
+{
+	width: 80px;
+	overflow:visible;
+	position: absolute;
+	z-index = 101;
+}
+
+.myEvaluationText
+{
+	margin-top: -30px;
+	margin-left: -50px;
+}
+
+.downArrow
+{
+	width: 30px;
+	height: 30px;
+	margin-top: -3px;
+	margin-left: -18px;
+	font-size: 22px;
+	-webkit-transform: rotate(90deg);
+    -moz-transform: rotate(90deg);
+    -o-transform: rotate(90deg);
+    -ms-transform: rotate(90deg);
+    transform: rotate(90deg);"
+}
+
 .myAnswerWrap .ui-state-disabled {
    background-image:none;
    opacity:0.99 !important;

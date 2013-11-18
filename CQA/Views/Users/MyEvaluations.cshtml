@@ -15,10 +15,10 @@
 }
 else
 {
-    <h3>Vaše ohodnotené odpovede</h3>
+    <h3>Vami hodnotené odpovede</h3>
     foreach (var ea in Model)
     {
-    <div class="setup">@Html.Raw(
+    <div class="setup">@Html.Raw("<span style=\"font-size: 24px\">" + ea.Setup.Subject.Name + " " + ea.Setup.Name + " </span><br/>" +
             "Počet hodnotených odpovedí: " + "<b>" + ea.Answers.Count() + "</b>")
     </div>
         
@@ -92,24 +92,36 @@ else
                 <div class="ui-widget-content-wrapper" style="width: 100%; margin-top: 25px;">
                     @foreach (var e in a.Evaluations)
                     {
-                        int value = (int)(e.Value * 100);
-                        if (value >= 50)
+                        int value = (int)(e.Value * 100);  
+                        int margin = 0;
+                        
+                        if(value >= 50){
+                            margin=-14;
+                        }
+                        else{
+                            margin = -8;
+                        }
+                        if (e.UserId == WebSecurity.CurrentUserId)
                         {
-                        <div class="crowdSlider @if(e.UserId == WebSecurity.CurrentUserId){@("myEvaluation")}" style="left:@(value)%; margin-left: -14px; "></div>
+                            <div class="myEvaluationWrap" style="left:@(value)%; margin-left: @(margin)px;">
+                                <div class="myEvaluationText">Vaše hodnotenie</div>
+                                <div class="downArrow">›</div>
+                                <div class="crowdSlider myEvaluation" ></div>
+                            </div>
+                                
                         }
                         else
                         {
-                        <div class="crowdSlider  @if(e.UserId == WebSecurity.CurrentUserId){@("myEvaluation")}" style="left:@(value)%; margin-left: -8px; "></div>
+                            <div class="crowdSlider" style="left:@(value)%; margin-left: @(margin)px; "></div>
                         }
-
-                    }
+                    }      
                     <div class="slider-range"></div>
                 </div>
             </div>
             <div style="clear: both"></div>
             <div style="text-align: center; width: 100%">Počet hodnotení odpovede: <b class="evalsCount">@(a.Evaluations.Count())</b></div>
             <div class="commentsWrap">
-                <div class="comments" style="margin-left: 15px; margin-top: 0px; width: 96%;">
+                <div class="comments" style="margin-left: 15px; margin-top: 5px; width: 96%;">
                     <h5 style="margin: 0; margin-top: 5px; margin-bottom: 5px">Komentáre:</h5>
                     @if (a.Comments.Any())
                     {

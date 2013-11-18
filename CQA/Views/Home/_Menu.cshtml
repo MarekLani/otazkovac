@@ -29,11 +29,8 @@
                                     }
                                     </a> 
                                 </li>
-                                <li><a href="@Url.Action("MyEvaluations","Users")">Moje hodnotenia
-                                    @if(Model.UnseenEvaluatedAnswersCount > 0){
-                                        <span class="badge badge-success"> @(Model.UnseenEvaluatedAnswersCount)  </span>
-                                    }
-                                    </a>
+                                <li>
+                                    <a href="@Url.Action("MyEvaluations","Users")">Moje hodnotenia</a>
                                 </li>
                                 if(User.IsInRole("Admin")){
                                     <li class="dropdown">
