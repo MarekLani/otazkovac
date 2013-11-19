@@ -228,7 +228,7 @@ else
             $(".myAnswerWrap").each(function () {
                 //alert($(this).children(".numValue"));
                 var val = $(this).find(".numValue").val();
-                $(this).find(".evalValue").css("background", getColorWithOpacity(val, $(this).find(".count").text()));
+                $(this).find(".evalValue").css("background", getColorWithOpacity(val, $(this).find(".count").val()));
                 changeText($(this).find(".cleanValue"), val);
                 changeText($(this).find(".textValue"), val);
                 $(this).find(".slider-range").slider('value', val);
