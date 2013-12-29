@@ -101,6 +101,7 @@ else
                         else{
                             margin = -8;
                         }
+
                         if (e.UserId == WebSecurity.CurrentUserId)
                         {
                             <div class="myEvaluationWrap" style="left:@(value)%; margin-left: @(margin)px;">
@@ -109,6 +110,14 @@ else
                                 <div class="crowdSlider myEvaluation" ></div>
                             </div>
                                 
+                        }
+                        else if (Roles.IsUserInRole(CQA.Membership.CustomMembershipProvider.GetUser(e.UserId).UserName, "Admin") && CQA.Membership.CustomMembershipProvider.GetUser(e.UserId).UserName != "xlanim")
+                        {
+                           <div class="myEvaluationWrap" style="left:@(value)%; margin-left: @(margin)px;">
+                                <div class="myEvaluationText" style="margin-left: -65px">Hodnotenie učiteľa</div>
+                                <div class="downArrow">›</div>
+                                <div class="crowdSlider authorityEvaluation" ></div>
+                            </div> 
                         }
                         else
                         {

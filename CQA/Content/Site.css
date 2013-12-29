@@ -933,12 +933,12 @@ tr.pager td {
 	}
 
 	.crowdSlider
-{
-	width: 18px !important;
-	height: 18px !important;
-	top: -6px !important;
-	margin-left: -12px;
-}
+	{
+		width: 18px !important;
+		height: 18px !important;
+		top: -6px !important;
+		margin-left: -12px;
+	}
 
     .thumb
 	{
@@ -1169,6 +1169,13 @@ tr.pager td {
 .myEvaluation
 {
 	background: #333333 !important;
+}
+
+.authorityEvaluation
+{
+	width: 20px;
+	height: 20px;
+	background-image: url("../Images/smallStar.png");
 }
 
 .myEvaluationWrap

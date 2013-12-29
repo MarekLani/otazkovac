@@ -230,6 +230,7 @@ namespace CQA.Controllers
 
             int skippedAnswerId = 0;
             int skippedQuestionId = 0;
+            bool triedObtainEval = false;
 
             if (Session["SkippedQuestionId"] != null)
             {
@@ -265,7 +266,7 @@ namespace CQA.Controllers
                 }
             }
 
-            //Hack for selecting when user has not seen the question so there is no record to be selected
+            //Hack for selecting, when user has not seen the question, so there is no record to be selected
             //See selects lower using DefaultIfEmpty
             var defaultQuestionView = new QuestionView();
             defaultQuestionView.ViewDate = DateTime.MinValue;
@@ -292,18 +293,20 @@ namespace CQA.Controllers
             int p = db.Setups.Find(setupId).AnsweringProbability;
             if (rand.Next(p) != p-1)
             {
+                triedObtainEval = true;
                 //user is going to validate answer
 
-                //Algorythm for selection of answer to be evaluated looks like this:
+                //Algorithm for selection of answer to be evaluated looks like this:
                 //1. Find all answers, which have not been already evaluated by current user,
                 //   which were not written by current user, which are in current setup and for active question
-                //2. With greedy maximization principle, try to find questions which have fewer than 3 evaluations (MinEvaluationLimit)
+                //2. If answer was skipped remove it from list (if it is not the only one possible answer to be displayed) 
+                //3. With greedy maximization principle, try to find questions which have fewer than 3 evaluations (MinEvaluationLimit)
                 //  and which question was not seen by current user in last day, if such a answer exists ruturn it
-                //3. If no such a question exists try to find question which have fewer then 16 (FullEvaluationLimit) evaluations with
+                //4. If no such a question exists try to find question which have fewer then 16 (FullEvaluationLimit) evaluations with
                 // the same proccedure as before. 
-                //4.If there is no answer sleected byt his rules, ignore 1 day rule and try to find
+                //5.If there is no answer sleected in step 4, ignore 1 day rule and try to find
                 // answer as before, but without the one day rule.
-                //5. If there are also no results, try to find question to be answered
+                //6. If there are also no results, try to find question to be answered
 
                 //step 1
                 var answers = db.Answers
@@ -312,6 +315,14 @@ namespace CQA.Controllers
                                         && a.UserId != WebSecurity.CurrentUserId
                                         && a.Question.IsActive).ToList();
 
+                //Remove skipped answer (if was)
+                if (skippedAnswerId != 0 && answers.Count() > 1)
+                {
+                    Answer delAns = answers.Find(a => a.AnswerId == skippedAnswerId);
+                    if (delAns != null)
+                        answers.Remove(delAns);
+                }
+
                 if (answers.Any())
                 {
                     //step 2
@@ -319,13 +330,6 @@ namespace CQA.Controllers
                                 .Where(a => a.Question.QuestionViews.Where(qv => qv.UserId == WebSecurity.CurrentUserId)
                                     .DefaultIfEmpty(defaultQuestionView).Single().ViewDate.AddDays(1) < DateTime.Now
                                     && a.Evaluations.Count < MyConsts.MinEvaluationLimit).OrderByDescending(a => a.Evaluations.Count()).ToList();
-                    //Remove skipped answer (if was)
-                    if (skippedAnswerId != 0)
-                    {
-                        Answer delAns = bottomGreedy.Find(a => a.AnswerId == skippedAnswerId);
-                        if(delAns != null)
-                            bottomGreedy.Remove(delAns);
-                    }
                     if (bottomGreedy.Any())
                     {
                         int n = bottomGreedy.First().Evaluations.Count();
@@ -341,13 +345,6 @@ namespace CQA.Controllers
                             .Where(a => a.Evaluations.Count < MyConsts.FullEvaluationLimit)
                             .OrderByDescending(a => a.Evaluations.Count()).ToList();
 
-                        //Remove skipped answer (if was)
-                        if (skippedAnswerId != 0)
-                        {
-                            Answer delAns = upperGreedy.Find(a => a.AnswerId == skippedAnswerId);
-                            if(delAns != null)
-                                upperGreedy.Remove(delAns);
-                        }
                         if (upperGreedy.Any())
                         {
                             var UnseenAnswers = upperGreedy.Where(a => a.Question.QuestionViews.Where(qv => qv.QuestionId == a.QuestionId && qv.UserId == WebSecurity.CurrentUserId)
@@ -365,15 +362,24 @@ namespace CQA.Controllers
             }
 
             //Choosing a question to be answered
-            //Algorythm looks like this:
+            //Algorithm looks like this:
             //1. Choose active questions from current setup, which was not already answered by current user
-            //2. From this questions choose only those, which answers were not evaluated by current user in last two days
-            //3. If no questions are selected in step two, ignore 2 days rule and select from all questions
+            //2. If question was skipped remove it from list (if it is not the only one possible question to be displayed) 
+            //3. From this questions choose only those, which answers were not evaluated by current user in last two days
+            //4. If no questions are selected in step two, ignore 2 days rule 
+            //5. Choose random question with smallest number of answers 
 
             //Step 1 take active questions which user has not answered yet
             var tempQuestions = db.Questions.Where( q => !q.Answers.Where(r => r.UserId == WebSecurity.CurrentUserId).Any() &&
                 q.IsActive &&
                 q.SetupId == setupId).OrderBy(q => q.Answers.Count()).ToList();
+
+            if (skippedQuestionId != 0 && tempQuestions.Count() > 1)
+            {
+                Question delQue = tempQuestions.Find(q => q.QuestionId == skippedQuestionId);
+                if (delQue != null)
+                    tempQuestions.Remove(delQue);
+            }
 
             if (tempQuestions.Any())
             {
@@ -386,12 +392,7 @@ namespace CQA.Controllers
                 if (!questions.Any())
                     questions = tempQuestions;
 
-                if (skippedQuestionId != 0)
-                {
-                    Question delQue = questions.Find(q => q.QuestionId == skippedQuestionId);
-                    if (delQue != null)
-                        questions.Remove(delQue);
-                }
+               
                 //Check if there is any question to be answered
                 if(questions.Any()){
                     int n = questions.First().Answers.Count();
@@ -401,7 +402,7 @@ namespace CQA.Controllers
                     return View("Answer",q );
                 }
             }
-            if (skippedAnswerId == 0 && skippedQuestionId == 0)
+            if (skippedAnswerId == 0 && skippedQuestionId == 0 && triedObtainEval == true)
                 return View("NothingToDoHere");
             else
                 return RedirectToAction("AnswerAndEvaluate", new { setupId = setupId });

@@ -55,7 +55,7 @@ else
                         <div class="cleanValue"></div>
 
                         @{
-                                int n = a.Evaluations.Count(); 
+                int n = a.Evaluations.Count(); 
                             <div class="evalsCount">@(n)
                                 @if (n == 1)
                                 {
@@ -91,18 +91,34 @@ else
             <div class="answerText"><b>Odpoveď: </b>@(a.Text)</div>
             <div class="textValue"></div>
             <div class="sliderWrap">
-                <div class="ui-widget-content-wrapper" style="width: 100%; margin-top: 25px;">
+                <div class="ui-widget-content-wrapper" style="width: 100%; margin-top: 30px;">
                     @foreach (var e in a.Evaluations)
                     {
                         int value = (int)(e.Value * 100);
+                        int margin = 0;
+
                         if (value >= 50)
                         {
-                        <div class="crowdSlider" style="left:@(value)%; margin-left: -14px; "></div>
+                            margin = -14;
                         }
                         else
                         {
-                        <div class="crowdSlider" style="left:@(value)%; margin-left: -8px; "></div>
+                            margin = -8;
                         }
+
+                        if (Roles.IsUserInRole(CQA.Membership.CustomMembershipProvider.GetUser(e.UserId).UserName, "Admin") && CQA.Membership.CustomMembershipProvider.GetUser(e.UserId).UserName != "xlanim")
+                        {
+                        <div class="myEvaluationWrap" style="left:@(value)%; margin-left: @(margin)px;">
+                            <div class="myEvaluationText" style="margin-left: -65px">Hodnotenie učiteľa</div>
+                            <div class="downArrow">›</div>
+                            <div class="crowdSlider authorityEvaluation"></div>
+                        </div> 
+                        }
+                        else
+                        {
+                        <div class="crowdSlider" style="left:@(value)%; margin-left: -@(margin)px; "></div>
+                        }
+
 
                     }
                     <div class="slider-range"></div>
@@ -160,7 +176,7 @@ else
             data = $.parseJSON(data);
             $("#a" + data.AnswerId).find('.noComments').hide();
             $("#a" + data.AnswerId).find('textarea').val('');
-            $("#a"+data.AnswerId).find(".comments").append('<div class="comment empAnswer"><b>' + data.UserName + ':</b> ' + data.Text + '</div>');
+            $("#a" + data.AnswerId).find(".comments").append('<div class="comment empAnswer"><b>' + data.UserName + ':</b> ' + data.Text + '</div>');
         }
 
         $(document).ready(function () {
@@ -198,7 +214,7 @@ else
                     $(this).addClass("opened");
                 }
 
-                
+
             });
 
             function changeText(el, val) {
