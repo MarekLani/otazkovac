@@ -91,7 +91,7 @@ else
             <div class="answerText"><b>Odpoveď: </b>@(a.Text)</div>
             <div class="textValue"></div>
             <div class="sliderWrap">
-                <div class="ui-widget-content-wrapper" style="width: 100%; margin-top: 30px;">
+                <div class="ui-widget-content-wrapper" style="width: 100%; margin-top: 35px;">
                     @foreach (var e in a.Evaluations)
                     {
                         int value = (int)(e.Value * 100);
@@ -106,7 +106,7 @@ else
                             margin = -8;
                         }
 
-                        if (Roles.IsUserInRole(CQA.Membership.CustomMembershipProvider.GetUser(e.UserId).UserName, "Admin") && CQA.Membership.CustomMembershipProvider.GetUser(e.UserId).UserName != "xlanim")
+                        if (!Roles.IsUserInRole(CQA.Membership.CustomMembershipProvider.GetUser(e.UserId).UserName, "Admin") && CQA.Membership.CustomMembershipProvider.GetUser(e.UserId).UserName != "xlaanim")
                         {
                         <div class="myEvaluationWrap" style="left:@(value)%; margin-left: @(margin)px;">
                             <div class="myEvaluationText" style="margin-left: -65px">Hodnotenie učiteľa</div>

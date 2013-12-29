@@ -114,9 +114,10 @@ else
                         else if (Roles.IsUserInRole(CQA.Membership.CustomMembershipProvider.GetUser(e.UserId).UserName, "Admin") && CQA.Membership.CustomMembershipProvider.GetUser(e.UserId).UserName != "xlanim")
                         {
                            <div class="myEvaluationWrap" style="left:@(value)%; margin-left: @(margin)px;">
-                                <div class="myEvaluationText" style="margin-left: -65px">Hodnotenie učiteľa</div>
-                                <div class="downArrow">›</div>
                                 <div class="crowdSlider authorityEvaluation" ></div>
+                               <div class="upArrow">›</div>
+                                <div class="myEvaluationText" style="margin-left: -65px; margin-top: -2px;">Hodnotenie učiteľa</div>
+                                
                             </div> 
                         }
                         else
@@ -128,7 +129,7 @@ else
                 </div>
             </div>
             <div style="clear: both"></div>
-            <div style="text-align: center; width: 100%">Počet hodnotení odpovede: <b class="evalsCount">@(a.Evaluations.Count())</b></div>
+            <div style="text-align: center; width: 100%; margin-top: 20px;">Počet hodnotení odpovede: <b class="evalsCount">@(a.Evaluations.Count())</b></div>
             <div class="commentsWrap">
                 <div class="comments" style="margin-left: 15px; margin-top: 5px; width: 96%;">
                     <h5 style="margin: 0; margin-top: 5px; margin-bottom: 5px">Komentáre:</h5>
