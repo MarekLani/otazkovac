@@ -111,13 +111,12 @@ else
                             </div>
                                 
                         }
-                        else if (Roles.IsUserInRole(CQA.Membership.CustomMembershipProvider.GetUser(e.UserId).UserName, "Admin") && CQA.Membership.CustomMembershipProvider.GetUser(e.UserId).UserName != "xlanim")
+                        else if(Roles.IsUserInRole(CQA.Membership.CustomMembershipProvider.GetUser(e.UserId).UserName, "Admin") && CQA.Membership.CustomMembershipProvider.GetUser(e.UserId).UserName != "xlanim")
                         {
-                           <div class="myEvaluationWrap" style="left:@(value)%; margin-left: @(margin)px;">
-                                <div class="crowdSlider authorityEvaluation" ></div>
+                           <div class="authorityEvaluationWrap" style="left:@(value)%; margin-left: @(margin)px;">
+                               <div class="crowdSlider authorityEvaluation" ></div>
                                <div class="upArrow">›</div>
-                                <div class="myEvaluationText" style="margin-left: -65px; margin-top: -2px;">Hodnotenie učiteľa</div>
-                                
+                               <div class="myEvaluationText" style="margin-left: -65px; margin-top: -2px;">Hodnotenie učiteľa</div>
                             </div> 
                         }
                         else

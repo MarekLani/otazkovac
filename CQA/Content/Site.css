@@ -1178,12 +1178,17 @@ tr.pager td {
 	background-image: url("../Images/smallStar.png");
 }
 
-.myEvaluationWrap
+.myEvaluationWrap, .authorityEvaluationWrap
 {
 	width: 80px;
 	overflow:visible;
 	position: absolute;
 	z-index: 101;
+}
+
+.authorityEvaluationWrap
+{
+	z-index: 102;
 }
 
 .myEvaluationText

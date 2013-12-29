@@ -106,17 +106,17 @@ else
                             margin = -8;
                         }
 
-                        if (!Roles.IsUserInRole(CQA.Membership.CustomMembershipProvider.GetUser(e.UserId).UserName, "Admin") && CQA.Membership.CustomMembershipProvider.GetUser(e.UserId).UserName != "xlaanim")
+                        if (Roles.IsUserInRole(CQA.Membership.CustomMembershipProvider.GetUser(e.UserId).UserName, "Admin") && CQA.Membership.CustomMembershipProvider.GetUser(e.UserId).UserName != "xlanim")
                         {
-                        <div class="myEvaluationWrap" style="left:@(value)%; margin-left: @(margin)px;">
-                            <div class="myEvaluationText" style="margin-left: -65px">Hodnotenie učiteľa</div>
-                            <div class="downArrow">›</div>
-                            <div class="crowdSlider authorityEvaluation"></div>
-                        </div> 
+                            <div class="authorityEvaluationWrap" style="left:@(value)%; margin-left: @(margin)px;">
+                                <div class="myEvaluationText" style="margin-left: -65px">Hodnotenie učiteľa</div>
+                                <div class="downArrow">›</div>
+                                <div class="crowdSlider authorityEvaluation"></div>
+                            </div> 
                         }
                         else
                         {
-                        <div class="crowdSlider" style="left:@(value)%; margin-left: -@(margin)px; "></div>
+                            <div class="crowdSlider" style="left:@(value)%; margin-left: -@(margin)px; "></div>
                         }
 
 
