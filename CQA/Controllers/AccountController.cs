@@ -246,8 +246,6 @@ namespace CQA.Controllers
             return View(model);
         }
 
-      
-
 
 
         #region Helpers

@@ -72,20 +72,37 @@ namespace CQA.Controllers
                     return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest);
                 }
 
+
+                //Notifications
+                Answer answer = db.Answers.Find(answerId);
+
+                //Create Notification
+                Notification not = new Notification();
+                not.Answer = answer;
+                not.User = answer.Author;
+                not.NotificationFor = NotificationFor.MyAnswer;
+                not.NotificationType = NotificationType.NewEvaluation;
+                db.Notifications.Add(not);
+                db.SaveChanges();
+
+                //ForEach already assigned evaluation we need to create notifications too
+                foreach (Evaluation eval in answer.Evaluations)
+                {
+                    Notification not2 = new Notification();
+                    not2.Answer = eval.Answer;
+                    not2.User = eval.Author;
+                    not2.NotificationFor = NotificationFor.MyEvaluation;
+                    not2.NotificationType = NotificationType.NewEvaluation;
+                    db.Notifications.Add(not2);
+                    db.SaveChanges();
+                }
+
                 var e = new Evaluation();
                 e.UserId= WebSecurity.CurrentUserId;
                 e.AnswerId = answerId;
                 e.Value = (double)value/100;
                 db.Ratings.Add(e);
                 db.SaveChanges();
-
-                //Check if we already have 1 evaluation and if the evaluated answer can be shown to answer
-                Answer answer = db.Answers.Find(answerId);
-                
-                //We want to notify user after every new evaluation
-                answer.SeenEvaluation = false;
-                db.Entry(answer).State = EntityState.Modified;
-                db.SaveChanges();                
 
                 //Mark action
                 UserMadeAction(UserActionType.Evaluation, answerId,0);
@@ -123,6 +140,35 @@ namespace CQA.Controllers
                 comment.UserId = WebSecurity.CurrentUserId;
                 db.Comments.Add(comment);
                 db.SaveChanges();
+
+                Answer ans = db.Answers.Single(a => a.AnswerId == comment.AnswerId);
+                //Create Notification
+                if (ans.UserId != WebSecurity.CurrentUserId)
+                {
+                    Notification not = new Notification();
+                    not.Answer = comment.Answer;
+                    not.User = comment.Answer.Author;
+                    not.NotificationFor = NotificationFor.MyAnswer;
+                    not.NotificationType = NotificationType.NewComment;
+                    db.Notifications.Add(not);
+                    db.SaveChanges();
+                }
+
+                //ForEach already assigned evaluation we need to create notifications too
+                foreach (Evaluation eval in ans.Evaluations)
+                {
+                    //We do not want to notify author of comment
+                    if (eval.UserId != comment.UserId)
+                    {
+                        Notification not2 = new Notification();
+                        not2.Answer = eval.Answer;
+                        not2.User = eval.Author;
+                        not2.NotificationFor = NotificationFor.MyEvaluation;
+                        not2.NotificationType = NotificationType.NewComment;
+                        db.Notifications.Add(not2);
+                        db.SaveChanges();
+                    }
+                }
 
                 //Mark action
                 UserMadeAction(UserActionType.Commented, comment.AnswerId, 0);

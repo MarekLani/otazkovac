@@ -185,14 +185,38 @@ namespace CQA.Controllers
 
         private void FillupQuestion(ref Question q, string[] values)
         {
-            q.QuestionId = Convert.ToInt32(values[0]);
-            q.QuestionText = values[2];
-            //If hint is present
-            if (values[4] != "")
-                q.Hint = values[4];
-            else
-                q.Hint = null;
-            q.IsActive = (1 == Convert.ToInt32(values[5]));
+            try
+            {
+                q.QuestionId = Convert.ToInt32(values[0]);
+                q.QuestionText = values[2];
+                //If hint is present
+                if (values[4] != "")
+                    q.Hint = values[4];
+                else
+                    q.Hint = null;
+                q.IsActive = (1 == Convert.ToInt32(values[5]));
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.InnerException);
+            }
+        }
+
+        public ActionResult ConvertOldNotifications()
+        {
+            foreach (Answer ans in db.Answers.Where(a => a.SeenEvaluation == false).ToList())
+            {
+                Notification not = new Notification();
+                
+                not.AnswerId = ans.AnswerId;
+                not.NotificationFor = NotificationFor.MyAnswer;
+                not.User = ans.Author;
+                not.NotificationType = NotificationType.NewEvaluation;
+                db.Notifications.Add(not);
+                db.SaveChanges();
+            }
+
+            return RedirectToAction("Index","Home");
         }
 
         protected override void Dispose(bool disposing)

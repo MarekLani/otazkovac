@@ -19,7 +19,9 @@ else
     foreach (var ea in Model)
     {
     <div class="setup">@Html.Raw("<span style=\"font-size: 24px\">" + ea.Setup.Subject.Name + " " + ea.Setup.Name + " </span><br/>" +
-            "Počet hodnotených odpovedí: " + "<b>" + ea.Answers.Count() + "</b>")
+             "Počet nových ohodnotených odpovedí:" + "<b>" + ea.UnseenCount +
+            " </b> | " +
+            "Počet všetkých ohodnotených odpovedí: " + "<b>" + ea.Answers.Count() + "</b>")
     </div>
         
     <div class="header">
@@ -66,6 +68,22 @@ else
                                 else
                                 {
                                     @("hodnotení");
+                                }
+                            </div>
+                                n = a.Comments.Count();
+                            <div class="commentsCount">
+                                 @(a.Comments.Count())
+                                 @if (n == 1)
+                                {
+                                    @("komentár");
+                                }
+                                else if (n < 5 && n > 0)
+                                {
+                                    @("komentáre");
+                                }
+                                else
+                                {
+                                    @("komenatárov");
                                 }
                             </div>
                         }

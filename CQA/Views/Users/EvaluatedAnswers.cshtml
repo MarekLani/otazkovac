@@ -70,6 +70,22 @@ else
                                     @("hodnotení");
                                 }
                             </div>
+                                n = a.Comments.Count();
+                            <div class="commentsCount">
+                                 @(a.Comments.Count())
+                                 @if (n == 1)
+                                 {
+                                    @("komentár");
+                                 }
+                                 else if (n < 5 && n > 0)
+                                 {
+                                    @("komentáre");
+                                 }
+                                 else
+                                 {
+                                    @("komenatárov");
+                                 }
+                            </div>
                         }
 
                     </div>

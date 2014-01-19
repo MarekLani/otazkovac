@@ -204,8 +204,13 @@
     <Compile Include="Migrations\201311101005156_CommentTextFixedToBeTypeOfStringMigration.Designer.cs">
       <DependentUpon>201311101005156_CommentTextFixedToBeTypeOfStringMigration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201401181943553_NotificationsInSeparateTableMigration.cs" />
+    <Compile Include="Migrations\201401181943553_NotificationsInSeparateTableMigration.Designer.cs">
+      <DependentUpon>201401181943553_NotificationsInSeparateTableMigration.cs</DependentUpon>
+    </Compile>
     <Compile Include="Models\DateCreatedModel.cs" />
     <Compile Include="Models\MyConsts.cs" />
+    <Compile Include="Models\Notifications.cs" />
     <Compile Include="Models\SetupsProbabilityChanges.cs" />
     <Compile Include="Models\SetupStatistics.cs" />
     <Compile Include="Models\UsersSetup.cs" />
@@ -456,6 +461,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201311101005156_CommentTextFixedToBeTypeOfStringMigration.resx">
       <DependentUpon>201311101005156_CommentTextFixedToBeTypeOfStringMigration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201401181943553_NotificationsInSeparateTableMigration.resx">
+      <DependentUpon>201401181943553_NotificationsInSeparateTableMigration.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\ErrorStrings.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>

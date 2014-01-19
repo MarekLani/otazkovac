@@ -30,8 +30,13 @@
                                     </a> 
                                 </li>
                                 <li>
-                                    <a href="@Url.Action("MyEvaluations","Users")">Moje hodnotenia</a>
+                                    <a href="@Url.Action("MyEvaluations","Users")">Moje hodnotenia
+                                     @if(Model.UnseenEvaluatedEvaluationsCount > 0){
+                                        <span class="badge badge-success"> @(Model.UnseenEvaluatedEvaluationsCount)  </span>
+                                    }
+                                    </a>
                                 </li>
+                                
                                 if(User.IsInRole("Admin")){
                                     <li class="dropdown">
                                       <a href="#" class="dropdown-toggle" data-toggle="dropdown">Admin<b class="caret"></b></a>

@@ -25,29 +25,35 @@ namespace CQA.Controllers
         public ActionResult EvaluatedAnswers()
         {
             List<EvaluatedAnswers> evaluatedAnswers = new List<Models.EvaluatedAnswers>();
-            var setupsWithEvaluatedAnswers = db.Answers.Where(a => a.UserId == WebSecurity.CurrentUserId && a.SeenEvaluation != null )
+            var setupsWithEvaluatedAnswers = db.Answers.Where(a => a.UserId == WebSecurity.CurrentUserId && a.Evaluations.Count > 0)
                 .OrderByDescending(a => a.DateCreated).GroupBy(a => a.Question.Setup);
-            foreach(var s in setupsWithEvaluatedAnswers) //.Where(a => a SeenEvaluation == false))
+            foreach(var s in setupsWithEvaluatedAnswers)
             {
                 EvaluatedAnswers ea = new EvaluatedAnswers();
                 ea.Answers = new List<Answer>();
                 ea.UnseenHighlightedAnswers = new List<Answer>();
                 ea.Setup = s.Key;
                 ea.UnseenCount = 0;
+
+                List<Notification> Notifications = new List<Notification>();
+                Notifications = db.Notifications.Where(n => n.UserId == WebSecurity.CurrentUserId && n.NotificationFor == NotificationFor.MyAnswer).ToList();
+
                 foreach(Answer a in s)
                 {
                     ea.Answers.Add(a);
-                    if (!(bool)a.SeenEvaluation)
+                    foreach(Notification not in Notifications.Where(n => n.AnswerId == a.AnswerId))
                     {
                         ea.UnseenCount++;
-                        a.SeenEvaluation = true;
                         ea.UnseenHighlightedAnswers.Add(a);
-                        db.Entry(a).State = EntityState.Modified;
+                        db.Notifications.Remove(not);
                     }
                 }
                 evaluatedAnswers.Add(ea);
             }
             db.SaveChanges();
+
+
+
             return View(evaluatedAnswers);
         }
 
@@ -56,16 +62,25 @@ namespace CQA.Controllers
             List<EvaluatedAnswers> evaluatedAnswers = new List<Models.EvaluatedAnswers>();
             var setupsWithEvaluatedAnswers = db.Answers.Where(a => a.Evaluations.Where(e => e.UserId == WebSecurity.CurrentUserId).Any())
                 .OrderByDescending(a => a.DateCreated).GroupBy(a => a.Question.Setup);
-            foreach (var s in setupsWithEvaluatedAnswers) //.Where(a => a SeenEvaluation == false))
+            foreach (var s in setupsWithEvaluatedAnswers)
             {
                 EvaluatedAnswers ea = new EvaluatedAnswers();
                 ea.Answers = new List<Answer>();
                 ea.UnseenHighlightedAnswers = new List<Answer>();
                 ea.Setup = s.Key;
                 ea.UnseenCount = 0;
+                List<Notification> Notifications = new List<Notification>();
+                Notifications = db.Notifications.Where(n => n.UserId == WebSecurity.CurrentUserId && n.NotificationFor == NotificationFor.MyEvaluation).ToList();
+
                 foreach (Answer a in s)
                 {
                     ea.Answers.Add(a);
+                    foreach (Notification not in Notifications.Where(n => n.AnswerId == a.AnswerId))
+                    {
+                        ea.UnseenCount++;
+                        ea.UnseenHighlightedAnswers.Add(a);
+                        db.Notifications.Remove(not);
+                    }
                 }
                 evaluatedAnswers.Add(ea);
             }

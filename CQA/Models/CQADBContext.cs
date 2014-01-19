@@ -24,6 +24,7 @@ namespace CQA.Models
         public DbSet<UsersSetup> UsersSetups { get; set; }
         public DbSet<UsersAction> UsersActions { get; set; }
         public DbSet<QuestionView> QuestionViews { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
         
         //Not needed right now
         //public DbSet<SetupsStatistics> SetupsStatistics { get; set; }
