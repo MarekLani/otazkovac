@@ -219,6 +219,24 @@ namespace CQA.Controllers
             return RedirectToAction("Index","Home");
         }
 
+        public ActionResult GetBasicStatistics()
+        {
+            using (StreamWriter sw = new StreamWriter(Server.MapPath("~/Reports/") + "stats.csv", false))
+            {
+                sw.WriteLine("pocet hodnoteni ;" + db.Ratings.Count());
+                sw.WriteLine("pocet odpovedi ;" + db.Answers.Count());
+
+                List<UserProfile> users = db.UserProfiles.OrderBy(u => u.Evaluations.Count()).ToList();
+                foreach (UserProfile u in users)
+                {
+                    sw.WriteLine(u.UserId + ";" + u.Evaluations.Count());
+                }
+                
+            }
+            ViewBag.Link = Request.Url.GetLeftPart(UriPartial.Authority)+"/Reports/stats.csv";
+            return View();
+        }
+
         protected override void Dispose(bool disposing)
         {
             db.Dispose();

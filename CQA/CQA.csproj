@@ -439,6 +439,7 @@
     <Content Include="Views\QuestionsAndAnswers\AnswerWithHint.cshtml" />
     <Content Include="Views\Shared\_CreateCommentForm.cshtml" />
     <Content Include="Views\Users\MyEvaluations.cshtml" />
+    <Content Include="Views\Setups\GetBasicStatistics.cshtml" />
     <None Include="Web.Production.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
