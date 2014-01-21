@@ -225,6 +225,7 @@ namespace CQA.Controllers
             {
                 sw.WriteLine("pocet hodnoteni ;" + db.Ratings.Count());
                 sw.WriteLine("pocet odpovedi ;" + db.Answers.Count());
+                sw.WriteLine("dostatocne ohodnotenych ;" + db.Answers.Where(a => a.Evaluations.Count() == 16).Count());
 
                 List<UserProfile> users = db.UserProfiles.OrderBy(u => u.Evaluations.Count()).ToList();
                 foreach (UserProfile u in users)
