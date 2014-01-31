@@ -230,7 +230,7 @@ namespace CQA.Controllers
                 List<UserProfile> users = db.UserProfiles.OrderBy(u => u.Evaluations.Count()).ToList();
                 foreach (UserProfile u in users)
                 {
-                    sw.WriteLine(u.RealName + ";" + u.Evaluations.Count() + u.UsersActions.Where(a => a.Action == UserActionType.SkippedAnswering || a.Action == UserActionType.SkippedEvaluation).Count() );
+                    sw.WriteLine(u.RealName + ";" + u.Evaluations.Count() ";" + u.UsersActions.Where(a => a.Action == UserActionType.SkippedAnswering || a.Action == UserActionType.SkippedEvaluation).Count() );
                 }
                 
             }
