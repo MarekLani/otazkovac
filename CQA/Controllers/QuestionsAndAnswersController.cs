@@ -27,6 +27,7 @@ namespace CQA.Controllers
         [HttpPost]
         [ValidateInput(false)]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public ActionResult CreateAnswer(int questionId, string text)
         {
             if (ModelState.IsValid)
@@ -60,6 +61,7 @@ namespace CQA.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public ActionResult CreateEvaluation(int answerId, int value)
         {
             if (ModelState.IsValid)
@@ -133,6 +135,7 @@ namespace CQA.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize]
         public ActionResult CreateComment(Comment comment)
         {
             if (ModelState.IsValid)
@@ -271,12 +274,11 @@ namespace CQA.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         public ActionResult AnswerAndEvaluate(int setupId)
         {
-
             int skippedAnswerId = 0;
             int skippedQuestionId = 0;
-            bool triedObtainEval = false;
 
             if (Session["SkippedQuestionId"] != null)
             {
@@ -312,11 +314,6 @@ namespace CQA.Controllers
                 }
             }
 
-            //Hack for selecting, when user has not seen the question, so there is no record to be selected
-            //See selects lower using DefaultIfEmpty
-            var defaultQuestionView = new QuestionView();
-            defaultQuestionView.ViewDate = DateTime.MinValue;
-
             if (db.UsersSetups.Where( us => us.UserId == WebSecurity.CurrentUserId && us.SetupId == setupId ).ToList() == null)
             {
                 UsersSetup us = new UsersSetup();
@@ -326,20 +323,96 @@ namespace CQA.Controllers
                 db.UsersSetups.Add(us);
             }
 
-            //ForTesting
-            //var answerss = db.Answers
-            //            .Where(a => !a.Evaluations.Where(e => e.UserId == WebSecurity.CurrentUserId).Any()
-            //                && a.Question.SetupId == setupId
-            //                && a.Question.IsActive).ToList();
-            //return View("Evaluate", answerss.First());
+            Question que = null;
+            Answer ans = null;
 
+            ChooseAnswerOrQuestion(setupId, skippedAnswerId, skippedQuestionId, ref ans, ref que, WebSecurity.CurrentUserId);
+
+            if (ans != null)
+            {
+                AddHandledObjectToSession(ans.AnswerId, true, setupId);
+                return View("Evaluate", ans);
+            }
+            if (que != null)
+            {
+                AddHandledObjectToSession(que.QuestionId,false, setupId);
+                return View("Answer", que);
+            }
+
+            if (skippedAnswerId == 0 && skippedQuestionId == 0)
+                return View("NothingToDoHere");
+            else
+                return RedirectToAction("AnswerAndEvaluate", new { setupId = setupId });
+        }
+
+        [HttpGet]
+        public ActionResult ExternAnswerAndEvaluate(string ais, string name, int setupId)
+        {
+            //check if setup is active
+            Setup setup = db.Setups.Find(setupId);
+            if (setup == null || !setup.Active)
+            {
+                return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest);
+            }
+
+            Question que = null;
+            Answer ans = null;
+
+            UserProfile user;
+
+            if ((user = db.UserProfiles.Single(u => u.UserName == ais)) == null)
+            {
+                WebSecurity.CreateUserAndAccount(ais, "pass", new { RealName = name });
+                user = db.UserProfiles.Single(u => u.UserName == ais);
+            }
+
+            ChooseAnswerOrQuestion(setupId, 0, 0, ref ans, ref que, user.UserId);
+
+            if(ans != null)
+                return Json(new { 
+                    action = "Eval",
+                    questionText = ans.Question.QuestionText,
+                    answerText = ans.Text,
+                    answerId = ans.AnswerId
+                }, JsonRequestBehavior.AllowGet);
+            if (que != null)
+                return Json(new
+                {
+                    action = "Answer",
+                    questionText = que.QuestionText,
+                    questionId = que.QuestionId
+
+                }, JsonRequestBehavior.AllowGet);
+            return Json(new
+            {
+                action = "No content"
+            }, JsonRequestBehavior.AllowGet);
+
+        }
+
+        /// <summary>
+        /// Returns true when answer or question was selected otherwise returns false
+        /// </summary>
+        /// <param name="setupId"></param>
+        /// <param name="skippedAnswerId"></param>
+        /// <param name="skippedQuestionId"></param>
+        /// <param name="ans"></param>
+        /// <param name="que"></param>
+        /// <returns></returns>
+        private bool ChooseAnswerOrQuestion(int setupId, int skippedAnswerId, int skippedQuestionId, ref Answer ans, ref Question que, int userId)
+        {
+            
+            //Hack for selecting, when user has not seen the question, so there is no record to be selected
+            //See selects lower using DefaultIfEmpty
+            var defaultQuestionView = new QuestionView();
+            defaultQuestionView.ViewDate = DateTime.MinValue;
+            
             Random rand = new Random();
 
             //Base on probability set for setup it is selected if user is going to evaluate or answer
             int p = db.Setups.Find(setupId).AnsweringProbability;
-            if (rand.Next(p) != p-1)
+            if (rand.Next(p) != p - 1)
             {
-                triedObtainEval = true;
                 //user is going to validate answer
 
                 //Algorithm for selection of answer to be evaluated looks like this:
@@ -356,9 +429,9 @@ namespace CQA.Controllers
 
                 //step 1
                 var answers = db.Answers
-                                    .Where(a => !a.Evaluations.Where(e => e.UserId == WebSecurity.CurrentUserId).Any()
+                                    .Where(a => !a.Evaluations.Where(e => e.UserId == userId).Any()
                                         && a.Question.SetupId == setupId
-                                        && a.UserId != WebSecurity.CurrentUserId
+                                        && a.UserId != userId
                                         && a.Question.IsActive).ToList();
 
                 //Remove skipped answer (if was)
@@ -373,16 +446,15 @@ namespace CQA.Controllers
                 {
                     //step 2
                     var bottomGreedy = answers
-                                .Where(a => a.Question.QuestionViews.Where(qv => qv.UserId == WebSecurity.CurrentUserId)
+                                .Where(a => a.Question.QuestionViews.Where(qv => qv.UserId == userId)
                                     .DefaultIfEmpty(defaultQuestionView).Single().ViewDate.AddDays(1) < DateTime.Now
                                     && a.Evaluations.Count < MyConsts.MinEvaluationLimit).OrderByDescending(a => a.Evaluations.Count()).ToList();
                     if (bottomGreedy.Any())
                     {
                         int n = bottomGreedy.First().Evaluations.Count();
                         var bestEvaluatedAnswers = bottomGreedy.Where(a => a.Evaluations.Count() == n);
-                        Answer ans = bestEvaluatedAnswers.ElementAt(rand.Next(bestEvaluatedAnswers.Count()));
-                        AddHandledObjectToSession(ans.AnswerId, true, setupId);
-                        return View("Evaluate", ans );
+                        ans = bestEvaluatedAnswers.ElementAt(rand.Next(bestEvaluatedAnswers.Count()));
+                        return true;
                     }
                     else
                     {
@@ -393,15 +465,14 @@ namespace CQA.Controllers
 
                         if (upperGreedy.Any())
                         {
-                            var UnseenAnswers = upperGreedy.Where(a => a.Question.QuestionViews.Where(qv => qv.QuestionId == a.QuestionId && qv.UserId == WebSecurity.CurrentUserId)
+                            var UnseenAnswers = upperGreedy.Where(a => a.Question.QuestionViews.Where(qv => qv.QuestionId == a.QuestionId && qv.UserId == userId)
                                 .DefaultIfEmpty(defaultQuestionView).Single().ViewDate.AddDays(1) < DateTime.Now).ToList();
                             if (UnseenAnswers.Any())
                                 upperGreedy = UnseenAnswers;
                             int n = upperGreedy.First().Evaluations.Count();
                             var bestEvaluatedAnswers = upperGreedy.Where(a => a.Evaluations.Count() == n);
-                            Answer ans = bestEvaluatedAnswers.ElementAt(rand.Next(bestEvaluatedAnswers.Count()));
-                            AddHandledObjectToSession(ans.AnswerId, true, setupId);
-                            return View("Evaluate", ans);
+                            ans = bestEvaluatedAnswers.ElementAt(rand.Next(bestEvaluatedAnswers.Count()));
+                            return true;
                         }
                     }
                 }
@@ -416,7 +487,7 @@ namespace CQA.Controllers
             //5. Choose random question with smallest number of answers 
 
             //Step 1 take active questions which user has not answered yet
-            var tempQuestions = db.Questions.Where( q => !q.Answers.Where(r => r.UserId == WebSecurity.CurrentUserId).Any() &&
+            var tempQuestions = db.Questions.Where(q => !q.Answers.Where(r => r.UserId == userId).Any() &&
                 q.IsActive &&
                 q.SetupId == setupId).OrderBy(q => q.Answers.Count()).ToList();
 
@@ -431,27 +502,23 @@ namespace CQA.Controllers
             {
                 //Step2 Check if there are questions to be answered, which have not been seen by current user in last two days
                 //TODO check if the order of questions stays as it was
-                var questions = tempQuestions.Where(q => q.QuestionViews.Where(qv => qv.UserId == WebSecurity.CurrentUserId)
+                var questions = tempQuestions.Where(q => q.QuestionViews.Where(qv => qv.UserId == userId)
                     .DefaultIfEmpty(defaultQuestionView).Single().ViewDate.AddDays(2) < DateTime.Now).ToList();
-                
+
                 //Step3 if there are no questions from step2 we have to ignore 2 days rule
                 if (!questions.Any())
                     questions = tempQuestions;
 
-               
                 //Check if there is any question to be answered
-                if(questions.Any()){
+                if (questions.Any())
+                {
                     int n = questions.First().Answers.Count();
                     var worstAnsweredQuestions = questions.Where(a => a.Answers.Count() == n);
-                    Question q = worstAnsweredQuestions.ElementAt(rand.Next(worstAnsweredQuestions.Count()));
-                    AddHandledObjectToSession(q.QuestionId, false, setupId);
-                    return View("Answer",q );
+                    que = worstAnsweredQuestions.ElementAt(rand.Next(worstAnsweredQuestions.Count()));
+                    return true;
                 }
             }
-            if (skippedAnswerId == 0 && skippedQuestionId == 0 && triedObtainEval == true)
-                return View("NothingToDoHere");
-            else
-                return RedirectToAction("AnswerAndEvaluate", new { setupId = setupId });
+            return false;
         }
 
         public ActionResult SkipAnswer(int questionId)
