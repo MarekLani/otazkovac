@@ -17,8 +17,6 @@ using System.Web.Script.Serialization;
 namespace CQA.Controllers
 {
 
-
-    [Authorize]
     public class QuestionsAndAnswersController : Controller
     {
 
