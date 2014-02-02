@@ -162,8 +162,12 @@ namespace CQA.Controllers
                 var Line = reader.ReadLine();
                 var values = Line.Split(';');
 
-                Question q = db.Questions.Find(Convert.ToInt32(values[0]));
-                if ( q != null)
+                int id = Convert.ToInt32(values[0]);
+                var l = db.Questions.Where(que => que.SetupId == setupId && que.QuestionFileId == id).ToList();
+                Question q = null;
+                if(l.Any())
+                    q = l.First();
+                if (q != null)
                 {
                     FillupQuestion(ref q, values);
                     db.Entry(q).State = EntityState.Modified;
@@ -187,7 +191,7 @@ namespace CQA.Controllers
         {
             try
             {
-                q.QuestionId = Convert.ToInt32(values[0]);
+                q.QuestionFileId = Convert.ToInt32(values[0]);
                 q.QuestionText = values[2];
                 //If hint is present
                 if (values[4] != "")

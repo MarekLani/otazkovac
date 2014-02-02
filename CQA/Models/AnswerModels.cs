@@ -6,6 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.Script.Serialization;
 using CQA.Resources;
 
 namespace CQA.Models
@@ -37,6 +38,16 @@ namespace CQA.Models
         public virtual ICollection<UsersAction> UsersActions { get; set; }
         public virtual ICollection<Comment> Comments { get; set; }
 
+        public Answer()
+        {
+        }
+
+        public Answer(int questionId, string text, int userId)
+        {
+            this.QuestionId = questionId;
+            Text = text;
+            UserId = userId;
+        }
 
         public double GetAvgEvaluation()
         {
@@ -46,6 +57,24 @@ namespace CQA.Models
                 total += e.Value;
             }
             return total / this.Evaluations.Count();
+        }
+
+        public string GetAnswerCommentsInJson()
+        {
+            CQADBContext db = new CQADBContext();
+            List<Comment> comments = this.Comments.ToList();
+            List<ViewComment> viewComments = new List<ViewComment>();
+            foreach (Comment c in comments)
+            {
+                ViewComment vc;
+                if (c.Anonymous)
+                    vc = new ViewComment(c.Text, "Anonym", this.AnswerId);
+                else
+                    vc = new ViewComment(c.Text, db.UserProfiles.Find(c.UserId).RealName, this.AnswerId);
+                viewComments.Add(vc);
+            }
+            var jsonSerialiser = new JavaScriptSerializer();
+            return jsonSerialiser.Serialize(viewComments);
         }
 
     }

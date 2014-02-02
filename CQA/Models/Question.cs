@@ -12,6 +12,8 @@ namespace CQA.Models
     {
         public int QuestionId { get; set; }
 
+        public int QuestionFileId { get; set; }
+
         [Required(ErrorMessageResourceType = typeof(ErrorStrings), ErrorMessageResourceName = "Required")]
         [DataType(DataType.MultilineText)]
         public string QuestionText { get; set; }

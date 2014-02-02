@@ -18,6 +18,15 @@ namespace CQA.Models
 
         [Required(ErrorMessageResourceType = typeof(ErrorStrings), ErrorMessageResourceName = "Required")]
         public double Value { get; set; }
+
+        public Evaluation(){}
+
+        public Evaluation(int userId, int answerId, double value)
+        {
+            UserId = userId;
+            AnswerId = answerId;
+            Value = value;
+        }
        
     }
 }

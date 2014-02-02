@@ -8,7 +8,7 @@ using CQA.Resources;
 
 namespace CQA.Models
 {
-    public class Comment
+    public class Comment : DateCreatedModel
     {
         public int CommentId { get; set; }
 

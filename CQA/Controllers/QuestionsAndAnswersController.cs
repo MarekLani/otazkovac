@@ -13,6 +13,7 @@ using System.Security.Permissions;
 using System.DirectoryServices.AccountManagement;
 using System.DirectoryServices;
 using System.Web.Script.Serialization;
+using System.IO;
 
 namespace CQA.Controllers
 {
@@ -38,15 +39,12 @@ namespace CQA.Controllers
                     return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest);
                 }
 
-                var answer = new Answer();
-                answer.UserId = WebSecurity.CurrentUserId;
-                answer.QuestionId = questionId;
-                answer.Text = HttpUtility.HtmlDecode(text);
+                var answer = new Answer(questionId, HttpUtility.HtmlDecode(text), WebSecurity.CurrentUserId);
                 db.Answers.Add(answer);
                 db.SaveChanges();
 
-                UserMadeAction(UserActionType.Answering, 0,questionId);
-                UserSeenQuestion(questionId);
+                UserMadeAction(UserActionType.Answering, 0, questionId, WebSecurity.CurrentUserId);
+                UserSeenQuestion(questionId, WebSecurity.CurrentUserId);
 
                 object result = new { answerText = text };
                 return Json(result);
@@ -55,6 +53,32 @@ namespace CQA.Controllers
             {
                 return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest);
             }
+        }
+
+        [HttpPost]
+        public ActionResult ExternCreateAnswer()
+        {
+            Request.InputStream.Seek(0, SeekOrigin.Begin);
+            string jsonData = new StreamReader(Request.InputStream).ReadToEnd();
+
+            Answer ans = new JavaScriptSerializer().Deserialize<Answer>(jsonData);
+
+            if (!db.UserProfiles.Where(u => u.UserId == ans.UserId).Any()||
+                db.Answers.Where(a => a.QuestionId == ans.QuestionId && a.UserId == ans.UserId).Any())
+            {
+                return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest);
+            }
+
+            ans.Text = HttpUtility.HtmlDecode(ans.Text);
+
+            db.Answers.Add(ans);
+            db.SaveChanges();
+
+            UserMadeAction(UserActionType.Answering, 0, ans.QuestionId, ans.UserId);
+            UserSeenQuestion(ans.QuestionId, ans.UserId);
+
+            object result = new { answerText = ans.Text };
+            return Json(result);
         }  
 
         [HttpPost]
@@ -72,63 +96,53 @@ namespace CQA.Controllers
                     return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest);
                 }
 
-
                 //Notifications
                 Answer answer = db.Answers.Find(answerId);
+                CreateNotifications(answer, NotificationType.NewEvaluation, WebSecurity.CurrentUserId);
 
-                //Create Notification
-                Notification not = new Notification();
-                not.Answer = answer;
-                not.User = answer.Author;
-                not.NotificationFor = NotificationFor.MyAnswer;
-                not.NotificationType = NotificationType.NewEvaluation;
-                db.Notifications.Add(not);
-                db.SaveChanges();
-
-                //ForEach already assigned evaluation we need to create notifications too
-                foreach (Evaluation eval in answer.Evaluations)
-                {
-                    Notification not2 = new Notification();
-                    not2.Answer = eval.Answer;
-                    not2.User = eval.Author;
-                    not2.NotificationFor = NotificationFor.MyEvaluation;
-                    not2.NotificationType = NotificationType.NewEvaluation;
-                    db.Notifications.Add(not2);
-                    db.SaveChanges();
-                }
-
-                var e = new Evaluation();
-                e.UserId= WebSecurity.CurrentUserId;
-                e.AnswerId = answerId;
-                e.Value = (double)value/100;
+                var e = new Evaluation(WebSecurity.CurrentUserId, answerId, (double)value / 100);
                 db.Ratings.Add(e);
                 db.SaveChanges();
 
                 //Mark action
-                UserMadeAction(UserActionType.Evaluation, answerId,0);
+                UserMadeAction(UserActionType.Evaluation, answerId, 0, WebSecurity.CurrentUserId);
                 //Mark question as seen
-                UserSeenQuestion(answer.QuestionId);
+                UserSeenQuestion(answer.QuestionId, WebSecurity.CurrentUserId);
                 
-                db.SaveChanges();
-
-                List<Comment> comments = db.Answers.Find(answerId).Comments.ToList();
-                List<ViewComment> viewComments = new List<ViewComment>();
-                foreach (Comment c in comments)
-                {
-                    ViewComment vc;
-                    if (c.Anonymous)
-                        vc = new ViewComment(c.Text, "Anonym", answerId);
-                    else
-                        vc = new ViewComment(c.Text, db.UserProfiles.Find(c.UserId).RealName, answerId);
-                    viewComments.Add(vc);
-                }
-                var jsonSerialiser = new JavaScriptSerializer();
-                var commentsInJson = jsonSerialiser.Serialize(viewComments);
-
-                return Json(new { avgEval = answer.GetAvgEvaluation(), evalsCount = answer.Evaluations.Count(), comments = commentsInJson });
+                return Json(new { avgEval = answer.GetAvgEvaluation(), evalsCount = answer.Evaluations.Count(), comments = answer.GetAnswerCommentsInJson() });
             }
 
             return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest);
+        }
+
+        [HttpPost]
+        public ActionResult ExternCreateEvaluation()
+        {
+            Request.InputStream.Seek(0, SeekOrigin.Begin);
+            string jsonData = new StreamReader(Request.InputStream).ReadToEnd();
+
+            Evaluation eval = new JavaScriptSerializer().Deserialize<Evaluation>(jsonData);
+
+            if (!db.UserProfiles.Where(u => u.UserId == eval.UserId).Any() || 
+                db.Ratings.Where(a => a.AnswerId == eval.AnswerId && a.UserId == eval.UserId).Any())
+            {
+                return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest);
+            }
+
+            //Notifications
+            Answer answer = db.Answers.Find(eval.AnswerId);
+            CreateNotifications(answer, NotificationType.NewEvaluation, eval.UserId);
+
+            db.Ratings.Add(eval);
+            db.SaveChanges();
+
+            //Mark action
+            UserMadeAction(UserActionType.Evaluation, eval.AnswerId, 0, eval.UserId);
+            //Mark question as seen
+            UserSeenQuestion(eval.Answer.QuestionId, eval.UserId);
+
+            return Json(new { avgEval = answer.GetAvgEvaluation(), evalsCount = answer.Evaluations.Count(), comments = answer.GetAnswerCommentsInJson() });
+            
         }
 
         [HttpPost]
@@ -144,35 +158,10 @@ namespace CQA.Controllers
 
                 Answer ans = db.Answers.Single(a => a.AnswerId == comment.AnswerId);
                 //Create Notification
-                if (ans.UserId != WebSecurity.CurrentUserId)
-                {
-                    Notification not = new Notification();
-                    not.Answer = comment.Answer;
-                    not.User = comment.Answer.Author;
-                    not.NotificationFor = NotificationFor.MyAnswer;
-                    not.NotificationType = NotificationType.NewComment;
-                    db.Notifications.Add(not);
-                    db.SaveChanges();
-                }
-
-                //ForEach already assigned evaluation we need to create notifications too
-                foreach (Evaluation eval in ans.Evaluations)
-                {
-                    //We do not want to notify author of comment
-                    if (eval.UserId != comment.UserId)
-                    {
-                        Notification not2 = new Notification();
-                        not2.Answer = eval.Answer;
-                        not2.User = eval.Author;
-                        not2.NotificationFor = NotificationFor.MyEvaluation;
-                        not2.NotificationType = NotificationType.NewComment;
-                        db.Notifications.Add(not2);
-                        db.SaveChanges();
-                    }
-                }
+                CreateNotifications(ans, NotificationType.NewComment, comment.UserId);
 
                 //Mark action
-                UserMadeAction(UserActionType.Commented, comment.AnswerId, 0);
+                UserMadeAction(UserActionType.Commented, comment.AnswerId, 0, WebSecurity.CurrentUserId);
                 ViewComment vc;
                 if(comment.Anonymous)
                     vc = new ViewComment( comment.Text, "Anonym", comment.AnswerId);
@@ -184,6 +173,61 @@ namespace CQA.Controllers
             }
 
             return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest);
+        }
+
+        [HttpPost]
+        public ActionResult ExternCreateComment()
+        {
+            Request.InputStream.Seek(0, SeekOrigin.Begin);
+            string jsonData = new StreamReader(Request.InputStream).ReadToEnd();
+
+            Comment comment = new JavaScriptSerializer().Deserialize<Comment>(jsonData);
+            
+            db.Comments.Add(comment);
+            db.SaveChanges();
+
+            Answer ans = db.Answers.Single(a => a.AnswerId == comment.AnswerId);
+            //Create Notification
+            CreateNotifications(ans, NotificationType.NewComment, comment.UserId);
+
+            //Mark action
+            UserMadeAction(UserActionType.Commented, comment.AnswerId, 0, comment.UserId);
+            ViewComment vc;
+            if (comment.Anonymous)
+                vc = new ViewComment(comment.Text, "Anonym", comment.AnswerId);
+            else
+                vc = new ViewComment(comment.Text, db.UserProfiles.Find(comment.UserId).RealName, comment.AnswerId);
+            var jsonSerialiser = new JavaScriptSerializer();
+            return Json(jsonSerialiser.Serialize(vc));
+        }
+
+        private void CreateNotifications(Answer answer, NotificationType type, int authorId)
+        {
+            //Create Notification of author of answer (We do not want to notify author if he created comment/eval)
+            if (answer.AnswerId != authorId)
+            {
+                Notification not = new Notification();
+                not.Answer = answer;
+                not.User = answer.Author;
+                not.NotificationFor = NotificationFor.MyAnswer;
+                not.NotificationType = type;
+                db.Notifications.Add(not);
+                db.SaveChanges();
+            }
+
+            //ForEach already assigned evaluation we need to create notifications too
+            foreach (Evaluation eval in answer.Evaluations)
+            {
+                if(eval.UserId != authorId){
+                    Notification not2 = new Notification();
+                    not2.Answer = eval.Answer;
+                    not2.User = eval.Author;
+                    not2.NotificationFor = NotificationFor.MyEvaluation;
+                    not2.NotificationType = type;
+                    db.Notifications.Add(not2);
+                    db.SaveChanges();
+                }
+            }
         }
 
         //GetHint - not being used
@@ -219,57 +263,6 @@ namespace CQA.Controllers
         //    return Json(false, JsonRequestBehavior.AllowGet);
 
         //}
-
-        /// <summary>
-        /// Finds and update/creates new record of viewed question by user
-        /// </summary>
-        /// <param name="questionId"></param>
-        private void UserSeenQuestion(int questionId)
-        {
-            QuestionView qv = db.QuestionViews.Find(WebSecurity.CurrentUserId,questionId);
-            if (qv == null)
-            {
-                qv = new QuestionView();
-                qv.QuestionId = questionId;
-                qv.UserId = WebSecurity.CurrentUserId;
-                qv.ViewDate = DateTime.Now;
-                db.QuestionViews.Add(qv);
-            }
-            else
-            {
-                qv.ViewDate = DateTime.Now;
-                db.Entry(qv).State = EntityState.Modified;
-            }
-
-            db.SaveChanges();
-        }
-
-        /// <summary>
-        /// Save action of user 
-        /// set answerId = 0 if saving action connected with question
-        /// otherwise set questionId = 0
-        /// </summary>
-        /// <param name="action"></param>
-        /// <param name="answerId"></param>
-        /// <param name="questionId"></param>
-        private void UserMadeAction(UserActionType action, int answerId, int questionId)
-        {
-            UsersAction ua = new UsersAction();
-            ua.UserId = WebSecurity.CurrentUserId;
-
-            if (answerId != 0)
-            {
-                ua.AnswerId = answerId;
-            }
-            else
-            {
-                ua.QuestionId = questionId;
-            }
-            
-            ua.Action = action;
-            db.UsersActions.Add(ua);
-            db.SaveChanges();
-        }
 
         [HttpGet]
         [Authorize]
@@ -356,8 +349,8 @@ namespace CQA.Controllers
             Question que = null;
             Answer ans = null;
 
+            //Create User Profile
             UserProfile user;
-
             if ((user = db.UserProfiles.Single(u => u.UserName == ais)) == null)
             {
                 WebSecurity.CreateUserAndAccount(ais, "pass", new { RealName = name });
@@ -371,14 +364,16 @@ namespace CQA.Controllers
                     action = "Eval",
                     questionText = ans.Question.QuestionText,
                     answerText = ans.Text,
-                    answerId = ans.AnswerId
+                    answerId = ans.AnswerId,
+                    userId = user.UserId
                 }, JsonRequestBehavior.AllowGet);
             if (que != null)
                 return Json(new
                 {
                     action = "Answer",
                     questionText = que.QuestionText,
-                    questionId = que.QuestionId
+                    questionId = que.QuestionId,
+                    userId = user.UserId
 
                 }, JsonRequestBehavior.AllowGet);
             return Json(new
@@ -519,6 +514,60 @@ namespace CQA.Controllers
             return false;
         }
 
+        /// <summary>
+        /// Finds and update/creates new record of viewed question by user
+        /// </summary>
+        /// <param name="questionId"></param>
+        private void UserSeenQuestion(int questionId, int userId)
+        {
+            QuestionView qv = db.QuestionViews.Find(userId, questionId);
+            if (qv == null)
+            {
+                qv = new QuestionView();
+                qv.QuestionId = questionId;
+                qv.UserId = userId;
+                qv.ViewDate = DateTime.Now;
+                db.QuestionViews.Add(qv);
+            }
+            else
+            {
+                qv.ViewDate = DateTime.Now;
+                db.Entry(qv).State = EntityState.Modified;
+            }
+
+            db.SaveChanges();
+        }
+
+        /// <summary>
+        /// Save action of user 
+        /// set answerId = 0 if saving action connected with question
+        /// otherwise set questionId = 0
+        /// </summary>
+        /// <param name="action"></param>
+        /// <param name="answerId"></param>
+        /// <param name="questionId"></param>
+        private void UserMadeAction(UserActionType action, int answerId, int questionId, int userId = 0)
+        {
+            if (userId == 0)
+                userId = WebSecurity.CurrentUserId;
+
+            UsersAction ua = new UsersAction();
+            ua.UserId = userId;
+
+            if (answerId != 0)
+            {
+                ua.AnswerId = answerId;
+            }
+            else
+            {
+                ua.QuestionId = questionId;
+            }
+
+            ua.Action = action;
+            db.UsersActions.Add(ua);
+            db.SaveChanges();
+        }
+
         public ActionResult SkipAnswer(int questionId)
         {
             int setupId = db.Questions.Find(questionId).SetupId;
@@ -528,12 +577,24 @@ namespace CQA.Controllers
             return RedirectToAction("AnswerAndEvaluate", new { setupId = setupId });
         }
 
+        [HttpGet]
+        public void ExternSkipAnswer(int userId, int questionId)
+        {
+            UserMadeAction(UserActionType.SkippedAnswering, 0, questionId, userId);
+        }
+
         public ActionResult SkipEvaluation(int answerId, int setupId)
         {
             UserMadeAction(UserActionType.SkippedEvaluation, answerId, 0);
             RemoveHandledObjectFromSession(true);
             Session["SkippedAnswerId"] = answerId; 
             return RedirectToAction("AnswerAndEvaluate", new { setupId = setupId});
+        }
+
+        [HttpGet]
+        public void ExternSkipEvaluation(int userId, int answerId)
+        {
+            UserMadeAction(UserActionType.SkippedEvaluation, answerId, 0, userId);
         }
 
         /// <summary>

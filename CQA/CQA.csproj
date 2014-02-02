@@ -208,6 +208,14 @@
     <Compile Include="Migrations\201401181943553_NotificationsInSeparateTableMigration.Designer.cs">
       <DependentUpon>201401181943553_NotificationsInSeparateTableMigration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201402021721403_AddedTimeStampToComment.cs" />
+    <Compile Include="Migrations\201402021721403_AddedTimeStampToComment.Designer.cs">
+      <DependentUpon>201402021721403_AddedTimeStampToComment.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201402021804382_QuestionFileIdAddedToQuestion.cs" />
+    <Compile Include="Migrations\201402021804382_QuestionFileIdAddedToQuestion.Designer.cs">
+      <DependentUpon>201402021804382_QuestionFileIdAddedToQuestion.cs</DependentUpon>
+    </Compile>
     <Compile Include="Models\DateCreatedModel.cs" />
     <Compile Include="Models\MyConsts.cs" />
     <Compile Include="Models\Notifications.cs" />
@@ -465,6 +473,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201401181943553_NotificationsInSeparateTableMigration.resx">
       <DependentUpon>201401181943553_NotificationsInSeparateTableMigration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201402021721403_AddedTimeStampToComment.resx">
+      <DependentUpon>201402021721403_AddedTimeStampToComment.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201402021804382_QuestionFileIdAddedToQuestion.resx">
+      <DependentUpon>201402021804382_QuestionFileIdAddedToQuestion.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\ErrorStrings.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
