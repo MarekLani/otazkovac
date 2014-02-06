@@ -46,6 +46,9 @@ namespace CQA.Models
                 //OnPropertyChanged("AnsweringProbability"); 
             } 
         }
+
+        public DateTime StartDate { get; set; }
+
         public virtual ICollection<Question> Questions { get; set; }
         public virtual ICollection<UsersSetup> UsersSetups { get; set; }
         //not needed right now

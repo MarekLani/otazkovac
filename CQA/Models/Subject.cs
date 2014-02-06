@@ -23,5 +23,6 @@ namespace CQA.Models
         public string Shortcut { get; set; }
 
         public virtual ICollection<Setup> Setups { get; set; }
+        public virtual ICollection<Concept> Concepts { get; set; }
     }
 }

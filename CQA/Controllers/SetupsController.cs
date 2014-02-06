@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.Entity;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
@@ -240,6 +241,18 @@ namespace CQA.Controllers
             }
             ViewBag.Link = Request.Url.GetLeftPart(UriPartial.Authority)+"/Reports/stats.csv";
             return View();
+        }
+
+        [HttpPost]
+        public ActionResult SetStartDate(int setupId, string date)
+        {
+            var l = date.Split('/');
+            Setup setup = db.Setups.Find(setupId);
+            setup.StartDate = new DateTime(Convert.ToInt32(l[2]), Convert.ToInt32(l[0]),Convert.ToInt32(l[1]));
+            db.Entry(setup).State = EntityState.Modified;
+            db.SaveChanges();
+
+            return new HttpStatusCodeResult((int)HttpStatusCode.OK);
         }
 
         protected override void Dispose(bool disposing)

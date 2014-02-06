@@ -30,6 +30,7 @@ namespace CQA.Models
         public virtual ICollection<Answer> Answers { get; set; }
         public virtual ICollection<UsersAction> UsersActions { get; set; }
         public virtual ICollection<QuestionView> QuestionViews { get; set; }
+        public virtual ICollection<Concept> Concepts { get; set; }
 
     }
 }

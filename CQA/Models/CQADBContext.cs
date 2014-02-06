@@ -25,6 +25,7 @@ namespace CQA.Models
         public DbSet<UsersAction> UsersActions { get; set; }
         public DbSet<QuestionView> QuestionViews { get; set; }
         public DbSet<Notification> Notifications { get; set; }
+        public DbSet<Concept> Concepts { get; set; }
         
         //Not needed right now
         //public DbSet<SetupsStatistics> SetupsStatistics { get; set; }
@@ -82,7 +83,25 @@ namespace CQA.Models
                         .WithRequired(us => us.Setup)
                         .HasForeignKey(us => us.SetupId);
 
-          
+            modelBuilder.Entity<Concept>()
+               .HasRequired(c => c.Subject)
+               .WithMany(s => s.Concepts)
+               .HasForeignKey(c => c.SubjectId)
+               .WillCascadeOnDelete(false);   
+
+            modelBuilder.Entity<Concept>()
+                .HasMany(c => c.Questions)
+                .WithMany(q => q.Concepts)
+                .Map(a =>
+                {
+                    a.ToTable("QuestionConcepts");
+                    a.MapLeftKey("ConceptId");
+                    a.MapRightKey("QuestionId");
+                });
+
+                   
+  
+
             #region UsersSetups
             //Creating many to many relationship where duplicity in foreign keys is allowed
             modelBuilder.Entity<UserProfile>()

@@ -3,6 +3,10 @@
 @{
     ViewBag.Title = "Zoznam otázok";
 }
+@section Styles {
+    @Styles.Render("~/Content/themes/base/css")
+}
+
 
 <h2>Otázky pre setup @(ViewData["SetupName"]), z predmetu  @(ViewData["SubjectName"])</h2>
 
@@ -37,7 +41,18 @@
                     @("Neaktívna")
                }
            </span>
+       <span class="conceptList">
+           @foreach (var concept in item.Concepts)
+           {
+               @(concept.Value)
+           }
+       </span>
        <span style="line-height:40px; font-size:20px; vertical-align:central">@item.QuestionText </span>
+
+       <form>
+           <input name="questionId" class="questionId" type="hidden" value="@(item.QuestionId)" />
+          <input class="concepts" />
+       </form>
    </div>
 }
 
@@ -45,5 +60,36 @@
 <div>
     @Html.ActionLink("Späť na setupy", "Index")
 </div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryui")
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+        $(document).ready(function () {
+            $(".concepts").each(function() {
+                var thisEl = $(this);
+                thisEl.autocomplete({
+                source:function (request, response) {
+                    $.getJSON("@Url.Action("SearchConcepts", "Subjects")?subjectId=@(ViewData["SetupId"])&term=" + request.term + "&questionId=" +  thisEl.siblings(".questionId").val(),
+                              response);
+                },
+                minLength: 2,
+                select: function (event, ui) {
+                    $.ajax({
+                        url: "@Url.Action("AssignConceptToQuestion", "Subjects")",
+                        method: "post", contentType: "json",
+                        data: '{"ConceptId":' + ui.item.id + ', "QuestionId":' + $(event.target).siblings(".questionId").val() + '}',
+                        success: function (data) {$(event.target).parent().parent().children(".conceptList").append(data["value"]) }
+                    })  
+                }
+                });
+                
+            });
+
+            
+
+        });
+    </script>
+}
 
 

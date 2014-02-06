@@ -216,6 +216,31 @@
     <Compile Include="Migrations\201402021804382_QuestionFileIdAddedToQuestion.Designer.cs">
       <DependentUpon>201402021804382_QuestionFileIdAddedToQuestion.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201402042023253_AddedConcepts.cs" />
+    <Compile Include="Migrations\201402042023253_AddedConcepts.Designer.cs">
+      <DependentUpon>201402042023253_AddedConcepts.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201402061037408_ActiveWeeksInConcepts.cs" />
+    <Compile Include="Migrations\201402061037408_ActiveWeeksInConcepts.Designer.cs">
+      <DependentUpon>201402061037408_ActiveWeeksInConcepts.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201402061532393_ConceptsBoundedToQuestions.cs" />
+    <Compile Include="Migrations\201402061532393_ConceptsBoundedToQuestions.Designer.cs">
+      <DependentUpon>201402061532393_ConceptsBoundedToQuestions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201402061534469_ConceptBindingToSubjectRemoved.cs" />
+    <Compile Include="Migrations\201402061534469_ConceptBindingToSubjectRemoved.Designer.cs">
+      <DependentUpon>201402061534469_ConceptBindingToSubjectRemoved.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201402061625285_ConceptBindingToSubjectAdded.cs" />
+    <Compile Include="Migrations\201402061625285_ConceptBindingToSubjectAdded.Designer.cs">
+      <DependentUpon>201402061625285_ConceptBindingToSubjectAdded.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201402061652191_StartDateAddedToSetup.cs" />
+    <Compile Include="Migrations\201402061652191_StartDateAddedToSetup.Designer.cs">
+      <DependentUpon>201402061652191_StartDateAddedToSetup.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Models\Concept.cs" />
     <Compile Include="Models\DateCreatedModel.cs" />
     <Compile Include="Models\MyConsts.cs" />
     <Compile Include="Models\Notifications.cs" />
@@ -479,6 +504,24 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201402021804382_QuestionFileIdAddedToQuestion.resx">
       <DependentUpon>201402021804382_QuestionFileIdAddedToQuestion.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201402042023253_AddedConcepts.resx">
+      <DependentUpon>201402042023253_AddedConcepts.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201402061037408_ActiveWeeksInConcepts.resx">
+      <DependentUpon>201402061037408_ActiveWeeksInConcepts.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201402061532393_ConceptsBoundedToQuestions.resx">
+      <DependentUpon>201402061532393_ConceptsBoundedToQuestions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201402061534469_ConceptBindingToSubjectRemoved.resx">
+      <DependentUpon>201402061534469_ConceptBindingToSubjectRemoved.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201402061625285_ConceptBindingToSubjectAdded.resx">
+      <DependentUpon>201402061625285_ConceptBindingToSubjectAdded.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201402061652191_StartDateAddedToSetup.resx">
+      <DependentUpon>201402061652191_StartDateAddedToSetup.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\ErrorStrings.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
