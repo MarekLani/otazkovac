@@ -10,50 +10,61 @@
 
 <h2>Otázky pre setup @(ViewData["SetupName"]), z predmetu  @(ViewData["SubjectName"])</h2>
 
-<form action="@Url.Action("AddQuestions","Setups")" method="post" enctype="multipart/form-data" >
-     <input name="file" type="file" accept=".csv" />
+<form action="@Url.Action("AddQuestions", "Setups")" method="post" enctype="multipart/form-data" >
+    <input name="file" type="file" accept=".csv" />
     <input type="hidden" name="setupId" value="@(ViewData["SetupId"])" />
     <button type="submit" class="btn btn-primary">Pridať otázky</button>
 </form>
 
 
 
-@foreach (var item in Model) {
-   <div class="questionInList"> 
-       <div style="float:left; margin-right:20px;">
-           <div style="text-align:center">@item.Answers.Count()</div>
-           <div> @if(item.Answers.Count() == 1){ @Html.Raw("Odpoveď")}
-                 else if (item.Answers.Count() > 1 && item.Answers.Count() < 5)
-                 {
-                     @Html.Raw("Odpovede")
-                 }
-               else{
-                    @Html.Raw("Odpovedí")
-               } 
-           </div>
-       </div> 
-       <span style="line-height:40px; font-size:10px; vertical-align:central">@if (@item.IsActive)
+@foreach (var item in Model)
+{
+    <div class="questionInList">
+        <div style="float: left; margin-right: 20px;">
+            <div style="text-align: center">@item.Answers.Count()</div>
+            <div>
+                @if (item.Answers.Count() == 1)
+                { @Html.Raw("Odpoveď")}
+                else if (item.Answers.Count() > 1 && item.Answers.Count() < 5)
                 {
-                    @("Aktívna")
+                    @Html.Raw("Odpovede")
                 }
-               else
-               {
-                    @("Neaktívna")
-               }
-           </span>
-       <span class="conceptList">
-           @foreach (var concept in item.Concepts)
-           {
-               @(concept.Value)
-           }
-       </span>
-       <span style="line-height:40px; font-size:20px; vertical-align:central">@item.QuestionText </span>
+                else
+                {
+                    @Html.Raw("Odpovedí")
+                }
+            </div>
+        </div>
+        <span style="line-height: 40px; font-size: 10px; vertical-align: central">
+            @if (@item.IsActive)
+            {
+                @("Aktívna")
+            }
+            else
+            {
+                @("Neaktívna")
+            }
+        </span>
+        <span style="line-height: 40px; font-size: 20px; vertical-align: central">@item.QuestionText </span>
+        <div class="conceptList">
+            Priradené koncepty: 
+            @foreach (var concept in item.Concepts)
+            {
+                <span>
+                    <span class="concept">@(concept.Value)</span>
+                    <input type="hidden" class="questionId" value="@item.QuestionId" />
+                    <input type="hidden" class="conceptId" value="@concept.ConceptId" />
+                    <b class="removeConcept">x</b>
+                </span>
+            }
+        </div>
 
-       <form>
-           <input name="questionId" class="questionId" type="hidden" value="@(item.QuestionId)" />
-          <input class="concepts" />
-       </form>
-   </div>
+        <form>
+            <input name="questionId" class="questionId" type="hidden" value="@(item.QuestionId)" />
+            <input class="concepts" />
+        </form>
+    </div>
 }
 
 <br />
@@ -66,28 +77,36 @@
     @Scripts.Render("~/bundles/jqueryval")
     <script>
         $(document).ready(function () {
-            $(".concepts").each(function() {
+            $(".concepts").each(function () {
                 var thisEl = $(this);
                 thisEl.autocomplete({
-                source:function (request, response) {
-                    $.getJSON("@Url.Action("SearchConcepts", "Subjects")?subjectId=@(ViewData["SetupId"])&term=" + request.term + "&questionId=" +  thisEl.siblings(".questionId").val(),
+                    source: function (request, response) {
+                        $.getJSON("@Url.Action("SearchConcepts", "Subjects")?subjectId=@(ViewData["SetupId"])&term=" + request.term + "&questionId=" + thisEl.siblings(".questionId").val(),
                               response);
-                },
-                minLength: 2,
-                select: function (event, ui) {
-                    $.ajax({
-                        url: "@Url.Action("AssignConceptToQuestion", "Subjects")",
-                        method: "post", contentType: "json",
-                        data: '{"ConceptId":' + ui.item.id + ', "QuestionId":' + $(event.target).siblings(".questionId").val() + '}',
-                        success: function (data) {$(event.target).parent().parent().children(".conceptList").append(data["value"]) }
-                    })  
+                    },
+                    minLength: 2,
+                    select: function (event, ui) {
+                        $.ajax({
+                            url: "@Url.Action("AssignConceptToQuestion", "Subjects")",
+                            method: "post",
+                            contentType: "application/json; charset=utf-8",
+                            dataType: "text",
+                            data: '{"ConceptId":' + ui.item.id + ', "QuestionId":' + $(event.target).siblings(".questionId").val() + '}',
+                            success: function (data) { $(event.target).parent().parent().children(".conceptList").append(data)  }
+                        });
                 }
                 });
-                
             });
 
-            
+            $(document).on("click", ".removeConcept", function (event) {
 
+                $.ajax({
+                    url: "@Url.Action("RemoveConceptFromQuestion", "Subjects")",
+                    method: "post", contentType: "json",
+                    data: '{"ConceptId":' + $(event.target).siblings(".conceptId").val() + ', "QuestionId":' + $(event.target).siblings(".questionId").val() + '}',
+                    success: function () { $(event.target).parent().remove() }
+                })
+            });
         });
     </script>
 }

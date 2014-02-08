@@ -5,6 +5,7 @@ using System.Data.Entity;
 using System.IO;
 using System.Linq;
 using System.Net;
+using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
@@ -125,7 +126,24 @@ namespace CQA.Controllers
                 db.SaveChanges();
             }
 
-            return new HttpStatusCodeResult((int)HttpStatusCode.Created);
+            StringBuilder sb = new StringBuilder("");
+
+            sb.Append(String.Format("<div id=\"{0}\" class=\"concept\">",concept.ConceptId));
+            sb.Append(String.Format("<span class=\"existingConcept\">{0}</span>",concept.Value));
+
+            for(int i = 0; i < 13; i++)
+            {
+                sb = sb.Append(String.Format("<input class=\"activeCheckbox\" type=\"checkbox\" data-conceptid=\"{0}\" data-week=\"{1}\">",concept.ConceptId,i));
+            }
+            
+            sb.Append("<form method=\"post\" data-ajax-url=\"/Subjects/RemoveConcept\" data-ajax-method=\"POST\" data-ajax=\"true\" autocomplete=\"off\" novalidate=\"novalidate\">");
+            sb.Append(String.Format("<input type=\"hidden\" value=\"{0}\" name=\"conceptId\">",concept.ConceptId));
+            sb.Append("<input class=\"btn removeConcept\" type=\"submit\" value=\"Odobrať koncept\">");
+            sb.Append("</form>");
+            sb.Append("<br>");
+            sb.Append("</div");
+
+            return Json(new { conceptWeeks = sb.ToString(),  });
         }
 
         [HttpPost]
@@ -152,7 +170,47 @@ namespace CQA.Controllers
             db.Entry(original).State = EntityState.Modified;
             db.SaveChanges();
 
-            return new HttpStatusCodeResult((int)HttpStatusCode.Created);
+            return Json(new { week = Convert.ToInt32(concept.ActiveWeeks), weekQuestionsCount = _QuestionInWeekCount(Convert.ToInt32(concept.ActiveWeeks),original) });
+        }
+
+        [HttpPost]
+        public ActionResult DeactivateConcept()
+        {
+            Request.InputStream.Seek(0, SeekOrigin.Begin);
+            string jsonData = new StreamReader(Request.InputStream).ReadToEnd();
+            Concept concept = new JavaScriptSerializer().Deserialize<Concept>(jsonData);
+            Concept original = db.Concepts.Find(concept.ConceptId);
+
+            List<int> activeWeeks = new List<int>(original.ActiveWeeksList);
+            if (activeWeeks.Contains(Convert.ToInt32(concept.ActiveWeeks)))
+                activeWeeks.Remove(Convert.ToInt32(concept.ActiveWeeks));
+
+            original.ActiveWeeksList = activeWeeks;
+            db.Entry(original).State = EntityState.Modified;
+            db.SaveChanges();
+
+            return Json(new { week = Convert.ToInt32(concept.ActiveWeeks), weekQuestionsCount = _QuestionInWeekCount(Convert.ToInt32(concept.ActiveWeeks), original) });
+        }
+
+
+        private int _QuestionInWeekCount(int week, Concept concept)
+        {
+            List<Question> questions = new List<CQA.Models.Question>();
+            foreach (var con in concept.Subject.Concepts)
+            {
+
+                if (con.ActiveWeeksList.Contains(week))
+                {
+                    foreach (var q in con.Questions)
+                    {
+                        if (!questions.Contains(q))
+                        {
+                            questions.Add(q);
+                        }
+                    }
+                }
+            }
+            return questions.Count;
         }
 
         struct AutocompletedConcepts
@@ -186,7 +244,8 @@ namespace CQA.Controllers
             public int QuestionId;
         }
 
-        public ActionResult AssignConceptToQuestion()
+        [HttpPost]
+        public string AssignConceptToQuestion()
         {
             Request.InputStream.Seek(0, SeekOrigin.Begin);
             string jsonData = new StreamReader(Request.InputStream).ReadToEnd();
@@ -198,7 +257,30 @@ namespace CQA.Controllers
             db.Entry(c).State = EntityState.Modified;
             db.SaveChanges();
 
-            return Json(new { value = c.Value, id = c.ConceptId }) ;
+            string result = String.Format(@"<span>"+
+                    "<span class=\"concept\">{0} </span>"+
+                    "<input type=\"hidden\" class=\"questionId\" value=\"{1}\" />" +
+                    "<input type=\"hidden\" class=\"conceptId\" value=\"{2}\" />" +
+                    "<b class=\"removeConcept\">x</b>" +
+                "</span>", c.Value,qc.QuestionId,c.ConceptId );
+
+            return result ;
+        }
+
+        [HttpPost]
+        public ActionResult RemoveConceptFromQuestion()
+        {
+            Request.InputStream.Seek(0, SeekOrigin.Begin);
+            string jsonData = new StreamReader(Request.InputStream).ReadToEnd();
+
+            QuestionConcept qc = new JavaScriptSerializer().Deserialize<QuestionConcept>(jsonData);
+
+            Concept c = db.Concepts.Find(qc.ConceptId);
+            c.Questions.Remove(db.Questions.Find(qc.QuestionId));
+            db.Entry(c).State = EntityState.Modified;
+            db.SaveChanges();
+
+            return new HttpStatusCodeResult((int)HttpStatusCode.OK);
         }
 
         protected override void Dispose(bool disposing)
