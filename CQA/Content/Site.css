@@ -1478,5 +1478,63 @@ textarea
 
 }
 
+/*****Concepts part*/
 
+#concepts
+{
+	width: 100%;
+	background: #dedbdb;
+	border: 1px solid grey;
+	padding: 5px;
+	margin-bottom: 20px;
+}
 
+#conceptWeeks td
+{
+	padding: 3px;
+	margin: 0;
+	font-size: 12px;
+	border-right: 1px solid grey;
+	padding-top: 1px;
+	padding-bottom: 0px;
+}
+
+#conceptWeeks tr
+{
+	margin: 0px;
+	padding: 0px;
+	border-bottom: 1px solid grey;
+}
+
+.existingConcept
+{
+	margin-left: 5px; 
+	padding: 3px;
+	background-color: #a6dbed;
+	float: left;
+	border: 1px solid #a3a4b1;
+	-moz-border-radius: 7px;
+	border-radius: 7px;
+}
+
+.activeCheckbox
+{
+	position: relative;
+	top: -5px;
+}
+
+.conceptValue
+{
+	width: 80px;
+}
+
+.removeConcept
+{
+	padding: 0px !important;
+	font-size: 10px !important;
+	position: relative;
+	top: -2px;
+	border: none;
+	margin-left: 3px;
+	background: none;
+}

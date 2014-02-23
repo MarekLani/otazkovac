@@ -23,9 +23,11 @@ namespace CQA.Models
         public int QuestionId { get; set; }
         public virtual Question Question { get; set; }
 
-        public int UserId { get; set; }
+        public int? UserId { get; set; }
         public virtual UserProfile Author{ get; set; }
 
+        public int? SetupId { get; set; }
+        public virtual Setup Setup { get; set; }
         /// <summary>
         /// Flag for determining if Answer have enough evaluations to be displayed to author
         /// NULL = not enough ratings

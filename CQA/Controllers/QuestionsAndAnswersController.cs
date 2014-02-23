@@ -74,8 +74,9 @@ namespace CQA.Controllers
             db.Answers.Add(ans);
             db.SaveChanges();
 
-            UserMadeAction(UserActionType.Answering, 0, ans.QuestionId, ans.UserId);
-            UserSeenQuestion(ans.QuestionId, ans.UserId);
+            UserMadeAction(UserActionType.Answering, 0, ans.QuestionId, (int)ans.UserId);
+            UserSeenQuestion(ans.QuestionId, (int)ans.UserId);
+
 
             object result = new { answerText = ans.Text };
             return Json(result);
@@ -365,6 +366,7 @@ namespace CQA.Controllers
                     questionText = ans.Question.QuestionText,
                     answerText = ans.Text,
                     answerId = ans.AnswerId,
+                    image = que.ImageUri,
                     userId = user.UserId
                 }, JsonRequestBehavior.AllowGet);
             if (que != null)
@@ -373,6 +375,7 @@ namespace CQA.Controllers
                     action = "Answer",
                     questionText = que.QuestionText,
                     questionId = que.QuestionId,
+                    image = que.ImageUri,
                     userId = user.UserId
 
                 }, JsonRequestBehavior.AllowGet);
@@ -395,6 +398,7 @@ namespace CQA.Controllers
         private bool ChooseAnswerOrQuestion(int setupId, int skippedAnswerId, int skippedQuestionId, ref Answer ans, ref Question que, int userId)
         {
             
+
             //Hack for selecting, when user has not seen the question, so there is no record to be selected
             //See selects lower using DefaultIfEmpty
             var defaultQuestionView = new QuestionView();
@@ -402,14 +406,23 @@ namespace CQA.Controllers
             
             Random rand = new Random();
 
+            Setup s = db.Setups.Find(setupId);
+
+            int week = (int)(s.StartDate - DateTime.Now).TotalDays / 7;
+            if(week > 13)
+                week = 13;
+
+            var activeConcepts = db.Concepts.Where(c => c.ActiveWeeksList.Contains(week) && c.SubjectId == s.SubjectId);
+
             //Base on probability set for setup it is selected if user is going to evaluate or answer
-            int p = db.Setups.Find(setupId).AnsweringProbability;
+            int p = s.AnsweringProbability;
             if (rand.Next(p) != p - 1)
             {
                 //user is going to validate answer
 
                 //Algorithm for selection of answer to be evaluated looks like this:
-                //1. Find all answers, which have not been already evaluated by current user,
+                //0. filter answer according to activness of concepts assigned to the related questions
+                //1. Find all answers, which have not been already evaluated by current user, which question concepts are within the active concepts
                 //   which were not written by current user, which are in current setup and for active question
                 //2. If answer was skipped remove it from list (if it is not the only one possible answer to be displayed) 
                 //3. With greedy maximization principle, try to find questions which have fewer than 3 evaluations (MinEvaluationLimit)
@@ -420,10 +433,14 @@ namespace CQA.Controllers
                 // answer as before, but without the one day rule.
                 //6. If there are also no results, try to find question to be answered
 
+                //step 0 select only from active concepts
+
+
                 //step 1
                 var answers = db.Answers
                                     .Where(a => !a.Evaluations.Where(e => e.UserId == userId).Any()
-                                        && a.Question.SetupId == setupId
+                                        && a.Question.Concepts.Intersect(activeConcepts).Any()
+                                        && a.Question.SubjectId == s.SubjectId
                                         && a.UserId != userId
                                         && a.Question.IsActive).ToList();
 

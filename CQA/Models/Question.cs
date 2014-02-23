@@ -24,8 +24,8 @@ namespace CQA.Models
 
         public bool IsActive { get; set; }
 
-        public int SetupId { get; set; }
-        public virtual Setup Setup { get; set; }
+        public int SubjectId { get; set; }
+        public virtual Subject Subject { get; set; }
 
         public virtual ICollection<Answer> Answers { get; set; }
         public virtual ICollection<UsersAction> UsersActions { get; set; }

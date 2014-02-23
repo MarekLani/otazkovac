@@ -25,14 +25,14 @@ namespace CQA.Controllers
         public ActionResult EvaluatedAnswers()
         {
             List<EvaluatedAnswers> evaluatedAnswers = new List<Models.EvaluatedAnswers>();
-            var setupsWithEvaluatedAnswers = db.Answers.Where(a => a.UserId == WebSecurity.CurrentUserId && a.Evaluations.Count > 0)
-                .OrderByDescending(a => a.DateCreated).GroupBy(a => a.Question.Setup);
-            foreach(var s in setupsWithEvaluatedAnswers)
+            var subjectssWithEvaluatedAnswers = db.Answers.Where(a => a.UserId == WebSecurity.CurrentUserId && a.Evaluations.Count > 0)
+                .OrderByDescending(a => a.DateCreated).GroupBy(a => a.Question.Subject);
+            foreach (var s in subjectssWithEvaluatedAnswers)
             {
                 EvaluatedAnswers ea = new EvaluatedAnswers();
                 ea.Answers = new List<Answer>();
                 ea.UnseenHighlightedAnswers = new List<Answer>();
-                ea.Setup = s.Key;
+                ea.Setup.Subject = s.Key;
                 ea.UnseenCount = 0;
 
                 List<Notification> Notifications = new List<Notification>();
@@ -60,17 +60,50 @@ namespace CQA.Controllers
         public ActionResult MyEvaluations()
         {
             List<EvaluatedAnswers> evaluatedAnswers = new List<Models.EvaluatedAnswers>();
-            var setupsWithEvaluatedAnswers = db.Answers.Where(a => a.Evaluations.Where(e => e.UserId == WebSecurity.CurrentUserId).Any())
-                .OrderByDescending(a => a.DateCreated).GroupBy(a => a.Question.Setup);
-            foreach (var s in setupsWithEvaluatedAnswers)
+            var subjectsWithEvaluatedAnswers = db.Answers.Where(a => a.Evaluations.Where(e => e.UserId == WebSecurity.CurrentUserId).Any())
+                .OrderByDescending(a => a.DateCreated).GroupBy(a => a.Question.Subject);
+            foreach (var s in subjectsWithEvaluatedAnswers)
             {
                 EvaluatedAnswers ea = new EvaluatedAnswers();
                 ea.Answers = new List<Answer>();
                 ea.UnseenHighlightedAnswers = new List<Answer>();
-                ea.Setup = s.Key;
+                ea.Setup.Subject = s.Key;
                 ea.UnseenCount = 0;
                 List<Notification> Notifications = new List<Notification>();
                 Notifications = db.Notifications.Where(n => n.UserId == WebSecurity.CurrentUserId && n.NotificationFor == NotificationFor.MyEvaluation).ToList();
+
+                foreach (Answer a in s)
+                {
+                    ea.Answers.Add(a);
+                    foreach (Notification not in Notifications.Where(n => n.AnswerId == a.AnswerId))
+                    {
+                        ea.UnseenCount++;
+                        ea.UnseenHighlightedAnswers.Add(a);
+                        db.Notifications.Remove(not);
+                    }
+                }
+                evaluatedAnswers.Add(ea);
+            }
+            db.SaveChanges();
+            return View(evaluatedAnswers);
+        }
+
+
+        public ActionResult AllEvaluations()
+        {
+            List<EvaluatedAnswers> evaluatedAnswers = new List<Models.EvaluatedAnswers>();
+            var subjectssWithEvaluatedAnswers = db.Answers.Where(a => a.UserId == WebSecurity.CurrentUserId && a.Evaluations.Count > 0 || a.Evaluations.Where(e => e.UserId == WebSecurity.CurrentUserId).Any())
+                .OrderByDescending(a => a.DateCreated).GroupBy(a => a.Question.Subject);
+            foreach (var s in subjectssWithEvaluatedAnswers)
+            {
+                EvaluatedAnswers ea = new EvaluatedAnswers();
+                ea.Answers = new List<Answer>();
+                ea.UnseenHighlightedAnswers = new List<Answer>();
+                ea.Setup.Subject = s.Key;
+                ea.UnseenCount = 0;
+
+                List<Notification> Notifications = new List<Notification>();
+                Notifications = db.Notifications.Where(n => n.UserId == WebSecurity.CurrentUserId && n.NotificationFor == NotificationFor.MyAnswer).ToList();
 
                 foreach (Answer a in s)
                 {

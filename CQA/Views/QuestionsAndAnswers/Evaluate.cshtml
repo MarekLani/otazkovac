@@ -12,7 +12,10 @@
 <div class="question">
 
     <div id="questionText"><span style="font-size: 0.85em; font-weight: bold">Otázka: </span>@Html.DisplayFor(model => model.Question.QuestionText) </div>
-
+    @if (Model.Question.ImageUri != "" || Model.Question.ImageUri != null)
+    {
+        <img src="@Model.Question.ImageUri" style="max-width: 80%" />
+    }
 </div>
 <div class="answer">
     <div id="answerText"><span style="font-size: 0.85em; font-weight: bold">Odpoveď: </span>@Html.DisplayFor(model => model.Text)</div>

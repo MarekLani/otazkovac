@@ -10,15 +10,22 @@
 
 <h2>Details</h2>
 
-Concepts:
+Koncepty:
 <div id="concepts">
 @{
-    foreach (var concept in Model.Subject.Concepts){
-        <div class="existingConcept">@(concept.Value)</div>
-    }
+    <div id="conceptsList">
+        @foreach (var concept in Model.Subject.Concepts){
+            <div>
+                <span class="existingConcept" >@(concept.Value)</span>
+                <input type="hidden" class="conceptId" value="@concept.ConceptId" />
+                <span style="margin-left:10px; cursor:pointer;" class="deleteConcept">x</span>
+            </div>
+        }
+    </div>
+    <div style="clear:both"></div>
 }
 </div>
-
+Pridať koncept:
 @using (Ajax.BeginForm(null, null, new AjaxOptions()
 {
     HttpMethod = "POST",
@@ -29,40 +36,75 @@ new { autocomplete = "off" }))
 {
     <input name="SubjectId" type="hidden" value="@Html.DisplayFor(model => model.SubjectId)"/>
     <input id="newConcept" name="Value" />
-    <input id="addConcept" type="submit" class="btn" value="Pridať koncept"/>
+    <button id="addConcept" type="submit" class="btn btn-default">Pridať koncept</button>
 }
 
-
-<div id="conceptWeeks">
+<hr />
+<p>Začiatok semestra:</p>
+@using (Ajax.BeginForm(null, null, new AjaxOptions()
+{
+    HttpMethod = "POST",
+    Url = Url.Action("SetStartDate", "Setups"),
+},
+new { autocomplete = "off" }))
+{
+    <input type="text" name="date" value="@Html.DisplayFor(model => model.StartDate)" id="datepicker">
+    <input name="setupId" type="hidden" value="@Html.DisplayFor(model => model.SetupId)"/>
+    <button type="submit" class="btn" style="position:relative; top: -6px">Nastaviť</button>
+}
+<hr />
+<table id="conceptWeeks">
     @{
+        <tr>
+            <td></td>
+            @for (int i = 0; i < 13; i++)
+            {
+                <td style="text-align:center">@i</td>
+            }
+        </tr>
         foreach (var concept in Model.Subject.Concepts)
         {
-            <div class="concept" id="@concept.ConceptId">
-                <span class="existingConcept">@(concept.Value) (@concept.Questions.Count())</span>
+            <tr class="concept" id="@("c"+concept.ConceptId)">
+                <td class="conceptValue">@(concept.Value) (@concept.Questions.Count())</td>
+                
                 @for (int i = 0; i < 13; i++)
                 {
-                    if(concept.ActiveWeeksList.Contains(i)){
-                     <input type="checkbox" class="activeCheckbox" checked data-week="@i" data-conceptId="@concept.ConceptId" />
+                    
+                    string style = "";
+                    if (Model.StartDate.AddDays(7 * i) <= DateTime.Now && Model.StartDate.AddDays(7 * i +6) >= DateTime.Now)
+                    {
+                        style = "style=\"background: green;\"";
                     }
-                    else{
+                    <td @Html.Raw(style)>        
+                    @if (concept.ActiveWeeksList.Contains(i))
+                    {
+                        <input type="checkbox" class="activeCheckbox"  checked data-week="@i" data-conceptId="@concept.ConceptId" />
+                    }
+                    else
+                    {
                         <input type="checkbox" class="activeCheckbox" data-week="@i" data-conceptId="@concept.ConceptId" />
                     }
+                    </td>
                 }
+                <td>
                 @using (Ajax.BeginForm(null, null, new AjaxOptions()
                 {
                     HttpMethod = "POST",
                     Url = Url.Action("RemoveConcept", "Subjects"),
                 },
-                new { autocomplete = "off" }))
+                new { autocomplete = "off", style = "margin:0; padding: 0;" }))
                 {
-                    <input name="conceptId" type="hidden" value="@concept.ConceptId"/>
-                    <input  type="submit" class="btn removeConcept" value="Odobrať koncept"/>
+                    
+                        <input name="conceptId" type="hidden" value="@concept.ConceptId"/>
+                        <button type="submit" class="removeConcept"> X </button>
+                    
                 }
-
-                <br/>
-            </div>
+                    </td>
+          </tr>
         }
     }
+    <tr>
+        <td></td>
      @for (int i = 0; i < 13; i++)
      {
          List<CQA.Models.Question> questions = new List<CQA.Models.Question>();
@@ -80,24 +122,14 @@ new { autocomplete = "off" }))
                  }
              }
          }
-         <span id="weekTotal@(i)">@questions.Count()</span>;
+         <td id="weekTotal@(i)">@questions.Count()</td>;
      }
-</div>
+     </tr>
+</table>
+<hr />
 
-<p>Date:</p>
-@using (Ajax.BeginForm(null, null, new AjaxOptions()
-{
-    HttpMethod = "POST",
-    Url = Url.Action("SetStartDate", "Setups"),
-},
-new { autocomplete = "off" }))
-{
-    <input type="text" name="date" value="@Html.DisplayFor(model => model.StartDate)" id="datepicker">
-    <input name="setupId" type="hidden" value="@Html.DisplayFor(model => model.SetupId)"/>
-    <input type="submit" />
-}
  
-
+<!--
 <fieldset>
     <legend>Setup</legend>
 
@@ -121,7 +153,7 @@ new { autocomplete = "off" }))
     <div class="display-field">
         @Html.DisplayFor(model => model.Subject.Name)
     </div>
-</fieldset>
+</fieldset> -->
 <p>
     @Html.ActionLink("Stats", "GetBasicStatistics") |
     @Html.ActionLink("Edit", "Edit", new { id = Model.SetupId }) |
@@ -137,7 +169,7 @@ new { autocomplete = "off" }))
             var concept = $("#newConcept").val()
             $("#newConcept").val("")
             if(concept != "")
-                $("#concepts").append('<div class="newConcept">' + concept + '</div>')
+                $("#conceptsList").append('<div class="existingConcept">' + concept + '</div>')
             $("#conceptWeeks").append(data["conceptWeeks"]);
 
 
@@ -154,10 +186,22 @@ new { autocomplete = "off" }))
 
            $(document).on("click", ".removeConcept", function (e) {
                $(e.target).parent().submit();
-               if ($(e.target).parent().parent().remove());
+               $(e.target).parent().parent().parent().remove();
                   
            });
 
+           $(document).on("click", ".deleteConcept", function (e) {
+               var id = $(e.target).sibling(".conceptId").val();
+               $(e.target).parent().remove();
+               $("#c"+id).remove();
+               
+               $.ajax({
+                   url: "@Url.Action("DeleteConcept", "Subjects")",
+                   method: "post",
+                   contentType: "json",
+                   data: '{"ConceptId":' + conceptId+'}'
+               });
+           });
 
            function activateConcept(conceptId, week) {
                $.ajax({

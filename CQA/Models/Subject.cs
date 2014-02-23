@@ -22,6 +22,8 @@ namespace CQA.Models
         [DisplayName("Skrátené meno")]
         public string Shortcut { get; set; }
 
+
+        public virtual ICollection<Question> Questions { get; set; }
         public virtual ICollection<Setup> Setups { get; set; }
         public virtual ICollection<Concept> Concepts { get; set; }
     }

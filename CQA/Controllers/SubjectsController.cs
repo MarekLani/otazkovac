@@ -129,7 +129,7 @@ namespace CQA.Controllers
             StringBuilder sb = new StringBuilder("");
 
             sb.Append(String.Format("<div id=\"{0}\" class=\"concept\">",concept.ConceptId));
-            sb.Append(String.Format("<span class=\"existingConcept\">{0}</span>",concept.Value));
+            sb.Append(String.Format("<span class=\"concept\">{0}</span>",concept.Value));
 
             for(int i = 0; i < 13; i++)
             {
@@ -190,6 +190,20 @@ namespace CQA.Controllers
             db.SaveChanges();
 
             return Json(new { week = Convert.ToInt32(concept.ActiveWeeks), weekQuestionsCount = _QuestionInWeekCount(Convert.ToInt32(concept.ActiveWeeks), original) });
+        }
+
+        [HttpPost]
+        public ActionResult DeleteConcept()
+        {
+            Request.InputStream.Seek(0, SeekOrigin.Begin);
+            string jsonData = new StreamReader(Request.InputStream).ReadToEnd();
+            Concept concept = new JavaScriptSerializer().Deserialize<Concept>(jsonData);
+            Concept c = db.Concepts.Find(concept.ConceptId);
+
+            db.Concepts.Remove(c);
+            db.SaveChanges();
+
+            return new HttpStatusCodeResult((int)HttpStatusCode.OK);
         }
 
 
@@ -281,6 +295,142 @@ namespace CQA.Controllers
             db.SaveChanges();
 
             return new HttpStatusCodeResult((int)HttpStatusCode.OK);
+        }
+
+        [HttpPost]
+        public ActionResult AddQuestions(HttpPostedFileBase file, int subjectId)
+        {
+            var reader = new StreamReader(file.InputStream, Encoding.UTF8);
+            List<string> columnNames = new List<string>();
+
+
+            System.Globalization.CultureInfo customCulture = (System.Globalization.CultureInfo)System.Threading.Thread.CurrentThread.CurrentCulture.Clone();
+            customCulture.NumberFormat.NumberDecimalSeparator = ".";
+
+            System.Threading.Thread.CurrentThread.CurrentCulture = customCulture;
+
+            var firstLine = reader.ReadLine();
+
+            while (!reader.EndOfStream)
+            {
+                var Line = reader.ReadLine();
+                var values = Line.Split(';');
+
+                int id = Convert.ToInt32(values[0]);
+                var l = db.Questions.Where(que => que.SubjectId == subjectId && que.QuestionFileId == id).ToList();
+                Question q = null;
+                if (l.Any())
+                    q = l.First();
+                if (q != null)
+                {
+                    FillupQuestion(ref q, values);
+                    db.Entry(q).State = EntityState.Modified;
+                    db.SaveChanges();
+                }
+                else
+                {
+                    Question newQ = new Question();
+                    FillupQuestion(ref newQ, values);
+                    newQ.SubjectId = subjectId;
+                    db.Questions.Add(newQ);
+                    db.SaveChanges();
+                }
+
+            }
+
+            return RedirectToAction("Questions", new { id = subjectId });
+        }
+
+        [HttpPost]
+        public ActionResult AddQuestionsAnswers(HttpPostedFileBase file, int subjectId)
+        {
+            var reader = new StreamReader(file.InputStream, Encoding.UTF8);
+            List<string> columnNames = new List<string>();
+
+            System.Globalization.CultureInfo customCulture = (System.Globalization.CultureInfo)System.Threading.Thread.CurrentThread.CurrentCulture.Clone();
+            customCulture.NumberFormat.NumberDecimalSeparator = ".";
+
+            System.Threading.Thread.CurrentThread.CurrentCulture = customCulture;
+
+            var firstLine = reader.ReadLine();
+
+            while (!reader.EndOfStream)
+            {
+                var Line = reader.ReadLine();
+                var values = Line.Split(';');
+
+                int id = Convert.ToInt32(values[0]);
+                var l = db.Questions.Where(que => que.SubjectId == subjectId && que.QuestionFileId == id).ToList();
+                Question q = null;
+                if (l.Any())
+                    q = l.First();
+                if (q == null)
+                {
+                    Question newQ = new Question();
+                    newQ.QuestionFileId = Convert.ToInt32(values[0]);
+                    newQ.QuestionText = values[1];
+                    newQ.ImageUri = values[2];
+                    newQ.SubjectId = subjectId;
+                    db.Questions.Add(newQ);
+                    db.SaveChanges();
+
+                    string[] concepts = values[3].Split(',');
+
+                    foreach (var concept in concepts)
+                    {
+                        if (!db.Concepts.Where(c => c.SubjectId == subjectId && c.Value == concept).ToList().Any())
+                        {
+                            Concept c = new Concept();
+                            c.Value = concept;
+                            c.SubjectId = subjectId;
+                            c.Questions.Add(newQ);
+                            db.Concepts.Add(c);
+                            db.SaveChanges();
+                        }
+
+                    }
+                    q = newQ;
+                }
+
+                Answer a = new Answer();
+                a.Text =values[5];
+                a.Question = q;
+                db.Answers.Add(a);
+                db.SaveChanges();
+
+            }
+
+            return RedirectToAction("Questions", new { id = subjectId });
+        }
+
+        [HttpGet]
+        public ActionResult Questions(int id)
+        {
+            ViewData["SubjectId"] = id;
+            var subject = db.Subjects.Find(id);
+            ViewData["SubjectName"] = subject.Name;
+            var questions = db.Subjects.Find(id).Questions;
+            return View(questions);
+        }
+
+        private void FillupQuestion(ref Question q, string[] values)
+        {
+            try
+            {
+                q.QuestionFileId = Convert.ToInt32(values[0]);
+                q.QuestionText = values[2];
+                //If hint is present
+                if (values[4] != "")
+                    q.Hint = values[4];
+                else
+                    q.Hint = null;
+                q.IsActive = (1 == Convert.ToInt32(values[5]));
+                q.ImageUri = values[6];
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.InnerException);
+            }
         }
 
         protected override void Dispose(bool disposing)

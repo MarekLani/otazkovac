@@ -1,0 +1,298 @@
+﻿@model ICollection<CQA.Models.EvaluatedAnswers>
+
+@section Styles{
+    @Styles.Render("~/Content/themes/base/css")
+}
+
+@{
+    ViewBag.Title = "Moje hodnotenia";
+}
+
+
+@if (!Model.Any())
+{
+    <h4>Zatiaľ ste nehodnotili žiadne odpovede</h4>
+}
+else
+{
+    <h3>Vami hodnotené odpovede</h3>
+    foreach (var ea in Model)
+    {
+    <div class="setup">@Html.Raw("<span style=\"font-size: 24px\">" + ea.Setup.Subject.Name + " " + ea.Setup.Name + " </span><br/>" +
+             "Počet nových ohodnotených odpovedí:" + "<b>" + ea.UnseenCount +
+            " </b> | " +
+            "Počet všetkých ohodnotených odpovedí: " + "<b>" + ea.Answers.Count() + "</b>")
+    </div>
+        
+    <div class="header">
+        <div class="header_value">
+            Hodnotenie
+        </div>
+        <div class="header_qa">Otázka</div>
+        <div class="header_qa">Odpoveď</div>
+
+        <div style="clear: both"></div>
+    </div>
+    
+        {
+            int i = 0;
+            foreach (var a in ea.Answers)
+            {
+                i++;
+            
+    <div class="myAnswerWrap" id="a@(a.AnswerId)">
+        <div class="myAnswer
+                @if (i % 2 == 0)
+                {@(" greyBackground")}
+                @if (ea.UnseenHighlightedAnswers.Contains(a))
+                {@(" empAnswer")}" 
+                @if (i == 1)
+                {@Html.Raw("style=\"border-top: 1px solid lightgrey;\"")} >
+
+            <div class="evalValueWrap" style="background: white">
+                <div class="evalValue">
+                    <div class="evalValueBg">
+                        <div class="cleanValue"></div>
+
+                        @{
+                                int n = a.Evaluations.Count(); 
+                            <div class="evalsCount">@(n)
+                                @if (n == 1)
+                                {
+                                    @("hodnotenie");
+                                }
+                                else if (n < 5)
+                                {
+                                    @("hodnotenia");
+                                }
+                                else
+                                {
+                                    @("hodnotení");
+                                }
+                            </div>
+                                n = a.Comments.Count();
+                            <div class="commentsCount">
+                                 @(a.Comments.Count())
+                                 @if (n == 1)
+                                {
+                                    @("komentár");
+                                }
+                                else if (n < 5 && n > 0)
+                                {
+                                    @("komentáre");
+                                }
+                                else
+                                {
+                                    @("komenatárov");
+                                }
+                            </div>
+                        }
+
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="elipsis">@(a.Question.QuestionText)</div>
+            <div class="elipsis" style="border-left: 1px solid lightgrey;">@(a.Text)</div>
+            <div class="detail btn" title="Zobraziť detail">
+                ››
+            </div>
+            <div style="clear: both"></div>
+        </div>
+        <div class="toggleDetails">
+            <input type="hidden" value="@(a.Evaluations.Count())" name="count" class="count" />
+            <input type="hidden" value="@((int)(a.GetAvgEvaluation() * 100))" name="numValue" class="numValue" />
+            <div class="questionText"><b>Otázka: </b>@(a.Question.QuestionText)</div>
+            <div class="answerText"><b>Odpoveď: </b>@(a.Text)</div>
+            <div class="textValue"></div>
+            <div class="sliderWrap">
+                <div class="ui-widget-content-wrapper" style="width: 100%; margin-top: 25px;">
+                    @foreach (var e in a.Evaluations)
+                    {
+                        int value = (int)(e.Value * 100);  
+                        int margin = 0;
+                        
+                        if(value >= 50){
+                            margin=-14;
+                        }
+                        else{
+                            margin = -8;
+                        }
+
+                        if (e.UserId == WebSecurity.CurrentUserId)
+                        {
+                            <div class="myEvaluationWrap" style="left:@(value)%; margin-left: @(margin)px;">
+                                <div class="myEvaluationText">Vaše hodnotenie</div>
+                                <div class="downArrow">›</div>
+                                <div class="crowdSlider myEvaluation" ></div>
+                            </div>
+                                
+                        }
+                        else if(Roles.IsUserInRole(CQA.Membership.CustomMembershipProvider.GetUser(e.UserId).UserName, "Admin") && CQA.Membership.CustomMembershipProvider.GetUser(e.UserId).UserName != "xlanim")
+                        {
+                           <div class="authorityEvaluationWrap" style="left:@(value)%; margin-left: @(margin)px;">
+                               <div class="crowdSlider authorityEvaluation" ></div>
+                               <div class="upArrow">›</div>
+                               <div class="myEvaluationText" style="margin-left: -65px; margin-top: -2px;">Hodnotenie učiteľa</div>
+                            </div> 
+                        }
+                        else
+                        {
+                            <div class="crowdSlider" style="left:@(value)%; margin-left: @(margin)px; "></div>
+                        }
+                    }      
+                    <div class="slider-range"></div>
+                </div>
+            </div>
+            <div style="clear: both"></div>
+            <div style="text-align: center; width: 100%; margin-top: 20px;">Počet hodnotení odpovede: <b class="evalsCount">@(a.Evaluations.Count())</b></div>
+            <div class="commentsWrap">
+                <div class="comments" style="margin-left: 15px; margin-top: 5px; width: 96%;">
+                    <h5 style="margin: 0; margin-top: 5px; margin-bottom: 5px">Komentáre:</h5>
+                    @if (a.Comments.Any())
+                    {
+                        foreach (CQA.Models.Comment c in a.Comments)
+                        {
+                                    
+                        <div class="comment">
+                            <b>
+                                @if (c.Anonymous)
+                                {
+                                    @("Anonym:") 
+                                }
+                                else
+                                {
+                                    @(c.Author.RealName + ":")
+                                }
+                            </b>
+                            @(c.Text)
+                        </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="noComments">K odpovedi neboli zatiaľ vytvorené žiadne komentáre</div>
+                    }
+                </div>
+                <div class="commentForm">
+                    @{Html.RenderPartial("_CreateCommentForm", new CQA.Models.Comment(a.AnswerId));}
+                </div>
+            </div>
+        </div>
+    </div>
+            }
+        }
+    }
+}
+
+@section Scripts{
+    @Scripts.Render("~/Scripts/jquery.dotdotdot.min.js")
+    @Scripts.Render("~/bundles/jqueryval")
+    @Scripts.Render("~/bundles/jqueryui")
+
+    <script type="text/javascript">
+
+        function CommentCreated(data) {
+            data = $.parseJSON(data);
+            $("#a" + data.AnswerId).find('.noComments').hide();
+            $("#a" + data.AnswerId).find('textarea').val('');
+            $("#a"+data.AnswerId).find(".comments").append('<div class="comment empAnswer"><b>' + data.UserName + ':</b> ' + data.Text + '</div>');
+        }
+
+        $(document).ready(function () {
+
+            $(".toggleDetails").each(function () {
+                //alert($(this).children(".numValue").val())
+            });
+
+            $(".elipsis").dotdotdot();
+
+            $(".slider-range").slider({
+                range: false,
+                min: 0,
+                max: 100,
+                value: 50,
+            });
+            $(".slider-range").slider('disable');
+
+
+            //Hides dialog by clicking outside of it
+            $('body').on("click", '.ui-widget-overlay', function () {
+                $("#dialog").dialog("close");
+            });
+
+
+            $(".myAnswer").click(function () {
+                var b = false;
+                if ($(this).hasClass("opened")) {
+                    b = true;
+                }
+                $(".opened").parent().find(".toggleDetails").slideToggle();
+                $(".opened").removeClass("opened");
+                if (!b) {
+                    $(this).parent().find(".toggleDetails").slideToggle();
+                    $(this).addClass("opened");
+                }
+
+                
+            });
+
+            function changeText(el, val) {
+                if (val < 10)
+                    el.html("Silný nesúhlas")
+                else if (val < 26) {
+                    el.html("Nesúhlas")
+                    el.addClass("evalValueOneRow")
+                }
+                else if (val < 42)
+                    el.html("Skôr nesúhlas")
+                else if (val < 58) {
+                    el.html("Čiastočný súhlas")
+                }
+                else if (val < 74) {
+                    el.html("Skôr súhlas")
+                    el.addClass("evalValueOneRow")
+                }
+                else if (val < 90) {
+                    el.html("Súhlas")
+                    el.addClass("evalValueOneRow")
+                }
+                else
+                    el.html("Silný súhlas")
+            }
+
+            $(".myAnswerWrap").each(function () {
+                //alert($(this).children(".numValue"));
+                var val = $(this).find(".numValue").val();
+                $(this).find(".evalValue").css("background", getColorWithOpacity(val, $(this).find(".count").val()));
+                changeText($(this).find(".cleanValue"), val);
+                changeText($(this).find(".textValue"), val);
+                $(this).find(".slider-range").slider('value', val);
+                $(this).find(".ui-widget-content-wrapper").css("background", getColor(val));
+            });
+
+
+            function getColorWithOpacity(val, evalsCount) {
+                if (evalsCount < 10)
+                    opacity = 10 - evalsCount;
+                else
+                    opacity = 1;
+                if (val > 50)
+                    return "rgba(" + (220 - ((val - 50) * 4)) + ", 180, 20, " + (0.2 + (0.8 / opacity)) + ")"
+                else
+                    return "rgba( 220, " + (180 - Math.ceil((50 - val) * 3.5)) + ", 20, " + (0.2 + (0.8 / opacity)) + ")"
+            }
+
+            function getColor(val) {
+                if (val > 50) {
+                    return "rgb(" + (220 - ((val - 50) * 4)) + ", 180, 20)"
+                }
+                else {
+                    return "rgb( 220, " + Math.ceil(180 - ((50 - val) * 3.5)) + ", 20)"
+                }
+            }
+
+        });
+    </script>
+}
