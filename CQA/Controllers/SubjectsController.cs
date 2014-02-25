@@ -147,9 +147,12 @@ namespace CQA.Controllers
         }
 
         [HttpPost]
-        public ActionResult RemoveConcept(int conceptId)
+        public ActionResult RemoveConcept()
         {
-            db.Concepts.Remove(db.Concepts.Find(conceptId));
+            Request.InputStream.Seek(0, SeekOrigin.Begin);
+            string jsonData = new StreamReader(Request.InputStream).ReadToEnd();
+            Concept concept = new JavaScriptSerializer().Deserialize<Concept>(jsonData);
+            db.Concepts.Remove(db.Concepts.Find(concept.ConceptId));
             db.SaveChanges();
             return new HttpStatusCodeResult((int)HttpStatusCode.OK);
         }
@@ -371,22 +374,31 @@ namespace CQA.Controllers
                     newQ.QuestionText = values[1];
                     newQ.ImageUri = values[2];
                     newQ.SubjectId = subjectId;
+                    newQ.Concepts = new List<Concept>();
+                    newQ.IsActive = true;
                     db.Questions.Add(newQ);
                     db.SaveChanges();
 
                     string[] concepts = values[3].Split(',');
-
-                    foreach (var concept in concepts)
+                    var conceptsList = concepts.ToList();
+                    conceptsList.RemoveAt(concepts.Count() - 1);
+                    foreach (var concept in conceptsList)
                     {
+
                         if (!db.Concepts.Where(c => c.SubjectId == subjectId && c.Value == concept).ToList().Any())
                         {
                             Concept c = new Concept();
                             c.Value = concept;
                             c.SubjectId = subjectId;
-                            c.Questions.Add(newQ);
                             db.Concepts.Add(c);
                             db.SaveChanges();
+
+                            newQ.Concepts.Add(c);
+                            db.Entry(newQ).State = EntityState.Modified;
+                            db.SaveChanges();
                         }
+                        else newQ.Concepts.Add(db.Concepts.Where(c => c.SubjectId == subjectId && c.Value == concept).First());
+
 
                     }
                     q = newQ;

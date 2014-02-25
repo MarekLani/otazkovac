@@ -61,7 +61,7 @@
                     <span class="concept">@(concept.Value)</span>
                     <input type="hidden" class="questionId" value="@item.QuestionId" />
                     <input type="hidden" class="conceptId" value="@concept.ConceptId" />
-                    <b class="removeConcept">x</b>
+                    <b class="removeConcept" style="cursor:pointer">x</b>
                 </span>
             }
         </div>
@@ -87,7 +87,7 @@
                 var thisEl = $(this);
                 thisEl.autocomplete({
                     source: function (request, response) {
-                        $.getJSON("@Url.Action("SearchConcepts", "Subjects")?subjectId=@(ViewData["SetupId"])&term=" + request.term + "&questionId=" + thisEl.siblings(".questionId").val(),
+                        $.getJSON("@Url.Action("SearchConcepts", "Subjects")?subjectId=@(ViewData["SubjectId"])&term=" + request.term + "&questionId=" + thisEl.siblings(".questionId").val(),
                               response);
                     },
                     minLength: 2,

@@ -286,7 +286,7 @@ namespace CQA.Controllers
 
             //check if setup is active
             Setup setup = db.Setups.Find(setupId);
-            if (setup == null || !setup.Active)
+            if (setup == null || !setup.Active || !setup.Displayed)
             {
                 return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest);
             }
@@ -323,6 +323,7 @@ namespace CQA.Controllers
             if (ans != null)
             {
                 AddHandledObjectToSession(ans.AnswerId, true, setupId);
+                ViewBag.setupId = setupId;
                 return View("Evaluate", ans);
             }
             if (que != null)
@@ -412,7 +413,13 @@ namespace CQA.Controllers
             if(week > 13)
                 week = 13;
 
-            var activeConcepts = db.Concepts.Where(c => c.ActiveWeeksList.Contains(week) && c.SubjectId == s.SubjectId);
+            var concepts = db.Concepts.Where(c => c.SubjectId == s.SubjectId).ToList();
+            List<Concept> activeConcepts = new List<Concept>();
+            foreach(var c in concepts)
+            {
+                if(c.ActiveWeeksList.Contains(week))
+                    activeConcepts.Add(c);
+            }
 
             //Base on probability set for setup it is selected if user is going to evaluate or answer
             int p = s.AnsweringProbability;
@@ -499,7 +506,8 @@ namespace CQA.Controllers
             //Step 1 take active questions which user has not answered yet
             var tempQuestions = db.Questions.Where(q => !q.Answers.Where(r => r.UserId == userId).Any() &&
                 q.IsActive &&
-                q.SetupId == setupId).OrderBy(q => q.Answers.Count()).ToList();
+                q.Concepts.Intersect(activeConcepts).Any() &&
+                q.SubjectId == s.SubjectId).OrderBy(q => q.Answers.Count()).ToList();
 
             if (skippedQuestionId != 0 && tempQuestions.Count() > 1)
             {
@@ -585,9 +593,8 @@ namespace CQA.Controllers
             db.SaveChanges();
         }
 
-        public ActionResult SkipAnswer(int questionId)
+        public ActionResult SkipAnswer(int questionId, int setupId)
         {
-            int setupId = db.Questions.Find(questionId).SetupId;
             UserMadeAction(UserActionType.SkippedAnswering, 0, questionId);
             RemoveHandledObjectFromSession(false);
             Session["SkippedQuestionId"] = questionId;  

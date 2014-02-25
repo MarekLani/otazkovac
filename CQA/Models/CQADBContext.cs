@@ -65,7 +65,7 @@ namespace CQA.Models
                         .HasForeignKey(e => e.AnswerId);
 
             modelBuilder.Entity<Answer>()
-                .HasRequired(c => c.Author)
+                .HasOptional(c => c.Author)
                 .WithMany(u => u.Answers)
                 .HasForeignKey(u => u.UserId)
                  .WillCascadeOnDelete(false);
@@ -89,18 +89,6 @@ namespace CQA.Models
                .HasForeignKey(c => c.SubjectId)
                .WillCascadeOnDelete(false);   
 
-            modelBuilder.Entity<Concept>()
-                .HasMany(c => c.Questions)
-                .WithMany(q => q.Concepts)
-                .Map(a =>
-                {
-                    a.ToTable("QuestionConcepts");
-                    a.MapLeftKey("ConceptId");
-                    a.MapRightKey("QuestionId");
-                });
-
-                   
-  
 
             #region UsersSetups
             //Creating many to many relationship where duplicity in foreign keys is allowed
@@ -135,6 +123,16 @@ namespace CQA.Models
               .HasKey(qv => new { qv.UserId, qv.QuestionId });
 
             #endregion
+
+            modelBuilder.Entity<Question>()
+                .HasMany(q => q.Concepts)
+                .WithMany(c => c.Questions)
+            .Map(x =>
+            {
+                x.ToTable("ConceptQuestions");
+                x.MapLeftKey("QuestionId");
+                x.MapRightKey("ConceptId");
+            });
 
             base.OnModelCreating(modelBuilder);
         }

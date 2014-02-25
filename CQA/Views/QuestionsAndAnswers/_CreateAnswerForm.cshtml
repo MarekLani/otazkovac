@@ -21,7 +21,7 @@
             @Html.TextAreaFor(model => model.Text, new { id = "questionField", autocomplete = "off" })
         </div>
         <div style="text-align: center">
-            <a href="@Url.Action("SkipAnswer", new { questionId = Model.QuestionId })" id="skip" class="btn">Preskočiť</a>
+            <a href="@Url.Action("SkipAnswer", new { questionId = Model.QuestionId, setupId = ViewBag.setupId })" id="skip" class="btn">Preskočiť</a>
             <button type="submit" id="submit" class="btn btn-primary">Odpovedať </button>
         </div>    
     }

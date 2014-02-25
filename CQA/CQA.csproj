@@ -192,53 +192,9 @@
     <Compile Include="Controllers\SetupsController.cs" />
     <Compile Include="Controllers\SubjectsController.cs" />
     <Compile Include="Controllers\UsersController.cs" />
-    <Compile Include="Migrations\201310291729401_InitialMigration.cs" />
-    <Compile Include="Migrations\201310291729401_InitialMigration.Designer.cs">
-      <DependentUpon>201310291729401_InitialMigration.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201311091546039_AddedAnonymousOptionToCommentMigration.cs" />
-    <Compile Include="Migrations\201311091546039_AddedAnonymousOptionToCommentMigration.Designer.cs">
-      <DependentUpon>201311091546039_AddedAnonymousOptionToCommentMigration.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201311101005156_CommentTextFixedToBeTypeOfStringMigration.cs" />
-    <Compile Include="Migrations\201311101005156_CommentTextFixedToBeTypeOfStringMigration.Designer.cs">
-      <DependentUpon>201311101005156_CommentTextFixedToBeTypeOfStringMigration.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201401181943553_NotificationsInSeparateTableMigration.cs" />
-    <Compile Include="Migrations\201401181943553_NotificationsInSeparateTableMigration.Designer.cs">
-      <DependentUpon>201401181943553_NotificationsInSeparateTableMigration.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201402021721403_AddedTimeStampToComment.cs" />
-    <Compile Include="Migrations\201402021721403_AddedTimeStampToComment.Designer.cs">
-      <DependentUpon>201402021721403_AddedTimeStampToComment.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201402021804382_QuestionFileIdAddedToQuestion.cs" />
-    <Compile Include="Migrations\201402021804382_QuestionFileIdAddedToQuestion.Designer.cs">
-      <DependentUpon>201402021804382_QuestionFileIdAddedToQuestion.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201402042023253_AddedConcepts.cs" />
-    <Compile Include="Migrations\201402042023253_AddedConcepts.Designer.cs">
-      <DependentUpon>201402042023253_AddedConcepts.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201402061037408_ActiveWeeksInConcepts.cs" />
-    <Compile Include="Migrations\201402061037408_ActiveWeeksInConcepts.Designer.cs">
-      <DependentUpon>201402061037408_ActiveWeeksInConcepts.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201402061532393_ConceptsBoundedToQuestions.cs" />
-    <Compile Include="Migrations\201402061532393_ConceptsBoundedToQuestions.Designer.cs">
-      <DependentUpon>201402061532393_ConceptsBoundedToQuestions.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201402061534469_ConceptBindingToSubjectRemoved.cs" />
-    <Compile Include="Migrations\201402061534469_ConceptBindingToSubjectRemoved.Designer.cs">
-      <DependentUpon>201402061534469_ConceptBindingToSubjectRemoved.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201402061625285_ConceptBindingToSubjectAdded.cs" />
-    <Compile Include="Migrations\201402061625285_ConceptBindingToSubjectAdded.Designer.cs">
-      <DependentUpon>201402061625285_ConceptBindingToSubjectAdded.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201402061652191_StartDateAddedToSetup.cs" />
-    <Compile Include="Migrations\201402061652191_StartDateAddedToSetup.Designer.cs">
-      <DependentUpon>201402061652191_StartDateAddedToSetup.cs</DependentUpon>
+    <Compile Include="Migrations\201402251549219_initialMigration.cs" />
+    <Compile Include="Migrations\201402251549219_initialMigration.Designer.cs">
+      <DependentUpon>201402251549219_initialMigration.cs</DependentUpon>
     </Compile>
     <Compile Include="Models\Concept.cs" />
     <Compile Include="Models\DateCreatedModel.cs" />
@@ -488,41 +444,8 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201310291729401_InitialMigration.resx">
-      <DependentUpon>201310291729401_InitialMigration.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201311091546039_AddedAnonymousOptionToCommentMigration.resx">
-      <DependentUpon>201311091546039_AddedAnonymousOptionToCommentMigration.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201311101005156_CommentTextFixedToBeTypeOfStringMigration.resx">
-      <DependentUpon>201311101005156_CommentTextFixedToBeTypeOfStringMigration.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201401181943553_NotificationsInSeparateTableMigration.resx">
-      <DependentUpon>201401181943553_NotificationsInSeparateTableMigration.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201402021721403_AddedTimeStampToComment.resx">
-      <DependentUpon>201402021721403_AddedTimeStampToComment.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201402021804382_QuestionFileIdAddedToQuestion.resx">
-      <DependentUpon>201402021804382_QuestionFileIdAddedToQuestion.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201402042023253_AddedConcepts.resx">
-      <DependentUpon>201402042023253_AddedConcepts.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201402061037408_ActiveWeeksInConcepts.resx">
-      <DependentUpon>201402061037408_ActiveWeeksInConcepts.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201402061532393_ConceptsBoundedToQuestions.resx">
-      <DependentUpon>201402061532393_ConceptsBoundedToQuestions.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201402061534469_ConceptBindingToSubjectRemoved.resx">
-      <DependentUpon>201402061534469_ConceptBindingToSubjectRemoved.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201402061625285_ConceptBindingToSubjectAdded.resx">
-      <DependentUpon>201402061625285_ConceptBindingToSubjectAdded.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201402061652191_StartDateAddedToSetup.resx">
-      <DependentUpon>201402061652191_StartDateAddedToSetup.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201402251549219_initialMigration.resx">
+      <DependentUpon>201402251549219_initialMigration.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\ErrorStrings.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>

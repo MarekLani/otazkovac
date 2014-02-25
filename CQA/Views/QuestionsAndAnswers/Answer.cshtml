@@ -28,7 +28,7 @@
     Ďakujeme za odpoveď. Akonáhle bude k dispozícií spätná väzba, budete notifikovaný.
 </div>
 <div style="text-align:center; width: 100%">
-    <a href="@Url.Action("AnswerAndEvaluate", new { setupId = Model.SetupId})" id="next" class="btn" style="display:none">Ďalšia otázka/hodnotenie</a>
+    <a href="@Url.Action("AnswerAndEvaluate", new { setupId = ViewBag.setupId})" id="next" class="btn" style="display:none">Ďalšia otázka/hodnotenie</a>
 </div>
 
 @section Scripts {
@@ -36,7 +36,7 @@
     @Scripts.Render("~/bundles/jqueryval")
         <script>
             jQuery(document).ready(function ($) {
-                $("#MenuSetupItem"+@(Model.SetupId)).addClass("activeMenuItem")
+                $("#MenuSetupItem"+@ViewBag.setupId).addClass("activeMenuItem")
             })
 
             function AnswerCreated(data) {

@@ -43,7 +43,7 @@
         <td>
             @Html.ActionLink("Stats", "GetBasicStatistics") |
             @Html.ActionLink("Editovať", "Edit", new { id=item.SetupId }) |
-            @Html.ActionLink("Otázky","Questions", new { id=item.SetupId }) |
+            @Html.ActionLink("Detail", "Details", new { id=item.SetupId }) |
             @Html.ActionLink("Vymazať", "Delete", new { id=item.SetupId })
         </td>
     </tr>

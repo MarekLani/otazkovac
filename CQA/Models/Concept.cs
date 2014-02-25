@@ -20,7 +20,7 @@ namespace CQA.Models
         public virtual ICollection<Question> Questions { get; set; }
 
         [NotMapped]
-        public virtual List<int> ActiveWeeksList
+        public List<int> ActiveWeeksList
         {
             get
             {

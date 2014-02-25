@@ -30,7 +30,7 @@ namespace CQA.Controllers
         public ActionResult _MainMenu()
         {
             var menu = new Menu();
-            menu.Setups = db.Setups.Where(s => s.Active).ToList();
+            menu.Setups = db.Setups.Where(s => s.Active && s.Displayed).ToList();
             menu.SubjectsNotEmpty = db.Subjects.Any();
             menu.UnseenEvaluatedAnswersCount = db.Notifications.Where(n => n.NotificationFor == NotificationFor.MyAnswer && n.UserId == WebSecurity.CurrentUserId).GroupBy(n => n.AnswerId).Count();
             menu.UnseenEvaluatedEvaluationsCount = db.Notifications.Where(n => n.NotificationFor == NotificationFor.MyEvaluation && n.UserId == WebSecurity.CurrentUserId).GroupBy(n => n.AnswerId).Count();

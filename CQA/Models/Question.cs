@@ -10,6 +10,7 @@ namespace CQA.Models
 {
     public class Question
     {
+
         public int QuestionId { get; set; }
 
         public int QuestionFileId { get; set; }

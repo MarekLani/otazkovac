@@ -14,11 +14,12 @@ Koncepty:
 <div id="concepts">
 @{
     <div id="conceptsList">
-        @foreach (var concept in Model.Subject.Concepts){
-            <div>
-                <span class="existingConcept" >@(concept.Value)</span>
+        @foreach (var concept in Model.Subject.Concepts.OrderBy(c => c.Value)){
+            <div style="float:left">
+                <span class="existingConcept" >@(concept.Value)
+                    <span style="margin-left:10px; cursor:pointer;" class="deleteConcept">x</span>
+                </span>
                 <input type="hidden" class="conceptId" value="@concept.ConceptId" />
-                <span style="margin-left:10px; cursor:pointer;" class="deleteConcept">x</span>
             </div>
         }
     </div>
@@ -59,10 +60,10 @@ new { autocomplete = "off" }))
             <td></td>
             @for (int i = 0; i < 13; i++)
             {
-                <td style="text-align:center">@i</td>
+                <td style="text-align:center">@(i+1)</td>
             }
         </tr>
-        foreach (var concept in Model.Subject.Concepts)
+        foreach (var concept in Model.Subject.Concepts.OrderBy(c => c.Value))
         {
             <tr class="concept" id="@("c"+concept.ConceptId)">
                 <td class="conceptValue">@(concept.Value) (@concept.Questions.Count())</td>
@@ -86,20 +87,6 @@ new { autocomplete = "off" }))
                     }
                     </td>
                 }
-                <td>
-                @using (Ajax.BeginForm(null, null, new AjaxOptions()
-                {
-                    HttpMethod = "POST",
-                    Url = Url.Action("RemoveConcept", "Subjects"),
-                },
-                new { autocomplete = "off", style = "margin:0; padding: 0;" }))
-                {
-                    
-                        <input name="conceptId" type="hidden" value="@concept.ConceptId"/>
-                        <button type="submit" class="removeConcept"> X </button>
-                    
-                }
-                    </td>
           </tr>
         }
     }
@@ -184,22 +171,16 @@ new { autocomplete = "off" }))
                    deactivateConcept($(e.target).attr("data-conceptId"), $(e.target).attr("data-week"));
            });
 
-           $(document).on("click", ".removeConcept", function (e) {
-               $(e.target).parent().submit();
-               $(e.target).parent().parent().parent().remove();
-                  
-           });
-
            $(document).on("click", ".deleteConcept", function (e) {
-               var id = $(e.target).sibling(".conceptId").val();
-               $(e.target).parent().remove();
+               var id = $(e.target).parent().siblings(".conceptId").val();
+               $(e.target).parent().parent().remove();
                $("#c"+id).remove();
                
                $.ajax({
-                   url: "@Url.Action("DeleteConcept", "Subjects")",
+                   url: "@Url.Action("RemoveConcept", "Subjects")",
                    method: "post",
                    contentType: "json",
-                   data: '{"ConceptId":' + conceptId+'}'
+                   data: '{"ConceptId":' + id+'}'
                });
            });
 

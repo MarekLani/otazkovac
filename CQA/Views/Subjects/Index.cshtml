@@ -30,6 +30,7 @@
         </td>
         <td>
             @Html.ActionLink("Editovať", "Edit", new { id=item.SubjectId }) |
+            @Html.ActionLink("Otázky","Questions", new { id=item.SubjectId }) |
             @Html.ActionLink("Vymazať", "Delete", new { id=item.SubjectId })
         </td>
     </tr>

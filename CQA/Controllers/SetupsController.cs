@@ -61,6 +61,7 @@ namespace CQA.Controllers
         {
             if (ModelState.IsValid)
             {
+                setup.StartDate = DateTime.Now;
                 db.Setups.Add(setup);
                 db.SaveChanges();
                 return RedirectToAction("Index");

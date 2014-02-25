@@ -29,6 +29,9 @@ namespace CQA.Models
         [DisplayName("Aktívny")]
         public bool Active { get; set; }
 
+        [DisplayName("Zobrazený")]
+        public bool Displayed { get; set; }
+
         [DisplayName("Meno predmetu")]
         public int SubjectId { get; set; }
         [DisplayName("Meno predmetu")]
