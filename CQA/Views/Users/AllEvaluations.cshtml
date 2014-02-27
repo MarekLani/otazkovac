@@ -8,14 +8,21 @@
     ViewBag.Title = "Moje hodnotenia";
 }
 
-
 @if (!Model.Any())
 {
     <h4>Zatiaľ ste nehodnotili žiadne odpovede</h4>
 }
 else
 {
-    <h3>Vami hodnotené odpovede</h3>
+    <h3>Zoznam ohodnotených odpovedí</h3>
+    <form id="filter">
+        <label for="select">zobraziť:</label>
+        <select>
+            <option>moje odpovede</option>
+            <option>mnou ohodnotené odpovede</option>
+            <option>všetko</option>
+        </select>
+    </form>
     foreach (var ea in Model)
     {
     <div class="setup">@Html.Raw("<span style=\"font-size: 24px\">" + ea.Setup.Subject.Name + " " + ea.Setup.Name + " </span><br/>" +
@@ -39,8 +46,14 @@ else
             foreach (var a in ea.Answers)
             {
                 i++;
-            
-    <div class="myAnswerWrap" id="a@(a.AnswerId)">
+
+                string cl = "answered";
+                if (a.UserId == WebSecurity.CurrentUserId)
+                {
+                    cl = "evaluated";
+                }
+         
+        <div class="myAnswerWrap @cl" id="a@(a.AnswerId)">
         <div class="myAnswer
                 @if (i % 2 == 0)
                 {@(" greyBackground")}
@@ -55,7 +68,7 @@ else
                         <div class="cleanValue"></div>
 
                         @{
-                                int n = a.Evaluations.Count(); 
+                int n = a.Evaluations.Count(); 
                             <div class="evalsCount">@(n)
                                 @if (n == 1)
                                 {
@@ -74,24 +87,23 @@ else
                             <div class="commentsCount">
                                  @(a.Comments.Count())
                                  @if (n == 1)
-                                {
+                                 {
                                     @("komentár");
-                                }
-                                else if (n < 5 && n > 0)
-                                {
+                                 }
+                                 else if (n < 5 && n > 0)
+                                 {
                                     @("komentáre");
-                                }
-                                else
-                                {
+                                 }
+                                 else
+                                 {
                                     @("komenatárov");
-                                }
+                                 }
                             </div>
                         }
 
                     </div>
                 </div>
             </div>
-
 
             <div class="elipsis">@(a.Question.QuestionText)</div>
             <div class="elipsis" style="border-left: 1px solid lightgrey;">@(a.Text)</div>
@@ -110,13 +122,15 @@ else
                 <div class="ui-widget-content-wrapper" style="width: 100%; margin-top: 25px;">
                     @foreach (var e in a.Evaluations)
                     {
-                        int value = (int)(e.Value * 100);  
+                        int value = (int)(e.Value * 100);
                         int margin = 0;
-                        
-                        if(value >= 50){
-                            margin=-14;
+
+                        if (value >= 50)
+                        {
+                            margin = -14;
                         }
-                        else{
+                        else
+                        {
                             margin = -8;
                         }
 
@@ -129,7 +143,7 @@ else
                             </div>
                                 
                         }
-                        else if(Roles.IsUserInRole(CQA.Membership.CustomMembershipProvider.GetUser(e.UserId).UserName, "Admin") && CQA.Membership.CustomMembershipProvider.GetUser(e.UserId).UserName != "xlanim")
+                        else if (Roles.IsUserInRole(CQA.Membership.CustomMembershipProvider.GetUser(e.UserId).UserName, "Admin") && CQA.Membership.CustomMembershipProvider.GetUser(e.UserId).UserName != "xlanim")
                         {
                            <div class="authorityEvaluationWrap" style="left:@(value)%; margin-left: @(margin)px;">
                                <div class="crowdSlider authorityEvaluation" ></div>
@@ -202,6 +216,43 @@ else
 
         $(document).ready(function () {
 
+            $("#filter").change(function () {
+                var options = $("#filter option");
+                var idx = options.index(options.filter(":selected"));
+                if (idx == 0) {
+                    $("#answered").each(function()
+                    {
+                        $(this).show();
+                    });
+                    $("#evaluated").each(function()
+                    {
+                        $(this).hide();
+                    });
+                }
+                else if(idx == 1)
+                {
+                    $("#answered").each(function()
+                    {
+                        $(this).hide();
+                    });
+                    $("#evaluated").each(function()
+                    {
+                        $(this).show();
+                    });
+                }
+                else if(idx == 2)
+                {
+                    $("#answered").each(function()
+                    {
+                        $(this).show();
+                    });
+                    $("#evaluated").each(function()
+                    {
+                        $(this).show();
+                    });
+                }
+            });
+
             $(".toggleDetails").each(function () {
                 //alert($(this).children(".numValue").val())
             });
@@ -224,6 +275,17 @@ else
 
 
             $(".myAnswer").click(function () {
+
+                $(this).parent(function () {
+                    //alert($(this).children(".numValue"));
+                    var val = $(this).find(".numValue").val();
+                    $(this).find(".evalValue").css("background", getColorWithOpacity(val, $(this).find(".count").val()));
+                    changeText($(this).find(".cleanValue"), val);
+                    changeText($(this).find(".textValue"), val);
+                    $(this).find(".slider-range").slider('value', val);
+                    $(this).find(".ui-widget-content-wrapper").css("background", getColor(val));
+                });
+
                 var b = false;
                 if ($(this).hasClass("opened")) {
                     b = true;
@@ -261,17 +323,6 @@ else
                 else
                     el.html("Silný súhlas")
             }
-
-            $(".myAnswerWrap").each(function () {
-                //alert($(this).children(".numValue"));
-                var val = $(this).find(".numValue").val();
-                $(this).find(".evalValue").css("background", getColorWithOpacity(val, $(this).find(".count").val()));
-                changeText($(this).find(".cleanValue"), val);
-                changeText($(this).find(".textValue"), val);
-                $(this).find(".slider-range").slider('value', val);
-                $(this).find(".ui-widget-content-wrapper").css("background", getColor(val));
-            });
-
 
             function getColorWithOpacity(val, evalsCount) {
                 if (evalsCount < 10)

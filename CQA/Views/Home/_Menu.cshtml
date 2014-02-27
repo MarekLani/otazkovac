@@ -36,6 +36,13 @@
                                     }
                                     </a>
                                 </li>
+                                <li>
+                                    <a href="@Url.Action("AllEvaluations","Users")">Ohodnotené odpovede
+                                     @if(Model.UnseenEvaluatedEvaluationsCount > 0){
+                                        <span class="badge badge-success"> @(Model.UnseenEvaluatedEvaluationsCount + Model.UnseenEvaluatedAnswersCount)  </span>
+                                    }
+                                    </a>
+                                </li>
                                 
                                 if(User.IsInRole("Admin")){
                                     <li class="dropdown">
