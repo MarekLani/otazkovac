@@ -56,8 +56,8 @@
             <button type="button" class="close" data-dismiss="alert">&times;</button>
             Ďakujeme za hodnotenie. Vyššie si môžete pozrieť priemerné hodnotenie odpovede.
         </div>
-        <a href="@Url.Action("AnswerAndEvaluate", new { setupId = Model.Question.SetupId })" id="next" class="btn" style="display:none">Ďalšia otázka/hodnotenie</a>
-        <a href="@Url.Action("SkipEvaluation", new { answerId = Model.AnswerId, setupId = Model.Question.SetupId })" id="newAnswer" style="margin:0" class="btn skip">Preskočiť</a>
+        <a href="@Url.Action("AnswerAndEvaluate", new { setupId = ViewBag.setupId })" id="next" class="btn" style="display:none">Ďalšia otázka/hodnotenie</a>
+        <a href="@Url.Action("SkipEvaluation", new { answerId = Model.AnswerId, setupId = ViewBag.setupId})" id="newAnswer" style="margin:0" class="btn skip">Preskočiť</a>
         <button type="submit" id="submit" class="btn btn-primary">Ohodnotiť</button>   
     }
     <div id="commentsSection">  
@@ -161,7 +161,7 @@
             //    idleTime = 0;
             //});
 
-            $("#MenuSetupItem"+@(Model.Question.SetupId)).addClass("activeMenuItem");
+            $("#MenuSetupItem"+@(ViewBag.setupId)).addClass("activeMenuItem");
 
            $(".slider-range").each(function () { $(this).trigger('mySliderTrigger') })
            $(".slider-range").slider({

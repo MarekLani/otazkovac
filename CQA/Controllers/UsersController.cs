@@ -32,7 +32,7 @@ namespace CQA.Controllers
                 EvaluatedAnswers ea = new EvaluatedAnswers();
                 ea.Answers = new List<Answer>();
                 ea.UnseenHighlightedAnswers = new List<Answer>();
-                ea.Setup.Subject = s.Key;
+                ea.Subject = s.Key;
                 ea.UnseenCount = 0;
 
                 List<Notification> Notifications = new List<Notification>();
@@ -67,7 +67,7 @@ namespace CQA.Controllers
                 EvaluatedAnswers ea = new EvaluatedAnswers();
                 ea.Answers = new List<Answer>();
                 ea.UnseenHighlightedAnswers = new List<Answer>();
-                ea.Setup.Subject = s.Key;
+                ea.Subject = s.Key;
                 ea.UnseenCount = 0;
                 List<Notification> Notifications = new List<Notification>();
                 Notifications = db.Notifications.Where(n => n.UserId == WebSecurity.CurrentUserId && n.NotificationFor == NotificationFor.MyEvaluation).ToList();
@@ -99,7 +99,7 @@ namespace CQA.Controllers
                 EvaluatedAnswers ea = new EvaluatedAnswers();
                 ea.Answers = new List<Answer>();
                 ea.UnseenHighlightedAnswers = new List<Answer>();
-                ea.Setup.Subject = s.Key;
+                ea.Subject = s.Key;
                 ea.UnseenCount = 0;
 
                 List<Notification> Notifications = new List<Notification>();

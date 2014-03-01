@@ -205,7 +205,7 @@ namespace CQA.Controllers
         private void CreateNotifications(Answer answer, NotificationType type, int authorId)
         {
             //Create Notification of author of answer (We do not want to notify author if he created comment/eval)
-            if (answer.AnswerId != authorId)
+            if (answer.AnswerId != authorId && answer.UserId != null)
             {
                 Notification not = new Notification();
                 not.Answer = answer;
@@ -271,6 +271,7 @@ namespace CQA.Controllers
         {
             int skippedAnswerId = 0;
             int skippedQuestionId = 0;
+            ViewBag.setupId = setupId;
 
             if (Session["SkippedQuestionId"] != null)
             {
@@ -323,7 +324,6 @@ namespace CQA.Controllers
             if (ans != null)
             {
                 AddHandledObjectToSession(ans.AnswerId, true, setupId);
-                ViewBag.setupId = setupId;
                 return View("Evaluate", ans);
             }
             if (que != null)
@@ -421,6 +421,22 @@ namespace CQA.Controllers
                     activeConcepts.Add(c);
             }
 
+            var ques = db.Questions.Where(q => q.SubjectId == q.SubjectId).ToList();
+            List<Question> activeQuestions = new List<Question>();
+            foreach (var q in ques)
+            {
+                if (q.Concepts.Intersect(activeConcepts).Any())
+                    activeQuestions.Add(q);
+            }
+
+             var anws = db.Answers;
+            List<Answer> activeAns = new List<Answer>();
+            foreach (var a in anws)
+            {
+                if (activeQuestions.Contains(a.Question))
+                    activeAns.Add(a);
+            }
+
             //Base on probability set for setup it is selected if user is going to evaluate or answer
             int p = s.AnsweringProbability;
             if (rand.Next(p) != p - 1)
@@ -444,12 +460,15 @@ namespace CQA.Controllers
 
 
                 //step 1
+
                 var answers = db.Answers
                                     .Where(a => !a.Evaluations.Where(e => e.UserId == userId).Any()
-                                        && a.Question.Concepts.Intersect(activeConcepts).Any()
+                                        // && activeQuestions.Where(q => q.QuestionId == a.Question.QuestionId).Any()
                                         && a.Question.SubjectId == s.SubjectId
-                                        && a.UserId != userId
-                                        && a.Question.IsActive).ToList();
+                                        && (a.UserId == null || a.UserId != userId)).ToList();
+                                       // && a.Question.IsActive).ToList();*/
+                answers = answers.Intersect(activeAns).ToList();
+
 
                 //Remove skipped answer (if was)
                 if (skippedAnswerId != 0 && answers.Count() > 1)
@@ -504,9 +523,8 @@ namespace CQA.Controllers
             //5. Choose random question with smallest number of answers 
 
             //Step 1 take active questions which user has not answered yet
-            var tempQuestions = db.Questions.Where(q => !q.Answers.Where(r => r.UserId == userId).Any() &&
-                q.IsActive &&
-                q.Concepts.Intersect(activeConcepts).Any() &&
+            var tempQuestions = activeQuestions.Where(q => !q.Answers.Where(r => r.UserId == userId).Any() &&
+               // q.IsActive &&
                 q.SubjectId == s.SubjectId).OrderBy(q => q.Answers.Count()).ToList();
 
             if (skippedQuestionId != 0 && tempQuestions.Count() > 1)

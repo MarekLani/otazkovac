@@ -108,7 +108,7 @@ namespace CQA.Models
 
     public class EvaluatedAnswers
     {
-        public Setup Setup { get; set; }
+        public Subject Subject { get; set; }
         public ICollection<Answer> Answers { get; set; }
         public ICollection<Answer> UnseenHighlightedAnswers { get; set; }
         public int UnseenCount {get;set;}

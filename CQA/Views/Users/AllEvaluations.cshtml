@@ -20,12 +20,12 @@ else
         <select>
             <option>moje odpovede</option>
             <option>mnou ohodnotené odpovede</option>
-            <option>všetko</option>
+            <option selected="selected">všetko</option>
         </select>
     </form>
     foreach (var ea in Model)
     {
-    <div class="setup">@Html.Raw("<span style=\"font-size: 24px\">" + ea.Setup.Subject.Name + " " + ea.Setup.Name + " </span><br/>" +
+    <div class="setup">@Html.Raw("<span style=\"font-size: 24px\">" + ea.Subject.Name + " </span><br/>" +
              "Počet nových ohodnotených odpovedí:" + "<b>" + ea.UnseenCount +
             " </b> | " +
             "Počet všetkých ohodnotených odpovedí: " + "<b>" + ea.Answers.Count() + "</b>")
@@ -219,34 +219,34 @@ else
             $("#filter").change(function () {
                 var options = $("#filter option");
                 var idx = options.index(options.filter(":selected"));
-                if (idx == 0) {
-                    $("#answered").each(function()
+                if (idx == 1) {
+                    $(".answered").each(function()
                     {
                         $(this).show();
                     });
-                    $("#evaluated").each(function()
+                    $(".evaluated").each(function()
                     {
                         $(this).hide();
                     });
                 }
-                else if(idx == 1)
+                else if(idx == 0)
                 {
-                    $("#answered").each(function()
+                    $(".answered").each(function()
                     {
                         $(this).hide();
                     });
-                    $("#evaluated").each(function()
+                    $(".evaluated").each(function()
                     {
                         $(this).show();
                     });
                 }
                 else if(idx == 2)
                 {
-                    $("#answered").each(function()
+                    $(".answered").each(function()
                     {
                         $(this).show();
                     });
-                    $("#evaluated").each(function()
+                    $(".evaluated").each(function()
                     {
                         $(this).show();
                     });
@@ -273,18 +273,22 @@ else
                 $("#dialog").dialog("close");
             });
 
+            $(".myAnswer").each(function () {
+                var parent = $(this).parent()
+                var val = parent.find(".numValue").val();
+                $(this).find(".evalValue").css("background", getColorWithOpacity(val, parent.find(".count").val()));
+                changeText(parent.find(".cleanValue"), val);
+            });
+          
 
             $(".myAnswer").click(function () {
 
-                $(this).parent(function () {
-                    //alert($(this).children(".numValue"));
-                    var val = $(this).find(".numValue").val();
-                    $(this).find(".evalValue").css("background", getColorWithOpacity(val, $(this).find(".count").val()));
-                    changeText($(this).find(".cleanValue"), val);
-                    changeText($(this).find(".textValue"), val);
-                    $(this).find(".slider-range").slider('value', val);
-                    $(this).find(".ui-widget-content-wrapper").css("background", getColor(val));
-                });
+                //alert($(this).children(".numValue"));
+                var parent = $(this).parent()
+                var val = parent.find(".numValue").val();
+                changeText(parent.find(".textValue"), val);
+                parent.find(".slider-range").slider('value', val);
+                parent.find(".ui-widget-content-wrapper").css("background", getColor(val));
 
                 var b = false;
                 if ($(this).hasClass("opened")) {

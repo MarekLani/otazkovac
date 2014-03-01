@@ -45,7 +45,6 @@
         </div>
         <div class="editor-field">
             @Html.EditorFor(model => model.AnsweringProbability)
-            @Html.ValidationMessageFor(model => model.AnsweringProbability)
         </div>
 
         <div class="editor-label">
@@ -54,6 +53,14 @@
         <div class="editor-field">
             @Html.DropDownList("SubjectId", String.Empty)
             @Html.ValidationMessageFor(model => model.SubjectId)
+        </div>
+
+         <div class="editor-label">
+            @Html.LabelFor(model => model.StartDate)
+        </div>
+        <div class="editor-field">
+            @Html.EditorFor(model => model.StartDate)
+            @Html.ValidationMessageFor(model => model.StartDate)
         </div>
 
         <p>
