@@ -367,7 +367,7 @@ namespace CQA.Controllers
                     questionText = ans.Question.QuestionText,
                     answerText = ans.Text,
                     answerId = ans.AnswerId,
-                    image = que.ImageUri,
+                    image = ans.Question.ImageUri,
                     userId = user.UserId
                 }, JsonRequestBehavior.AllowGet);
             if (que != null)
@@ -421,7 +421,7 @@ namespace CQA.Controllers
                     activeConcepts.Add(c);
             }
 
-            var ques = db.Questions.Where(q => q.SubjectId == q.SubjectId).ToList();
+            var ques = db.Questions.Where(q => q.SubjectId == s.SubjectId).ToList();
             List<Question> activeQuestions = new List<Question>();
             foreach (var q in ques)
             {
