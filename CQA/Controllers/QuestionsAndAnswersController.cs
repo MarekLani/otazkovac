@@ -81,7 +81,7 @@ namespace CQA.Controllers
 
 
             object result = new { answerText = ans.Text };
-            return Json(result);
+            return Json(result,JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]
@@ -202,7 +202,7 @@ namespace CQA.Controllers
             //Mark question as seen
             UserSeenQuestion(eval.Answer.QuestionId, eval.UserId);
 
-            return Json(new { avgEval = answer.GetAvgEvaluation(), evalsCount = answer.Evaluations.Count(), comments = answer.GetAnswerCommentsInJson() });
+            return Json(new { avgEval = answer.GetAvgEvaluation(), evalsCount = answer.Evaluations.Count(), comments = answer.GetAnswerCommentsInJson() },JsonRequestBehavior.AllowGet);
 
         }
 
@@ -287,7 +287,7 @@ namespace CQA.Controllers
             else
                 vc = new ViewComment(comment.Text, db.UserProfiles.Find(comment.UserId).RealName, comment.AnswerId);
             var jsonSerialiser = new JavaScriptSerializer();
-            return Json(jsonSerialiser.Serialize(vc));
+            return Json(jsonSerialiser.Serialize(vc),JsonRequestBehavior.AllowGet);
         }
 
         private void CreateNotifications(Answer answer, NotificationType type, int authorId)
