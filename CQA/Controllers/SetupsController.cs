@@ -203,7 +203,7 @@ namespace CQA.Controllers
 
             }
 
-            return RedirectToAction("Detail", new { id = setupId });
+            return RedirectToAction("Details", new { id = setupId });
         }
 
         [HttpPost]
