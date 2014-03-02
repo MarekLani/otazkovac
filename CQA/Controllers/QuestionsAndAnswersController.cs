@@ -55,6 +55,35 @@ namespace CQA.Controllers
             }
         }
 
+        [HttpGet]
+        public ActionResult ExternCreateAnswer(string text, int questionId, int setupId, int userId)
+        {
+
+            Answer ans = new Answer();
+            ans.Text = text;
+            ans.QuestionId = questionId;
+            ans.SetupId = setupId;
+            ans.UserId = userId;
+
+            if (!db.UserProfiles.Where(u => u.UserId == ans.UserId).Any()||
+                db.Answers.Where(a => a.QuestionId == ans.QuestionId && a.UserId == ans.UserId).Any())
+            {
+                return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest);
+            }
+
+            ans.Text = HttpUtility.HtmlDecode(ans.Text);
+
+            db.Answers.Add(ans);
+            db.SaveChanges();
+
+            UserMadeAction(UserActionType.Answering, 0, ans.QuestionId, (int)ans.UserId);
+            UserSeenQuestion(ans.QuestionId, (int)ans.UserId);
+
+
+            object result = new { answerText = ans.Text };
+            return Json(result);
+        }
+
         [HttpPost]
         public ActionResult ExternCreateAnswer()
         {
@@ -63,7 +92,7 @@ namespace CQA.Controllers
 
             Answer ans = new JavaScriptSerializer().Deserialize<Answer>(jsonData);
 
-            if (!db.UserProfiles.Where(u => u.UserId == ans.UserId).Any()||
+            if (!db.UserProfiles.Where(u => u.UserId == ans.UserId).Any() ||
                 db.Answers.Where(a => a.QuestionId == ans.QuestionId && a.UserId == ans.UserId).Any())
             {
                 return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest);
@@ -146,6 +175,37 @@ namespace CQA.Controllers
             
         }
 
+        [HttpGet]
+        public ActionResult ExternCreateEvaluation(int value, int answerId, int userId)
+        {
+
+            Evaluation eval = new Evaluation();
+            eval.Value = value;
+            eval.AnswerId = answerId;
+            eval.UserId = userId;
+
+            if (!db.UserProfiles.Where(u => u.UserId == eval.UserId).Any() ||
+                db.Ratings.Where(a => a.AnswerId == eval.AnswerId && a.UserId == eval.UserId).Any())
+            {
+                return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest);
+            }
+
+            //Notifications
+            Answer answer = db.Answers.Find(eval.AnswerId);
+            CreateNotifications(answer, NotificationType.NewEvaluation, eval.UserId);
+
+            db.Ratings.Add(eval);
+            db.SaveChanges();
+
+            //Mark action
+            UserMadeAction(UserActionType.Evaluation, eval.AnswerId, 0, eval.UserId);
+            //Mark question as seen
+            UserSeenQuestion(eval.Answer.QuestionId, eval.UserId);
+
+            return Json(new { avgEval = answer.GetAvgEvaluation(), evalsCount = answer.Evaluations.Count(), comments = answer.GetAnswerCommentsInJson() });
+
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
@@ -184,6 +244,34 @@ namespace CQA.Controllers
 
             Comment comment = new JavaScriptSerializer().Deserialize<Comment>(jsonData);
             
+            db.Comments.Add(comment);
+            db.SaveChanges();
+
+            Answer ans = db.Answers.Single(a => a.AnswerId == comment.AnswerId);
+            //Create Notification
+            CreateNotifications(ans, NotificationType.NewComment, comment.UserId);
+
+            //Mark action
+            UserMadeAction(UserActionType.Commented, comment.AnswerId, 0, comment.UserId);
+            ViewComment vc;
+            if (comment.Anonymous)
+                vc = new ViewComment(comment.Text, "Anonym", comment.AnswerId);
+            else
+                vc = new ViewComment(comment.Text, db.UserProfiles.Find(comment.UserId).RealName, comment.AnswerId);
+            var jsonSerialiser = new JavaScriptSerializer();
+            return Json(jsonSerialiser.Serialize(vc));
+        }
+
+        [HttpGet]
+        public ActionResult ExternCreateComment(string text, int answerId, bool anonymous, int userId)
+        {
+
+            Comment comment = new Comment();
+            comment.Text = text;
+            comment.AnswerId = answerId;
+            comment.Anonymous = anonymous;
+            comment.UserId = userId;
+
             db.Comments.Add(comment);
             db.SaveChanges();
 
