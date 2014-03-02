@@ -3,7 +3,7 @@ namespace CQA.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class initialMigration : DbMigration
+    public partial class InitialMigration : DbMigration
     {
         public override void Up()
         {
@@ -77,46 +77,6 @@ namespace CQA.Migrations
                 .Index(t => t.SubjectId);
             
             CreateTable(
-                "dbo.UsersSetups",
-                c => new
-                    {
-                        UserId = c.Int(nullable: false),
-                        SetupId = c.Int(nullable: false),
-                        Score = c.Double(nullable: false),
-                    })
-                .PrimaryKey(t => new { t.UserId, t.SetupId })
-                .ForeignKey("dbo.Setups", t => t.SetupId, cascadeDelete: true)
-                .ForeignKey("dbo.UserProfile", t => t.UserId, cascadeDelete: true)
-                .Index(t => t.SetupId)
-                .Index(t => t.UserId);
-            
-            CreateTable(
-                "dbo.SetupsProbabilityChanges",
-                c => new
-                    {
-                        SetupsProbabilityChangeId = c.Int(nullable: false, identity: true),
-                        SetupId = c.Int(nullable: false),
-                        Value = c.Int(nullable: false),
-                        DateCreated = c.DateTime(),
-                    })
-                .PrimaryKey(t => t.SetupsProbabilityChangeId)
-                .ForeignKey("dbo.Setups", t => t.SetupId, cascadeDelete: true)
-                .Index(t => t.SetupId);
-            
-            CreateTable(
-                "dbo.Concepts",
-                c => new
-                    {
-                        ConceptId = c.Int(nullable: false, identity: true),
-                        SubjectId = c.Int(nullable: false),
-                        Value = c.String(),
-                        ActiveWeeks = c.String(),
-                    })
-                .PrimaryKey(t => t.ConceptId)
-                .ForeignKey("dbo.Subjects", t => t.SubjectId)
-                .Index(t => t.SubjectId);
-            
-            CreateTable(
                 "dbo.Answers",
                 c => new
                     {
@@ -125,7 +85,7 @@ namespace CQA.Migrations
                         ExpertRating = c.Double(nullable: false),
                         QuestionId = c.Int(nullable: false),
                         UserId = c.Int(),
-                        SetupId = c.Int(),
+                        SetupId = c.Int(nullable: false),
                         SeenEvaluation = c.Boolean(),
                         DateCreated = c.DateTime(),
                     })
@@ -143,15 +103,12 @@ namespace CQA.Migrations
                     {
                         UserId = c.Int(nullable: false),
                         AnswerId = c.Int(nullable: false),
-                        SetupId = c.Int(),
                         Value = c.Double(nullable: false),
                         DateCreated = c.DateTime(),
                     })
                 .PrimaryKey(t => new { t.UserId, t.AnswerId })
-                .ForeignKey("dbo.Setups", t => t.SetupId)
                 .ForeignKey("dbo.Answers", t => t.AnswerId, cascadeDelete: true)
                 .ForeignKey("dbo.UserProfile", t => t.UserId, cascadeDelete: true)
-                .Index(t => t.SetupId)
                 .Index(t => t.AnswerId)
                 .Index(t => t.UserId);
             
@@ -190,6 +147,46 @@ namespace CQA.Migrations
                 .ForeignKey("dbo.Answers", t => t.AnswerId, cascadeDelete: true)
                 .Index(t => t.UserId)
                 .Index(t => t.AnswerId);
+            
+            CreateTable(
+                "dbo.UsersSetups",
+                c => new
+                    {
+                        UserId = c.Int(nullable: false),
+                        SetupId = c.Int(nullable: false),
+                        Score = c.Double(nullable: false),
+                    })
+                .PrimaryKey(t => new { t.UserId, t.SetupId })
+                .ForeignKey("dbo.Setups", t => t.SetupId, cascadeDelete: true)
+                .ForeignKey("dbo.UserProfile", t => t.UserId, cascadeDelete: true)
+                .Index(t => t.SetupId)
+                .Index(t => t.UserId);
+            
+            CreateTable(
+                "dbo.SetupsProbabilityChanges",
+                c => new
+                    {
+                        SetupsProbabilityChangeId = c.Int(nullable: false, identity: true),
+                        SetupId = c.Int(nullable: false),
+                        Value = c.Int(nullable: false),
+                        DateCreated = c.DateTime(),
+                    })
+                .PrimaryKey(t => t.SetupsProbabilityChangeId)
+                .ForeignKey("dbo.Setups", t => t.SetupId, cascadeDelete: true)
+                .Index(t => t.SetupId);
+            
+            CreateTable(
+                "dbo.Concepts",
+                c => new
+                    {
+                        ConceptId = c.Int(nullable: false, identity: true),
+                        SubjectId = c.Int(nullable: false),
+                        Value = c.String(),
+                        ActiveWeeks = c.String(),
+                    })
+                .PrimaryKey(t => t.ConceptId)
+                .ForeignKey("dbo.Subjects", t => t.SubjectId)
+                .Index(t => t.SubjectId);
             
             CreateTable(
                 "dbo.QuestionViews",
@@ -244,6 +241,10 @@ namespace CQA.Migrations
             DropIndex("dbo.Notifications", new[] { "UserId" });
             DropIndex("dbo.QuestionViews", new[] { "UserId" });
             DropIndex("dbo.QuestionViews", new[] { "QuestionId" });
+            DropIndex("dbo.Concepts", new[] { "SubjectId" });
+            DropIndex("dbo.SetupsProbabilityChanges", new[] { "SetupId" });
+            DropIndex("dbo.UsersSetups", new[] { "UserId" });
+            DropIndex("dbo.UsersSetups", new[] { "SetupId" });
             DropIndex("dbo.Comments", new[] { "AnswerId" });
             DropIndex("dbo.Comments", new[] { "UserId" });
             DropIndex("dbo.UsersActions", new[] { "UserId" });
@@ -251,14 +252,9 @@ namespace CQA.Migrations
             DropIndex("dbo.UsersActions", new[] { "AnswerId" });
             DropIndex("dbo.Evaluations", new[] { "UserId" });
             DropIndex("dbo.Evaluations", new[] { "AnswerId" });
-            DropIndex("dbo.Evaluations", new[] { "SetupId" });
             DropIndex("dbo.Answers", new[] { "SetupId" });
             DropIndex("dbo.Answers", new[] { "UserId" });
             DropIndex("dbo.Answers", new[] { "QuestionId" });
-            DropIndex("dbo.Concepts", new[] { "SubjectId" });
-            DropIndex("dbo.SetupsProbabilityChanges", new[] { "SetupId" });
-            DropIndex("dbo.UsersSetups", new[] { "UserId" });
-            DropIndex("dbo.UsersSetups", new[] { "SetupId" });
             DropIndex("dbo.Setups", new[] { "SubjectId" });
             DropIndex("dbo.Questions", new[] { "UserProfile_UserId" });
             DropIndex("dbo.Questions", new[] { "SubjectId" });
@@ -269,6 +265,10 @@ namespace CQA.Migrations
             DropForeignKey("dbo.Notifications", "UserId", "dbo.UserProfile");
             DropForeignKey("dbo.QuestionViews", "UserId", "dbo.UserProfile");
             DropForeignKey("dbo.QuestionViews", "QuestionId", "dbo.Questions");
+            DropForeignKey("dbo.Concepts", "SubjectId", "dbo.Subjects");
+            DropForeignKey("dbo.SetupsProbabilityChanges", "SetupId", "dbo.Setups");
+            DropForeignKey("dbo.UsersSetups", "UserId", "dbo.UserProfile");
+            DropForeignKey("dbo.UsersSetups", "SetupId", "dbo.Setups");
             DropForeignKey("dbo.Comments", "AnswerId", "dbo.Answers");
             DropForeignKey("dbo.Comments", "UserId", "dbo.UserProfile");
             DropForeignKey("dbo.UsersActions", "UserId", "dbo.UserProfile");
@@ -276,14 +276,9 @@ namespace CQA.Migrations
             DropForeignKey("dbo.UsersActions", "AnswerId", "dbo.Answers");
             DropForeignKey("dbo.Evaluations", "UserId", "dbo.UserProfile");
             DropForeignKey("dbo.Evaluations", "AnswerId", "dbo.Answers");
-            DropForeignKey("dbo.Evaluations", "SetupId", "dbo.Setups");
             DropForeignKey("dbo.Answers", "SetupId", "dbo.Setups");
             DropForeignKey("dbo.Answers", "UserId", "dbo.UserProfile");
             DropForeignKey("dbo.Answers", "QuestionId", "dbo.Questions");
-            DropForeignKey("dbo.Concepts", "SubjectId", "dbo.Subjects");
-            DropForeignKey("dbo.SetupsProbabilityChanges", "SetupId", "dbo.Setups");
-            DropForeignKey("dbo.UsersSetups", "UserId", "dbo.UserProfile");
-            DropForeignKey("dbo.UsersSetups", "SetupId", "dbo.Setups");
             DropForeignKey("dbo.Setups", "SubjectId", "dbo.Subjects");
             DropForeignKey("dbo.Questions", "UserProfile_UserId", "dbo.UserProfile");
             DropForeignKey("dbo.Questions", "SubjectId", "dbo.Subjects");
@@ -291,13 +286,13 @@ namespace CQA.Migrations
             DropTable("dbo.ConceptQuestions");
             DropTable("dbo.Notifications");
             DropTable("dbo.QuestionViews");
+            DropTable("dbo.Concepts");
+            DropTable("dbo.SetupsProbabilityChanges");
+            DropTable("dbo.UsersSetups");
             DropTable("dbo.Comments");
             DropTable("dbo.UsersActions");
             DropTable("dbo.Evaluations");
             DropTable("dbo.Answers");
-            DropTable("dbo.Concepts");
-            DropTable("dbo.SetupsProbabilityChanges");
-            DropTable("dbo.UsersSetups");
             DropTable("dbo.Setups");
             DropTable("dbo.Subjects");
             DropTable("dbo.Questions");

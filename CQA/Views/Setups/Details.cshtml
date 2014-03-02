@@ -9,6 +9,12 @@
 }
 
 <h2>Details</h2>
+Pridať odpovede
+<form action="@Url.Action("AddAnswers", "Setups")" method="post" enctype="multipart/form-data" >
+    <input name="file" type="file" accept=".csv" />
+    <input type="hidden" name="setupId" value="@Model.SetupId" />
+    <button type="submit" class="btn btn-primary">Pridať odpovede</button>
+</form>
 
 Koncepty:
 <div id="concepts">

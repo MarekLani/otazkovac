@@ -16,9 +16,6 @@ namespace CQA.Models
         public int AnswerId { get; set; }
         public virtual Answer Answer { get; set; }
 
-        public int? SetupId { get; set; }
-        public virtual Setup Setup { get; set; }
-
         [Required(ErrorMessageResourceType = typeof(ErrorStrings), ErrorMessageResourceName = "Required")]
         public double Value { get; set; }
 

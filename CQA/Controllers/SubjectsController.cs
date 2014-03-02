@@ -333,53 +333,14 @@ namespace CQA.Controllers
                 else
                 {
                     Question newQ = new Question();
+                    newQ.Concepts = new List<Concept>();
                     FillupQuestion(ref newQ, values);
                     newQ.SubjectId = subjectId;
                     db.Questions.Add(newQ);
                     db.SaveChanges();
-                }
+                    q = newQ;
 
-            }
-
-            return RedirectToAction("Questions", new { id = subjectId });
-        }
-
-        [HttpPost]
-        public ActionResult AddQuestionsAnswers(HttpPostedFileBase file, int subjectId)
-        {
-            var reader = new StreamReader(file.InputStream, Encoding.UTF8);
-            List<string> columnNames = new List<string>();
-
-            System.Globalization.CultureInfo customCulture = (System.Globalization.CultureInfo)System.Threading.Thread.CurrentThread.CurrentCulture.Clone();
-            customCulture.NumberFormat.NumberDecimalSeparator = ".";
-
-            System.Threading.Thread.CurrentThread.CurrentCulture = customCulture;
-
-            var firstLine = reader.ReadLine();
-
-            while (!reader.EndOfStream)
-            {
-                var Line = reader.ReadLine();
-                var values = Line.Split(';');
-
-                int id = Convert.ToInt32(values[0]);
-                var l = db.Questions.Where(que => que.SubjectId == subjectId && que.QuestionFileId == id).ToList();
-                Question q = null;
-                if (l.Any())
-                    q = l.First();
-                if (q == null)
-                {
-                    Question newQ = new Question();
-                    newQ.QuestionFileId = Convert.ToInt32(values[0]);
-                    newQ.QuestionText = values[1];
-                    newQ.ImageUri = values[2];
-                    newQ.SubjectId = subjectId;
-                    newQ.Concepts = new List<Concept>();
-                    newQ.IsActive = true;
-                    db.Questions.Add(newQ);
-                    db.SaveChanges();
-
-                    string[] concepts = values[3].Split(',');
+                    string[] concepts = values[7].Split(',');
                     var conceptsList = concepts.ToList();
                     conceptsList.RemoveAt(concepts.Count() - 1);
                     foreach (var concept in conceptsList)
@@ -393,27 +354,20 @@ namespace CQA.Controllers
                             db.Concepts.Add(c);
                             db.SaveChanges();
 
-                            newQ.Concepts.Add(c);
-                            db.Entry(newQ).State = EntityState.Modified;
+                            q.Concepts.Add(c);
+                            db.Entry(q).State = EntityState.Modified;
                             db.SaveChanges();
                         }
-                        else newQ.Concepts.Add(db.Concepts.Where(c => c.SubjectId == subjectId && c.Value == concept).First());
-
-
+                        else q.Concepts.Add(db.Concepts.Where(c => c.SubjectId == subjectId && c.Value == concept).First());
                     }
-                    q = newQ;
                 }
-
-                Answer a = new Answer();
-                a.Text =values[5];
-                a.Question = q;
-                db.Answers.Add(a);
-                db.SaveChanges();
 
             }
 
             return RedirectToAction("Questions", new { id = subjectId });
         }
+
+        
 
         [HttpGet]
         public ActionResult Questions(int id)
@@ -437,6 +391,9 @@ namespace CQA.Controllers
                 else
                     q.Hint = null;
                 q.IsActive = (1 == Convert.ToInt32(values[5]));
+                if (values[6] == null)
+                    q.ImageUri = "";
+                else
                 q.ImageUri = values[6];
             }
             catch (Exception e)

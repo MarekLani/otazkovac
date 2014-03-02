@@ -172,6 +172,41 @@ namespace CQA.Controllers
         }
 
         [HttpPost]
+        public ActionResult AddAnswers(HttpPostedFileBase file, int setupId)
+        {
+            var reader = new StreamReader(file.InputStream, Encoding.UTF8);
+            List<string> columnNames = new List<string>();
+
+            System.Globalization.CultureInfo customCulture = (System.Globalization.CultureInfo)System.Threading.Thread.CurrentThread.CurrentCulture.Clone();
+            customCulture.NumberFormat.NumberDecimalSeparator = ".";
+
+            System.Threading.Thread.CurrentThread.CurrentCulture = customCulture;
+            Setup s = db.Setups.Find(setupId);
+
+            var firstLine = reader.ReadLine();
+
+            while (!reader.EndOfStream)
+            {
+                var Line = reader.ReadLine();
+                var values = Line.Split(';');
+
+                int id = Convert.ToInt32(values[0]);
+                var q = db.Questions.Where(que => que.SubjectId == s.SubjectId && que.QuestionFileId == id).ToList().First();
+               
+
+                Answer a = new Answer();
+                a.Text = values[1];
+                a.Question = q;
+                a.SetupId = setupId;
+                db.Answers.Add(a);
+                db.SaveChanges();
+
+            }
+
+            return RedirectToAction("Detail", new { id = setupId });
+        }
+
+        [HttpPost]
         public ActionResult SetStartDate(int setupId, string date)
         {
             var l = date.Split('/');

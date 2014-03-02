@@ -119,6 +119,11 @@ namespace CQA.Models
                 .HasMany(q => q.QuestionViews)
                 .WithRequired(qv => qv.Question);
 
+            modelBuilder.Entity<Answer>()
+                .HasRequired(a => a.Setup)
+                .WithMany(s => s.Answers)
+                .WillCascadeOnDelete(false);
+
             modelBuilder.Entity<QuestionView>()
               .HasKey(qv => new { qv.UserId, qv.QuestionId });
 

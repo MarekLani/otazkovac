@@ -192,9 +192,9 @@
     <Compile Include="Controllers\SetupsController.cs" />
     <Compile Include="Controllers\SubjectsController.cs" />
     <Compile Include="Controllers\UsersController.cs" />
-    <Compile Include="Migrations\201402251923294_initialMigration.cs" />
-    <Compile Include="Migrations\201402251923294_initialMigration.Designer.cs">
-      <DependentUpon>201402251923294_initialMigration.cs</DependentUpon>
+    <Compile Include="Migrations\201403021645054_InitialMigration.cs" />
+    <Compile Include="Migrations\201403021645054_InitialMigration.Designer.cs">
+      <DependentUpon>201403021645054_InitialMigration.cs</DependentUpon>
     </Compile>
     <Compile Include="Models\Concept.cs" />
     <Compile Include="Models\DateCreatedModel.cs" />
@@ -444,8 +444,8 @@
     <Content Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Migrations\201402251923294_initialMigration.resx">
-      <DependentUpon>201402251923294_initialMigration.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201403021645054_InitialMigration.resx">
+      <DependentUpon>201403021645054_InitialMigration.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\ErrorStrings.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>

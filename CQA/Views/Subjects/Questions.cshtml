@@ -16,13 +16,6 @@
     <button type="submit" class="btn btn-primary">Pridať otázky</button>
 </form>
 
-<form action="@Url.Action("AddQuestionsAnswers", "Subjects")" method="post" enctype="multipart/form-data" >
-    <input name="file" type="file" accept=".csv" />
-    <input type="hidden" name="subjectId" value="@(ViewData["SubjectId"])" />
-    <button type="submit" class="btn btn-primary">Pridať otázky</button>
-</form>
-
-
 
 @foreach (var item in Model)
 {

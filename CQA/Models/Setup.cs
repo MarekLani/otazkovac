@@ -52,6 +52,8 @@ namespace CQA.Models
 
         public DateTime StartDate { get; set; }
 
+        public virtual ICollection<Answer> Answers { get; set; }
+
         public virtual ICollection<UsersSetup> UsersSetups { get; set; }
         //not needed right now
         //public virtual ICollection<SetupsStatistics> SetupsStatistics { get; set; }

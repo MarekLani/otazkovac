@@ -367,6 +367,7 @@ namespace CQA.Controllers
                     questionText = ans.Question.QuestionText,
                     answerText = ans.Text,
                     answerId = ans.AnswerId,
+                    setupId = ans.SetupId,
                     image = ans.Question.ImageUri,
                     userId = user.UserId
                 }, JsonRequestBehavior.AllowGet);
