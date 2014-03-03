@@ -87,10 +87,7 @@ namespace CQA.Controllers
         [HttpPost]
         public ActionResult ExternCreateAnswer()
         {
-            Request.InputStream.Seek(0, SeekOrigin.Begin);
-            string jsonData = new StreamReader(Request.InputStream).ReadToEnd();
-
-            Answer ans = new JavaScriptSerializer().Deserialize<Answer>(jsonData);
+            Answer ans = new JavaScriptSerializer().Deserialize<Answer>(Request.Form["json"]);
 
             if (!db.UserProfiles.Where(u => u.UserId == ans.UserId).Any() ||
                 db.Answers.Where(a => a.QuestionId == ans.QuestionId && a.UserId == ans.UserId).Any())
@@ -237,10 +234,8 @@ namespace CQA.Controllers
         [HttpPost]
         public ActionResult ExternCreateComment()
         {
-            Request.InputStream.Seek(0, SeekOrigin.Begin);
-            string jsonData = new StreamReader(Request.InputStream).ReadToEnd();
 
-            Comment comment = new JavaScriptSerializer().Deserialize<Comment>(jsonData);
+            Comment comment = new JavaScriptSerializer().Deserialize<Comment>(Request.Form["json"]);
             
             db.Comments.Add(comment);
             db.SaveChanges();
