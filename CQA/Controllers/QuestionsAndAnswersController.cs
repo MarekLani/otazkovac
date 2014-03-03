@@ -148,10 +148,8 @@ namespace CQA.Controllers
         [HttpPost]
         public ActionResult ExternCreateEvaluation()
         {
-            Request.InputStream.Seek(0, SeekOrigin.Begin);
-            string jsonData = new StreamReader(Request.InputStream).ReadToEnd();
 
-            Evaluation eval = new JavaScriptSerializer().Deserialize<Evaluation>(jsonData);
+            Evaluation eval = new JavaScriptSerializer().Deserialize<Evaluation>(Request.Form["json"]);
 
             if (!db.UserProfiles.Where(u => u.UserId == eval.UserId).Any() || 
                 db.Ratings.Where(a => a.AnswerId == eval.AnswerId && a.UserId == eval.UserId).Any())
