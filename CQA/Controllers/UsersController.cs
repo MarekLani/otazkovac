@@ -10,6 +10,7 @@ using WebMatrix.WebData;
 
 namespace CQA.Controllers
 {
+    [Authorize]
     public class UsersController : Controller
     {
         //

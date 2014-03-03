@@ -95,7 +95,7 @@ namespace CQA.Controllers
                 return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest);
             }
 
-            ans.Text = HttpUtility.HtmlDecode(ans.Text);
+            ans.Text = HttpUtility.HtmlDecode(ans.Text).Replace("\"","'");
 
             db.Answers.Add(ans);
             db.SaveChanges();
@@ -147,6 +147,7 @@ namespace CQA.Controllers
         {
 
             Evaluation eval = new JavaScriptSerializer().Deserialize<Evaluation>(Request.Form["json"]);
+            eval.Value = eval.Value / (double)100;
 
             if (!db.UserProfiles.Where(u => u.UserId == eval.UserId).Any() || 
                 db.Ratings.Where(a => a.AnswerId == eval.AnswerId && a.UserId == eval.UserId).Any())
@@ -251,6 +252,7 @@ namespace CQA.Controllers
                 vc = new ViewComment(comment.Text, "Anonym", comment.AnswerId);
             else
                 vc = new ViewComment(comment.Text, db.UserProfiles.Find(comment.UserId).RealName, comment.AnswerId);
+            vc.Text = vc.Text.Replace("\"", "'");
             var jsonSerialiser = new JavaScriptSerializer();
             return Json(jsonSerialiser.Serialize(vc));
         }
