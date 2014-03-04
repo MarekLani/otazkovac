@@ -444,17 +444,24 @@ namespace CQA.Controllers
 
             ChooseAnswerOrQuestion(setupId, 0, 0, ref ans, ref que, user.UserId);
 
-            if(ans != null)
+            if(ans != null){
+                string imgUri = "";
+                if(ans.Question.ImageUri != null)
+                    imgUri = ans.Question.ImageUri;
                 return Json(new { 
                     action = "Eval",
                     questionText = ans.Question.QuestionText,
                     answerText = ans.Text,
                     answerId = ans.AnswerId,
                     setupId = ans.SetupId,
-                    image = ans.Question.ImageUri,
+                    image = imgUri,
                     userId = user.UserId
                 }, JsonRequestBehavior.AllowGet);
+            }
             if (que != null)
+            {
+                if (que.ImageUri == null)
+                    que.ImageUri = "";
                 return Json(new
                 {
                     action = "Answer",
@@ -464,6 +471,7 @@ namespace CQA.Controllers
                     userId = user.UserId
 
                 }, JsonRequestBehavior.AllowGet);
+            }
             return Json(new
             {
                 action = "No content"

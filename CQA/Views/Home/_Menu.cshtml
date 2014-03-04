@@ -23,7 +23,7 @@
                         <ul class="nav pull-right">
                             @if (User.Identity.IsAuthenticated)
                             {
-                                <li><a href="@Url.Action("EvaluatedAnswers","Users")">Moje odpovede
+                                <!-- <li><a href="@Url.Action("EvaluatedAnswers","Users")">Moje odpovede
                                     @if(Model.UnseenEvaluatedAnswersCount > 0){
                                         <span class="badge badge-success"> @(Model.UnseenEvaluatedAnswersCount)  </span>
                                     }
@@ -35,7 +35,7 @@
                                         <span class="badge badge-success"> @(Model.UnseenEvaluatedEvaluationsCount)  </span>
                                     }
                                     </a>
-                                </li>
+                                </li>-->
                                 <li>
                                     <a href="@Url.Action("AllEvaluations","Users")">Ohodnotené odpovede
                                      @if(Model.UnseenEvaluatedEvaluationsCount > 0){
