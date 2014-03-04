@@ -19,10 +19,6 @@
                     <a href="@Model.ImageUri" target="_blank" style="color:darkblue; font-size:0.8em">(Zobraziť obrázok)</a>
         }
     </div>
-    @if (Model.ImageUri != "" || Model.ImageUri != null)
-    {
-        <img src="@Model.ImageUri" style="max-width: 80%" />
-    }
 </div>
 
  @{Html.RenderPartial("_CreateAnswerForm", new CQA.Models.CreateAnswer(Model.QuestionId));}
