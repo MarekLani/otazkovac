@@ -104,7 +104,7 @@ namespace CQA.Controllers
                 ea.UnseenCount = 0;
 
                 List<Notification> Notifications = new List<Notification>();
-                Notifications = db.Notifications.Where(n => n.UserId == WebSecurity.CurrentUserId && n.NotificationFor == NotificationFor.MyAnswer).ToList();
+                Notifications = db.Notifications.Where(n => n.UserId == WebSecurity.CurrentUserId && (n.NotificationFor == NotificationFor.MyAnswer && n.NotificationFor == NotificationFor.MyEvaluation)).ToList();
 
                 foreach (Answer a in s)
                 {

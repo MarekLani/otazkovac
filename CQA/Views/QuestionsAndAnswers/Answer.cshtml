@@ -15,6 +15,9 @@
     <div id="questionText">
         <span style="font-size: 0.85em; font-weight:bold">Otázka: </span>
         @Html.DisplayFor(model => model.QuestionText)
+        @if(Model.ImageUri != null && Model.ImageUri != ""){
+                    <a href="@Model.ImageUri" target="_blank" style="color:darkblue; font-size:0.8em">(Zobraziť obrázok)</a>
+        }
     </div>
     @if (Model.ImageUri != "" || Model.ImageUri != null)
     {

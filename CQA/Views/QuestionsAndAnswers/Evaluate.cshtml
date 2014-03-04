@@ -12,9 +12,9 @@
 <div class="question">
 
     <div id="questionText"><span style="font-size: 0.85em; font-weight: bold">Otázka: </span>@Html.DisplayFor(model => model.Question.QuestionText) </div>
-    @if (Model.Question.ImageUri != "" || Model.Question.ImageUri != null)
+    @if (Model.Question.ImageUri != null && Model.Question.ImageUri != "")
     {
-        <img src="@Model.Question.ImageUri" style="max-width: 80%" />
+        <a href="@Model.Question.ImageUri" target="_blank" style="color:darkblue; font-size:0.8em">(Zobraziť obrázok)</a>
     }
 </div>
 <div class="answer">
@@ -23,11 +23,11 @@
 
 <div style="text-align: center">
     @using (Ajax.BeginForm(null, null, new AjaxOptions()
-        {
-            HttpMethod = "POST",
-            Url = Url.Action("CreateEvaluation", "QuestionsAndAnswers"),
-            OnSuccess = "EvaluationCreated(data)"
-        },
+    {
+        HttpMethod = "POST",
+        Url = Url.Action("CreateEvaluation", "QuestionsAndAnswers"),
+        OnSuccess = "EvaluationCreated(data)"
+    },
         new { autocomplete = "off" }))
     {
         @Html.AntiForgeryToken()
@@ -57,7 +57,7 @@
             Ďakujeme za hodnotenie. Vyššie si môžete pozrieť priemerné hodnotenie odpovede.
         </div>
         <a href="@Url.Action("AnswerAndEvaluate", new { setupId = ViewBag.setupId })" id="next" class="btn" style="display:none">Ďalšia otázka/hodnotenie</a>
-        <a href="@Url.Action("SkipEvaluation", new { answerId = Model.AnswerId, setupId = ViewBag.setupId})" id="newAnswer" style="margin:0" class="btn skip">Preskočiť</a>
+        <a href="@Url.Action("SkipEvaluation", new { answerId = Model.AnswerId, setupId = ViewBag.setupId })" id="newAnswer" style="margin:0" class="btn skip">Preskočiť</a>
         <button type="submit" id="submit" class="btn btn-primary">Ohodnotiť</button>   
     }
     <div id="commentsSection">  

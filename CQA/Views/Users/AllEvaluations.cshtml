@@ -116,7 +116,7 @@ else
             <input type="hidden" value="@(a.Evaluations.Count())" name="count" class="count" />
             <input type="hidden" value="@((int)(a.GetAvgEvaluation() * 100))" name="numValue" class="numValue" />
             <div class="questionText"><b>Otázka: </b>@(a.Question.QuestionText) 
-                @if(a.Question.ImageUri != null || a.Question.ImageUri != ""){
+                @if(a.Question.ImageUri != null && a.Question.ImageUri != ""){
                     <a href="@a.Question.ImageUri" target="_blank" style="color:darkblue; font-size:0.8em">(Zobraziť obrázok)</a>
                 }
                     
