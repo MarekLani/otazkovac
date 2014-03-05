@@ -501,7 +501,7 @@ namespace CQA.Controllers
 
             Setup s = db.Setups.Find(setupId);
 
-            int week = (int)(s.StartDate - DateTime.Now).TotalDays / 7;
+            int week = (int)(DateTime.Now-s.StartDate).TotalDays / 7;
             if(week > 13)
                 week = 13;
 
