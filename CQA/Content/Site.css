@@ -1525,7 +1525,7 @@ textarea
 
 .conceptValue
 {
-	width: 80px;
+	width: auto;
 }
 
 .removeConcept

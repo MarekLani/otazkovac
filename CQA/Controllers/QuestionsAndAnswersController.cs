@@ -436,10 +436,19 @@ namespace CQA.Controllers
 
             //Create User Profile
             UserProfile user;
-            if ((user = db.UserProfiles.Single(u => u.UserName == ais)) == null)
+            if ((user = db.UserProfiles.FirstOrDefault(u => u.UserName == ais)) == null)
             {
                 WebSecurity.CreateUserAndAccount(ais, "pass", new { RealName = name });
                 user = db.UserProfiles.Single(u => u.UserName == ais);
+            }
+
+            if (db.UsersSetups.SingleOrDefault(us => us.UserId == user.UserId && us.SetupId == setupId) == null)
+            {
+                UsersSetup us = new UsersSetup();
+                us.UserId = user.UserId;
+                us.Score = 0;
+                us.SetupId = setupId;
+                db.UsersSetups.Add(us);
             }
 
             ChooseAnswerOrQuestion(setupId, 0, 0, ref ans, ref que, user.UserId);
