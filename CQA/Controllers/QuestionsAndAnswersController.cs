@@ -56,6 +56,7 @@ namespace CQA.Controllers
         }
 
         [HttpPost]
+        [ValidateInput(false)]
         public ActionResult ExternCreateAnswer()
         {
             Answer ans = new JavaScriptSerializer().Deserialize<Answer>(Request.Form["json"]);
@@ -66,7 +67,7 @@ namespace CQA.Controllers
                 return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest);
             }
 
-            ans.Text = HttpUtility.HtmlDecode(ans.Text).Replace("\"","'");
+            ans.Text = HttpUtility.HtmlEncode(ans.Text).Replace("\"", "'");
 
             db.Answers.Add(ans);
             db.SaveChanges();
@@ -76,7 +77,7 @@ namespace CQA.Controllers
 
             Question que = db.Questions.Single(q => q.QuestionId == ans.QuestionId);
 
-            object result = new { answerText = ans.Text, answerId = ans.AnswerId, questionId = ans.QuestionId, questionFileId = que.QuestionFileId };
+            object result = new { answerText = HttpUtility.HtmlDecode(ans.Text), answerId = ans.AnswerId, questionId = ans.QuestionId, questionFileId = que.QuestionFileId };
             return Json(result);
         }  
 
@@ -146,11 +147,13 @@ namespace CQA.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize]
+        [ValidateInput(false)]
         public ActionResult CreateComment(Comment comment)
         {
             if (ModelState.IsValid)
             {
                 comment.UserId = WebSecurity.CurrentUserId;
+                comment.Text = HttpUtility.HtmlEncode(comment.Text).Replace("\"","'");
                 db.Comments.Add(comment);
                 db.SaveChanges();
 
@@ -165,8 +168,10 @@ namespace CQA.Controllers
                     vc = new ViewComment( comment.Text, "Anonym", comment.AnswerId);
                 else
                     vc = new ViewComment(comment.Text, db.UserProfiles.Find(comment.UserId).RealName, comment.AnswerId);
-                var jsonSerialiser = new JavaScriptSerializer();
-                return Json(jsonSerialiser.Serialize(vc));
+
+                vc.Text = HttpUtility.HtmlDecode(vc.Text); 
+
+                return Json(vc);
 
             }
 
@@ -174,39 +179,12 @@ namespace CQA.Controllers
         }
 
         [HttpPost]
+        [ValidateInput(false)]
         public ActionResult ExternCreateComment()
         {
 
             Comment comment = new JavaScriptSerializer().Deserialize<Comment>(Request.Form["json"]);
-            
-            db.Comments.Add(comment);
-            db.SaveChanges();
-
-            Answer ans = db.Answers.Single(a => a.AnswerId == comment.AnswerId);
-            //Create Notification
-            CreateNotifications(ans, NotificationType.NewComment, comment.UserId);
-
-            //Mark action
-            UserMadeAction(UserActionType.Commented, comment.AnswerId, 0, comment.UserId);
-            ViewComment vc;
-            if (comment.Anonymous)
-                vc = new ViewComment(comment.Text, "Anonym", comment.AnswerId);
-            else
-                vc = new ViewComment(comment.Text, db.UserProfiles.Find(comment.UserId).RealName, comment.AnswerId);
-            vc.Text = vc.Text.Replace("\"", "'");
-            var jsonSerialiser = new JavaScriptSerializer();
-            return Json(jsonSerialiser.Serialize(vc));
-        }
-
-        [HttpGet]
-        public ActionResult ExternCreateComment(string text, int answerId, bool anonymous, int userId)
-        {
-
-            Comment comment = new Comment();
-            comment.Text = text;
-            comment.AnswerId = answerId;
-            comment.Anonymous = anonymous;
-            comment.UserId = userId;
+            comment.Text = HttpUtility.HtmlEncode(comment.Text).Replace("\"", "'");
 
             db.Comments.Add(comment);
             db.SaveChanges();
@@ -222,9 +200,10 @@ namespace CQA.Controllers
                 vc = new ViewComment(comment.Text, "Anonym", comment.AnswerId);
             else
                 vc = new ViewComment(comment.Text, db.UserProfiles.Find(comment.UserId).RealName, comment.AnswerId);
-            var jsonSerialiser = new JavaScriptSerializer();
-            return Json(jsonSerialiser.Serialize(vc),JsonRequestBehavior.AllowGet);
+            vc.Text = HttpUtility.HtmlDecode(vc.Text).Replace("\"", "'");
+            return Json(vc);
         }
+
 
         private void CreateNotifications(Answer answer, NotificationType type, int authorId)
         {

@@ -74,6 +74,8 @@ namespace CQA.Models
                     vc = new ViewComment(c.Text, "Anonym", this.AnswerId);
                 else
                     vc = new ViewComment(c.Text, db.UserProfiles.Find(c.UserId).RealName, this.AnswerId);
+
+                vc.Text = HttpUtility.HtmlDecode(vc.Text);
                 viewComments.Add(vc);
             }
             var jsonSerialiser = new JavaScriptSerializer();
