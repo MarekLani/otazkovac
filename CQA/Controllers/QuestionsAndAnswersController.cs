@@ -27,7 +27,7 @@ namespace CQA.Controllers
         [ValidateInput(false)]
         [ValidateAntiForgeryToken]
         [Authorize]
-        public ActionResult CreateAnswer(int questionId, string text)
+        public ActionResult CreateAnswer(int questionId, string text, int setupId)
         {
             if (ModelState.IsValid)
             {
@@ -39,7 +39,7 @@ namespace CQA.Controllers
                     return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest);
                 }
 
-                var answer = new Answer(questionId, HttpUtility.HtmlDecode(text), WebSecurity.CurrentUserId);
+                var answer = new Answer(questionId, HttpUtility.HtmlDecode(text), WebSecurity.CurrentUserId, setupId);
                 db.Answers.Add(answer);
                 db.SaveChanges();
 

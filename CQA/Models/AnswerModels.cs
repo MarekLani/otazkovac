@@ -44,11 +44,12 @@ namespace CQA.Models
         {
         }
 
-        public Answer(int questionId, string text, int userId)
+        public Answer(int questionId, string text, int userId, int setupId)
         {
             this.QuestionId = questionId;
             Text = text;
             UserId = userId;
+            SetupId = setupId;
         }
 
         public double GetAvgEvaluation()
