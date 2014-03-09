@@ -74,8 +74,9 @@ namespace CQA.Controllers
             UserMadeAction(UserActionType.Answering, 0, ans.QuestionId, (int)ans.UserId);
             UserSeenQuestion(ans.QuestionId, (int)ans.UserId);
 
+            Question que = db.Questions.Single(q => q.QuestionId == ans.QuestionId);
 
-            object result = new { answerText = ans.Text, answerId = ans.AnswerId, questionId = ans.QuestionId, questionFileId = ans.Question.QuestionFileId };
+            object result = new { answerText = ans.Text, answerId = ans.AnswerId, questionId = ans.QuestionId, questionFileId = que.QuestionFileId };
             return Json(result);
         }  
 
