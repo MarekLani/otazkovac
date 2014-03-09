@@ -55,35 +55,6 @@ namespace CQA.Controllers
             }
         }
 
-        [HttpGet]
-        public ActionResult ExternCreateAnswer(string text, int questionId, int setupId, int userId)
-        {
-
-            Answer ans = new Answer();
-            ans.Text = text;
-            ans.QuestionId = questionId;
-            ans.SetupId = setupId;
-            ans.UserId = userId;
-
-            if (!db.UserProfiles.Where(u => u.UserId == ans.UserId).Any()||
-                db.Answers.Where(a => a.QuestionId == ans.QuestionId && a.UserId == ans.UserId).Any())
-            {
-                return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest);
-            }
-
-            ans.Text = HttpUtility.HtmlDecode(ans.Text);
-
-            db.Answers.Add(ans);
-            db.SaveChanges();
-
-            UserMadeAction(UserActionType.Answering, 0, ans.QuestionId, (int)ans.UserId);
-            UserSeenQuestion(ans.QuestionId, (int)ans.UserId);
-
-
-            object result = new { answerText = ans.Text };
-            return Json(result,JsonRequestBehavior.AllowGet);
-        }
-
         [HttpPost]
         public ActionResult ExternCreateAnswer()
         {
@@ -104,7 +75,7 @@ namespace CQA.Controllers
             UserSeenQuestion(ans.QuestionId, (int)ans.UserId);
 
 
-            object result = new { answerText = ans.Text };
+            object result = new { answerText = ans.Text, answerId = ans.AnswerId, questionId = ans.QuestionId, questionFileId = ans.Question.QuestionFileId };
             return Json(result);
         }  
 
@@ -167,39 +138,8 @@ namespace CQA.Controllers
             //Mark question as seen
             UserSeenQuestion(eval.Answer.QuestionId, eval.UserId);
 
-            return Json(new { avgEval = answer.GetAvgEvaluation(), evalsCount = answer.Evaluations.Count(), comments = answer.GetAnswerCommentsInJson() });
+            return Json(new { avgEval = answer.GetAvgEvaluation(), evalsCount = answer.Evaluations.Count(), comments = answer.GetAnswerCommentsInJson(), answerId = eval.AnswerId });
             
-        }
-
-        [HttpGet]
-        public ActionResult ExternCreateEvaluation(int value, int answerId, int userId)
-        {
-
-            Evaluation eval = new Evaluation();
-            eval.Value = value;
-            eval.AnswerId = answerId;
-            eval.UserId = userId;
-
-            if (!db.UserProfiles.Where(u => u.UserId == eval.UserId).Any() ||
-                db.Ratings.Where(a => a.AnswerId == eval.AnswerId && a.UserId == eval.UserId).Any())
-            {
-                return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest);
-            }
-
-            //Notifications
-            Answer answer = db.Answers.Find(eval.AnswerId);
-            CreateNotifications(answer, NotificationType.NewEvaluation, eval.UserId);
-
-            db.Ratings.Add(eval);
-            db.SaveChanges();
-
-            //Mark action
-            UserMadeAction(UserActionType.Evaluation, eval.AnswerId, 0, eval.UserId);
-            //Mark question as seen
-            UserSeenQuestion(eval.Answer.QuestionId, eval.UserId);
-
-            return Json(new { avgEval = answer.GetAvgEvaluation(), evalsCount = answer.Evaluations.Count(), comments = answer.GetAnswerCommentsInJson() },JsonRequestBehavior.AllowGet);
-
         }
 
         [HttpPost]
