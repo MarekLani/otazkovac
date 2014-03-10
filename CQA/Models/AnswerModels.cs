@@ -9,6 +9,7 @@ using System.Web.Mvc;
 using System.Web.Script.Serialization;
 using CQA.Resources;
 
+
 namespace CQA.Models
 {
     public class Answer : DateCreatedModel
@@ -62,10 +63,10 @@ namespace CQA.Models
             return total / this.Evaluations.Count();
         }
 
-        public string GetAnswerCommentsInJson()
+        public List<ViewComment> GetAnswerComments()
         {
             CQADBContext db = new CQADBContext();
-            List<Comment> comments = this.Comments.ToList();
+            List<Comment> comments = db.Comments.ToList();//this.Comments.ToList();
             List<ViewComment> viewComments = new List<ViewComment>();
             foreach (Comment c in comments)
             {
@@ -78,8 +79,7 @@ namespace CQA.Models
                 vc.Text = HttpUtility.HtmlDecode(vc.Text);
                 viewComments.Add(vc);
             }
-            var jsonSerialiser = new JavaScriptSerializer();
-            return jsonSerialiser.Serialize(viewComments);
+            return viewComments;
         }
 
     }

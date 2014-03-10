@@ -109,7 +109,7 @@ namespace CQA.Controllers
                 //Mark question as seen
                 UserSeenQuestion(answer.QuestionId, WebSecurity.CurrentUserId);
                 
-                return Json(new { avgEval = answer.GetAvgEvaluation(), evalsCount = answer.Evaluations.Count(), comments = answer.GetAnswerCommentsInJson() });
+                return Json(new { avgEval = answer.GetAvgEvaluation(), evalsCount = answer.Evaluations.Count(), comments = answer.GetAnswerComments() });
             }
 
             return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest);
@@ -140,7 +140,7 @@ namespace CQA.Controllers
             //Mark question as seen
             UserSeenQuestion(eval.Answer.QuestionId, eval.UserId);
 
-            return Json(new { avgEval = answer.GetAvgEvaluation(), evalsCount = answer.Evaluations.Count(), comments = answer.GetAnswerCommentsInJson(), answerId = eval.AnswerId });
+            return Json(new { avgEval = answer.GetAvgEvaluation(), evalsCount = answer.Evaluations.Count(), comments = answer.GetAnswerComments(), answerId = eval.AnswerId });
             
         }
 
@@ -379,8 +379,8 @@ namespace CQA.Controllers
                     imgUri = ans.Question.ImageUri;
                 return Json(new { 
                     action = "Eval",
-                    questionText = ans.Question.QuestionText,
-                    answerText = ans.Text,
+                    questionText = ans.Question.QuestionText.Replace("\"","'"),
+                    answerText = ans.Text.Replace("\"", "'"),
                     answerId = ans.AnswerId,
                     setupId = ans.SetupId,
                     image = imgUri,
@@ -394,7 +394,7 @@ namespace CQA.Controllers
                 return Json(new
                 {
                     action = "Answer",
-                    questionText = que.QuestionText,
+                    questionText = que.QuestionText.Replace("\"", "'"),
                     questionId = que.QuestionId,
                     image = que.ImageUri,
                     userId = user.UserId
