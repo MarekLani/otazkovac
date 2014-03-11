@@ -66,7 +66,7 @@ namespace CQA.Models
         public List<ViewComment> GetAnswerComments()
         {
             CQADBContext db = new CQADBContext();
-            List<Comment> comments = db.Comments.ToList();//this.Comments.ToList();
+            List<Comment> comments = this.Comments.ToList();
             List<ViewComment> viewComments = new List<ViewComment>();
             foreach (Comment c in comments)
             {

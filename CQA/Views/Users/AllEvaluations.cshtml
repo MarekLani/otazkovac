@@ -213,7 +213,6 @@ else
     <script type="text/javascript">
 
         function CommentCreated(data) {
-            data = $.parseJSON(data);
             $("#a" + data.AnswerId).find('.noComments').hide();
             $("#a" + data.AnswerId).find('textarea').val('');
             $("#a"+data.AnswerId).find(".comments").append('<div class="comment empAnswer"><b>' + data.UserName + ':</b> ' + data.Text + '</div>');

@@ -81,7 +81,6 @@
         function CommentCreated(data) {
             $('#commentForm').fadeOut();
             $('#noComments').hide();
-            data = $.parseJSON(data);
             $("#comments").append('<div class="comment empAnswer"><b>'+ data.UserName +':</b> '+ data.Text +'</div>');
 
         }
@@ -106,7 +105,7 @@
             $('#submit').attr('disabled', 'disabled');
             $(".alert").fadeIn();  
 
-            commentsData = $.parseJSON(data["comments"]);
+            commentsData = data["comments"];
             if(commentsData.length == 0)
                 $("#comments").append('<div id="noComments">Zatiaľ neboli vytvorené žiadne komentáre</div>');
             else{
