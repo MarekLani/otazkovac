@@ -102,9 +102,9 @@ namespace CQA.Controllers
         public ActionResult AddAdmin(string user)
         {
             var roles = (SimpleRoleProvider)Roles.Provider;
-            if (!roles.GetRolesForUser("xlanim").Contains("Admin"))
+            if (!roles.GetRolesForUser(user).Contains("Admin"))
             {
-                roles.AddUsersToRoles(new[] { "xlanim" }, new[] { "Admin" });
+                roles.AddUsersToRoles(new[] { user }, new[] { "Admin" });
                 TempData["AdminAdded"] = user + "bol pridaný medzi administrátorov";
             }
             else
