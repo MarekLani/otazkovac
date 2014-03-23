@@ -10,7 +10,7 @@ using System.Web;
 using System.Web.Mvc;
 using CQA.Models;
 using WebMatrix.WebData;
-using Excel = Microsoft.Office.Interop.Excel; 
+//using Excel = Microsoft.Office.Interop.Excel; 
 
 namespace CQA.Controllers
 {
@@ -219,226 +219,226 @@ namespace CQA.Controllers
             return new HttpStatusCodeResult((int)HttpStatusCode.OK);
         }
 
-        [HttpGet]
-        public ActionResult GetReport(int setupId)
-        {
-            Excel.Application xlApp;
-            Excel.Workbook xlWorkBook;
-            Excel.Worksheet xlWorkSheet;
-            object misValue = System.Reflection.Missing.Value;
+        //[HttpGet]
+        //public ActionResult GetReport(int setupId)
+        //{
+        //    Excel.Application xlApp;
+        //    Excel.Workbook xlWorkBook;
+        //    Excel.Worksheet xlWorkSheet;
+        //    object misValue = System.Reflection.Missing.Value;
 
-            xlApp = new Excel.Application();
-            xlWorkBook = xlApp.Workbooks.Add(misValue);
+        //    xlApp = new Excel.Application();
+        //    xlWorkBook = xlApp.Workbooks.Add(misValue);
 
-            xlWorkSheet = (Excel.Worksheet)xlWorkBook.Worksheets.get_Item(1);
-            xlWorkSheet.Name = "QALO aktivita (po týždňoch)";
+        //    xlWorkSheet = (Excel.Worksheet)xlWorkBook.Worksheets.get_Item(1);
+        //    xlWorkSheet.Name = "QALO aktivita (po týždňoch)";
 
-            Setup s = db.Setups.SingleOrDefault(set => set.SetupId == setupId);
-            DateTime start = s.StartDate;
+        //    Setup s = db.Setups.SingleOrDefault(set => set.SetupId == setupId);
+        //    DateTime start = s.StartDate;
 
-            int k = 2;
-            //active users
-            while (start.AddDays(7) < DateTime.Now)
-            {
-                start = start.AddDays(7);
-                xlWorkSheet.Cells[1, k] = "k " + start.ToString();
-                k++;
-            }
+        //    int k = 2;
+        //    //active users
+        //    while (start.AddDays(7) < DateTime.Now)
+        //    {
+        //        start = start.AddDays(7);
+        //        xlWorkSheet.Cells[1, k] = "k " + start.ToString();
+        //        k++;
+        //    }
             
-            k = 2;
-            start = s.StartDate;
-            //active users
-            while (start.AddDays(7) < DateTime.Now)
-            {
-                start = start.AddDays(7);
-                xlWorkSheet.Cells[2, 1] = "Počet zapojených študentov";
-                xlWorkSheet.Cells[2, k] = db.UsersSetups.Where(us => us.SetupId == setupId && us.DateCreated <= start).ToList().Count.ToString();
-                k ++;
-            }
+        //    k = 2;
+        //    start = s.StartDate;
+        //    //active users
+        //    while (start.AddDays(7) < DateTime.Now)
+        //    {
+        //        start = start.AddDays(7);
+        //        xlWorkSheet.Cells[2, 1] = "Počet zapojených študentov";
+        //        xlWorkSheet.Cells[2, k] = db.UsersSetups.Where(us => us.SetupId == setupId && us.DateCreated <= start).ToList().Count.ToString();
+        //        k ++;
+        //    }
 
-            start = s.StartDate;
-            k = 2;
-            //evaluations : users
-            while (start.AddDays(7) < DateTime.Now)
-            {
-                start = start.AddDays(7);
-                int sCount = db.UsersSetups.Where(us => us.SetupId == setupId && us.DateCreated <= start).ToList().Count;
-                int eCount = db.Ratings.Where(e => e.Answer.SetupId == setupId && e.DateCreated <= start).ToList().Count;
+        //    start = s.StartDate;
+        //    k = 2;
+        //    //evaluations : users
+        //    while (start.AddDays(7) < DateTime.Now)
+        //    {
+        //        start = start.AddDays(7);
+        //        int sCount = db.UsersSetups.Where(us => us.SetupId == setupId && us.DateCreated <= start).ToList().Count;
+        //        int eCount = db.Ratings.Where(e => e.Answer.SetupId == setupId && e.DateCreated <= start).ToList().Count;
 
-                xlWorkSheet.Cells[3, 1] = "Priemer hodnotení na študenta";
-                if (sCount != 0)
-                    xlWorkSheet.Cells[3, k] = ((double)((double)eCount / sCount)).ToString("#.###");
-                else 
-                    xlWorkSheet.Cells[3, k] = "0";
-                k++;
-            }
+        //        xlWorkSheet.Cells[3, 1] = "Priemer hodnotení na študenta";
+        //        if (sCount != 0)
+        //            xlWorkSheet.Cells[3, k] = ((double)((double)eCount / sCount)).ToString("#.###");
+        //        else 
+        //            xlWorkSheet.Cells[3, k] = "0";
+        //        k++;
+        //    }
 
-            start = s.StartDate;
-            k = 2;
-            //evaluations : answers
-            while (start.AddDays(7) < DateTime.Now)
-            {
-                xlWorkSheet.Cells[4, 1] = "Priemer hodnotení na odpoveď";
-                start = start.AddDays(7);
-                int aCount = db.Answers.Where(a => a.SetupId == setupId).ToList().Count();
-                int eCount = db.Ratings.Where(e => e.Answer.SetupId == setupId && e.DateCreated <= start).ToList().Count;
+        //    start = s.StartDate;
+        //    k = 2;
+        //    //evaluations : answers
+        //    while (start.AddDays(7) < DateTime.Now)
+        //    {
+        //        xlWorkSheet.Cells[4, 1] = "Priemer hodnotení na odpoveď";
+        //        start = start.AddDays(7);
+        //        int aCount = db.Answers.Where(a => a.SetupId == setupId).ToList().Count();
+        //        int eCount = db.Ratings.Where(e => e.Answer.SetupId == setupId && e.DateCreated <= start).ToList().Count;
 
-                if (aCount != 0)
-                    xlWorkSheet.Cells[4, k] = ((double)((double)eCount / aCount)).ToString("#.###");
-                else
-                    xlWorkSheet.Cells[4, k] = "0";
-                k++;
-            }
+        //        if (aCount != 0)
+        //            xlWorkSheet.Cells[4, k] = ((double)((double)eCount / aCount)).ToString("#.###");
+        //        else
+        //            xlWorkSheet.Cells[4, k] = "0";
+        //        k++;
+        //    }
 
-            start = s.StartDate;
-            k = 2;
-            //answers : users
-            while (start.AddDays(7) < DateTime.Now)
-            {
-                xlWorkSheet.Cells[5, 1] = "Priemer odpovedí na študenta";
-                start = start.AddDays(7);
-                int aCount = db.UsersSetups.Where(a => a.SetupId == setupId && a.DateCreated <= start && a.UserId != null).ToList().Count;
-                int sCount = db.UsersSetups.Where(us => us.SetupId == setupId && us.DateCreated <= start).ToList().Count;
+        //    start = s.StartDate;
+        //    k = 2;
+        //    //answers : users
+        //    while (start.AddDays(7) < DateTime.Now)
+        //    {
+        //        xlWorkSheet.Cells[5, 1] = "Priemer odpovedí na študenta";
+        //        start = start.AddDays(7);
+        //        int aCount = db.UsersSetups.Where(a => a.SetupId == setupId && a.DateCreated <= start && a.UserId != null).ToList().Count;
+        //        int sCount = db.UsersSetups.Where(us => us.SetupId == setupId && us.DateCreated <= start).ToList().Count;
 
-                if (sCount != 0)
-                    xlWorkSheet.Cells[5, k] = ((double)((double)aCount / sCount)).ToString("#.###");
-                else
-                    xlWorkSheet.Cells[5, k] = "0";
-                k++;
-            }
+        //        if (sCount != 0)
+        //            xlWorkSheet.Cells[5, k] = ((double)((double)aCount / sCount)).ToString("#.###");
+        //        else
+        //            xlWorkSheet.Cells[5, k] = "0";
+        //        k++;
+        //    }
 
-            start = s.StartDate;
-            k = 2;
-            //maxHodnoteni
-            while (start.AddDays(7) < DateTime.Now)
-            {
-                xlWorkSheet.Cells[6, 1] = "Max. počet hodnotení odpovede";
-                start = start.AddDays(7);
-                if (db.Answers.Where(a => a.SetupId == setupId && a.DateCreated <= start).ToList().Count > 0)
-                {
-                    Answer ans = db.Answers.Where(a => a.SetupId == setupId && a.DateCreated <= start).OrderByDescending(a => a.Evaluations.Count()).ToList().First();
-                    xlWorkSheet.Cells[6, k] = ans.Evaluations.Count;
-                }
-                else
-                    xlWorkSheet.Cells[6, k] = 0;
-                k++;
-            }
+        //    start = s.StartDate;
+        //    k = 2;
+        //    //maxHodnoteni
+        //    while (start.AddDays(7) < DateTime.Now)
+        //    {
+        //        xlWorkSheet.Cells[6, 1] = "Max. počet hodnotení odpovede";
+        //        start = start.AddDays(7);
+        //        if (db.Answers.Where(a => a.SetupId == setupId && a.DateCreated <= start).ToList().Count > 0)
+        //        {
+        //            Answer ans = db.Answers.Where(a => a.SetupId == setupId && a.DateCreated <= start).OrderByDescending(a => a.Evaluations.Count()).ToList().First();
+        //            xlWorkSheet.Cells[6, k] = ans.Evaluations.Count;
+        //        }
+        //        else
+        //            xlWorkSheet.Cells[6, k] = 0;
+        //        k++;
+        //    }
 
-            start = s.StartDate;
-            k = 2;
-            //pocet hodnoteni
-            while (start.AddDays(7) < DateTime.Now)
-            {
-                start = start.AddDays(7);
-                xlWorkSheet.Cells[7, 1] = "Celkový počet hodnotení";
-                xlWorkSheet.Cells[7, k] = db.Ratings.Where(e => e.Answer.SetupId == setupId && e.DateCreated <= start).ToList().Count();
-                k++;
-            }
+        //    start = s.StartDate;
+        //    k = 2;
+        //    //pocet hodnoteni
+        //    while (start.AddDays(7) < DateTime.Now)
+        //    {
+        //        start = start.AddDays(7);
+        //        xlWorkSheet.Cells[7, 1] = "Celkový počet hodnotení";
+        //        xlWorkSheet.Cells[7, k] = db.Ratings.Where(e => e.Answer.SetupId == setupId && e.DateCreated <= start).ToList().Count();
+        //        k++;
+        //    }
 
-            start = s.StartDate;
-            k = 2;
-            //pocet odpovedi
-            while (start.AddDays(7) < DateTime.Now)
-            {
-                start = start.AddDays(7);
-                xlWorkSheet.Cells[8, 1] = "Celkový počet štud. odpovedí";
-                xlWorkSheet.Cells[8, k] = db.Answers.Where(a => a.SetupId == setupId && a.DateCreated <= start && a.UserId != null).ToList().Count();
-                k++;
-            }
+        //    start = s.StartDate;
+        //    k = 2;
+        //    //pocet odpovedi
+        //    while (start.AddDays(7) < DateTime.Now)
+        //    {
+        //        start = start.AddDays(7);
+        //        xlWorkSheet.Cells[8, 1] = "Celkový počet štud. odpovedí";
+        //        xlWorkSheet.Cells[8, k] = db.Answers.Where(a => a.SetupId == setupId && a.DateCreated <= start && a.UserId != null).ToList().Count();
+        //        k++;
+        //    }
 
-            start = s.StartDate;
-            k = 2;
-            //pocet hodnotenych odpovedi
-            while (start.AddDays(7) < DateTime.Now)
-            {
-                start = start.AddDays(7);
-                xlWorkSheet.Cells[9, 1] = "Počet hodnotených odpovedí";
-                var evals = db.Ratings.Where(e => e.Answer.SetupId == setupId && e.DateCreated <= start).ToList();
+        //    start = s.StartDate;
+        //    k = 2;
+        //    //pocet hodnotenych odpovedi
+        //    while (start.AddDays(7) < DateTime.Now)
+        //    {
+        //        start = start.AddDays(7);
+        //        xlWorkSheet.Cells[9, 1] = "Počet hodnotených odpovedí";
+        //        var evals = db.Ratings.Where(e => e.Answer.SetupId == setupId && e.DateCreated <= start).ToList();
 
-                List<Answer> ans= new List<Answer>();
+        //        List<Answer> ans= new List<Answer>();
 
-                foreach(var e in evals)
-                {
-                    if (!ans.Contains(e.Answer))
-                        ans.Add(e.Answer);
-                }
+        //        foreach(var e in evals)
+        //        {
+        //            if (!ans.Contains(e.Answer))
+        //                ans.Add(e.Answer);
+        //        }
 
-                xlWorkSheet.Cells[9, k] = ans.Count();
-                k++;
-            }
+        //        xlWorkSheet.Cells[9, k] = ans.Count();
+        //        k++;
+        //    }
 
-            start = s.StartDate;
-            k = 2;
-            //pocet odpovedi
-            while (start.AddDays(7) < DateTime.Now)
-            {
-                start = start.AddDays(7);
-                xlWorkSheet.Cells[10, 1] = "Počet odpovedí s aspoň 15 hodnoteniami";
-                xlWorkSheet.Cells[10, k] = db.Answers.Where(a => a.SetupId == setupId && a.DateCreated <= start && a.Evaluations.Count >= 15).ToList().Count();
-                k++;
-            }
-            var aRange = xlWorkSheet.get_Range("A1", "XX100");
-            aRange.EntireColumn.AutoFit();
-            aRange.Rows.AutoFit();
-            //xlWorkSheet.get_Range("B2", "XX100").NumberFormat = "@";
+        //    start = s.StartDate;
+        //    k = 2;
+        //    //pocet odpovedi
+        //    while (start.AddDays(7) < DateTime.Now)
+        //    {
+        //        start = start.AddDays(7);
+        //        xlWorkSheet.Cells[10, 1] = "Počet odpovedí s aspoň 15 hodnoteniami";
+        //        xlWorkSheet.Cells[10, k] = db.Answers.Where(a => a.SetupId == setupId && a.DateCreated <= start && a.Evaluations.Count >= 15).ToList().Count();
+        //        k++;
+        //    }
+        //    var aRange = xlWorkSheet.get_Range("A1", "XX100");
+        //    aRange.EntireColumn.AutoFit();
+        //    aRange.Rows.AutoFit();
+        //    //xlWorkSheet.get_Range("B2", "XX100").NumberFormat = "@";
 
-            xlWorkSheet = (Excel.Worksheet)xlWorkBook.Worksheets.Add(Type.Missing, Type.Missing, Type.Missing, Type.Missing);
-            xlWorkSheet.Name = "QALO štatistiky (po týždňoch)";
+        //    xlWorkSheet = (Excel.Worksheet)xlWorkBook.Worksheets.Add(Type.Missing, Type.Missing, Type.Missing, Type.Missing);
+        //    xlWorkSheet.Name = "QALO štatistiky (po týždňoch)";
 
-            int i = 2;
-            int j = 3;      
+        //    int i = 2;
+        //    int j = 3;      
 
-            start = s.StartDate;
-            k = 3;
-            while (start.AddDays(7) < DateTime.Now)
-            {
-                xlWorkSheet.Range[xlWorkSheet.Cells[1, k], xlWorkSheet.Cells[1, k+1]].Merge();
-                start = start.AddDays(7);
-                xlWorkSheet.Cells[1, k] = "k " + start.ToString();
-                xlWorkSheet.Cells[2, k] = "# Hodnotení";
-                xlWorkSheet.Cells[2, k+1] = "# Odpovedí";
-                k += 2;
-            }
+        //    start = s.StartDate;
+        //    k = 3;
+        //    while (start.AddDays(7) < DateTime.Now)
+        //    {
+        //        xlWorkSheet.Range[xlWorkSheet.Cells[1, k], xlWorkSheet.Cells[1, k+1]].Merge();
+        //        start = start.AddDays(7);
+        //        xlWorkSheet.Cells[1, k] = "k " + start.ToString();
+        //        xlWorkSheet.Cells[2, k] = "# Hodnotení";
+        //        xlWorkSheet.Cells[2, k+1] = "# Odpovedí";
+        //        k += 2;
+        //    }
 
-            xlWorkSheet.Cells[2, 1] = "Login";
-            xlWorkSheet.Cells[2, 2] = "Meno";
+        //    xlWorkSheet.Cells[2, 1] = "Login";
+        //    xlWorkSheet.Cells[2, 2] = "Meno";
 
-            j = 3;
-            i++;
-            foreach (UsersSetup us in s.UsersSetups.OrderBy(us => us.User.RealName))
-            {
-                xlWorkSheet.Cells[i, 1 ] = us.User.UserName;
-                xlWorkSheet.Cells[i, 2] = us.User.RealName;
-                start = s.StartDate;
+        //    j = 3;
+        //    i++;
+        //    foreach (UsersSetup us in s.UsersSetups.OrderBy(us => us.User.RealName))
+        //    {
+        //        xlWorkSheet.Cells[i, 1 ] = us.User.UserName;
+        //        xlWorkSheet.Cells[i, 2] = us.User.RealName;
+        //        start = s.StartDate;
 
-                while (start.AddDays(7) < DateTime.Now)
-                {     
-                    start = start.AddDays(7);
-                    xlWorkSheet.Cells[i, j ] = us.User.Evaluations.Where(e => e.DateCreated <= start && e.Answer.SetupId == setupId).ToList().Count.ToString() ;
-                    xlWorkSheet.Cells[i, j+1] = us.User.Answers.Where(a => a.DateCreated <= start && a.SetupId == setupId).ToList().Count.ToString();
-                    j+=2;
-                }
-                j = 3;
-                i++;
-            }
-            aRange = xlWorkSheet.get_Range("A1", "XX100");
-            aRange.EntireColumn.AutoFit();
-            aRange.Rows.AutoFit();
-            Int32 unixTimestamp = (Int32)(DateTime.Now.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
-            string fileUrl = Server.MapPath("~/Reports/") + "report_" + s.Subject.Name + "_" + unixTimestamp.ToString() +".xls";
+        //        while (start.AddDays(7) < DateTime.Now)
+        //        {     
+        //            start = start.AddDays(7);
+        //            xlWorkSheet.Cells[i, j ] = us.User.Evaluations.Where(e => e.DateCreated <= start && e.Answer.SetupId == setupId).ToList().Count.ToString() ;
+        //            xlWorkSheet.Cells[i, j+1] = us.User.Answers.Where(a => a.DateCreated <= start && a.SetupId == setupId).ToList().Count.ToString();
+        //            j+=2;
+        //        }
+        //        j = 3;
+        //        i++;
+        //    }
+        //    aRange = xlWorkSheet.get_Range("A1", "XX100");
+        //    aRange.EntireColumn.AutoFit();
+        //    aRange.Rows.AutoFit();
+        //    Int32 unixTimestamp = (Int32)(DateTime.Now.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+        //    string fileUrl = Server.MapPath("~/Reports/") + "report_" + s.Subject.Name + "_" + unixTimestamp.ToString() +".xls";
             
-            xlWorkBook.SaveAs(fileUrl, Excel.XlFileFormat.xlWorkbookNormal, misValue, misValue, misValue, misValue, Excel.XlSaveAsAccessMode.xlExclusive, misValue, misValue, misValue, misValue, misValue);
-            xlWorkBook.Close(true, misValue, misValue);
-            xlApp.Quit();
+        //    xlWorkBook.SaveAs(fileUrl, Excel.XlFileFormat.xlWorkbookNormal, misValue, misValue, misValue, misValue, Excel.XlSaveAsAccessMode.xlExclusive, misValue, misValue, misValue, misValue, misValue);
+        //    xlWorkBook.Close(true, misValue, misValue);
+        //    xlApp.Quit();
 
-            releaseObject(xlWorkSheet);
-            releaseObject(xlWorkBook);
-            releaseObject(xlApp);
+        //    releaseObject(xlWorkSheet);
+        //    releaseObject(xlWorkBook);
+        //    releaseObject(xlApp);
             
-            ViewBag.Link = Request.Url.GetLeftPart(UriPartial.Authority)+"fileUrl";
-            return View();
+        //    ViewBag.Link = Request.Url.GetLeftPart(UriPartial.Authority)+"fileUrl";
+        //    return View();
 
-        }
+        //}
 
         private void releaseObject(object obj)
         {
