@@ -6,7 +6,7 @@ using System.Web;
 
 namespace CQA.Models
 {
-    public class UsersSetup
+    public class UsersSetup:DateCreatedModel
     {
         public int UserId { get; set; }
         public virtual UserProfile User { get; set; }
