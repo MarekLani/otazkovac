@@ -310,13 +310,14 @@ namespace CQA.Controllers
                 }
             }
 
-            if (db.UsersSetups.Where( us => us.UserId == WebSecurity.CurrentUserId && us.SetupId == setupId ).ToList() == null)
+            if (db.UsersSetups.SingleOrDefault(us => us.UserId == WebSecurity.CurrentUserId && us.SetupId == setupId) == null)
             {
                 UsersSetup us = new UsersSetup();
                 us.UserId = WebSecurity.CurrentUserId;
                 us.Score = 0;
                 us.SetupId = setupId;
                 db.UsersSetups.Add(us);
+                db.SaveChanges();
             }
 
             Question que = null;
@@ -369,6 +370,7 @@ namespace CQA.Controllers
                 us.Score = 0;
                 us.SetupId = setupId;
                 db.UsersSetups.Add(us);
+                db.SaveChanges();
             }
 
             ChooseAnswerOrQuestion(setupId, 0, 0, ref ans, ref que, user.UserId);

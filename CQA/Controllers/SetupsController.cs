@@ -10,6 +10,7 @@ using System.Web;
 using System.Web.Mvc;
 using CQA.Models;
 using WebMatrix.WebData;
+using Excel = Microsoft.Office.Interop.Excel; 
 
 namespace CQA.Controllers
 {
@@ -216,6 +217,95 @@ namespace CQA.Controllers
             db.SaveChanges();
 
             return new HttpStatusCodeResult((int)HttpStatusCode.OK);
+        }
+
+        [HttpGet]
+        public ActionResult GetReport(int setupId)
+        {
+            Excel.Application xlApp;
+            Excel.Workbook xlWorkBook;
+            Excel.Worksheet xlWorkSheet;
+            object misValue = System.Reflection.Missing.Value;
+
+            xlApp = new Excel.Application();
+            xlWorkBook = xlApp.Workbooks.Add(misValue);
+
+            xlWorkSheet = (Excel.Worksheet)xlWorkBook.Worksheets.get_Item(1);
+            
+
+            xlWorkSheet.Name = "QALO štatistiky (po týždňoch)";
+
+            int i = 2;
+            int j = 3;      
+
+            Setup s = db.Setups.SingleOrDefault(set => set.SetupId == setupId);
+
+            DateTime start = s.StartDate;
+            int k = 3;
+            while (start.AddDays(7) < DateTime.Now)
+            {
+                xlWorkSheet.Range[xlWorkSheet.Cells[1, k], xlWorkSheet.Cells[1, k+1]].Merge();
+                start = start.AddDays(7);
+                xlWorkSheet.Cells[1, k] = "k " + start.ToString();
+                xlWorkSheet.Cells[2, k] = "# Hodnotení";
+                xlWorkSheet.Cells[2, k+1] = "# Odpovedí";
+                k += 2;
+            }
+
+            xlWorkSheet.Cells[2, 1] = "Login";
+            xlWorkSheet.Cells[2, 2] = "Meno";
+
+            j = 3;
+            i++;
+            foreach (UsersSetup us in s.UsersSetups.OrderBy(us => us.User.RealName))
+            {
+                xlWorkSheet.Cells[i, 1 ] = us.User.UserName;
+                xlWorkSheet.Cells[i, 2] = us.User.RealName;
+                start = s.StartDate;
+
+                while (start.AddDays(7) < DateTime.Now)
+                {     
+                    start = start.AddDays(7);
+                    xlWorkSheet.Cells[i, j ] = us.User.Evaluations.Where(e => e.DateCreated < start && e.Answer.SetupId == setupId).ToList().Count.ToString() ;
+                    xlWorkSheet.Cells[i, j+1] = us.User.Answers.Where(a => a.DateCreated < start && a.SetupId == setupId).ToList().Count.ToString();
+                    j+=2;
+                }
+                j = 3;
+                i++;
+            }
+            var aRange = xlWorkSheet.get_Range("A1", "XX100");
+            aRange.EntireColumn.AutoFit();
+            aRange.Rows.AutoFit();
+            Int32 unixTimestamp = (Int32)(DateTime.Now.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+            string fileUrl = Server.MapPath("~/Reports/") + "report_" + s.Subject.Name + "_" + unixTimestamp.ToString() +".xls";
+            xlWorkBook.SaveAs(fileUrl, Excel.XlFileFormat.xlWorkbookNormal, misValue, misValue, misValue, misValue, Excel.XlSaveAsAccessMode.xlExclusive, misValue, misValue, misValue, misValue, misValue);
+            xlWorkBook.Close(true, misValue, misValue);
+            xlApp.Quit();
+
+            releaseObject(xlWorkSheet);
+            releaseObject(xlWorkBook);
+            releaseObject(xlApp);
+            
+            ViewBag.Link = Request.Url.GetLeftPart(UriPartial.Authority)+"fileUrl";
+            return View();
+
+        }
+
+        private void releaseObject(object obj)
+        {
+            try
+            {
+                System.Runtime.InteropServices.Marshal.ReleaseComObject(obj);
+                obj = null;
+            }
+            catch (Exception ex)
+            {
+                obj = null;
+            }
+            finally
+            {
+                GC.Collect();
+            }
         }
 
         protected override void Dispose(bool disposing)
