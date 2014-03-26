@@ -472,7 +472,7 @@ namespace CQA.Controllers
                 //   which were not written by current user, which are in current setup and for active question
                 //2. If answer was skipped remove it from list (if it is not the only one possible answer to be displayed) 
                 //3. With greedy maximization principle, try to find questions which have fewer than 3 evaluations (MinEvaluationLimit)
-                //  and which question was not seen by current user in last day, if such a answer exists ruturn it
+                //  and which question was not seen by current user in last day, if such a answer exists ruturn it (only for user generated answers)
                 //4. If no such a question exists try to find question which have fewer then 16 (FullEvaluationLimit) evaluations with
                 // the same proccedure as before. 
                 //5.If there is no answer sleected in step 4, ignore 1 day rule and try to find
@@ -503,11 +503,12 @@ namespace CQA.Controllers
 
                 if (answers.Any())
                 {
-                    //step 2
+                    //step 2 
                     var bottomGreedy = answers
                                 .Where(a => a.Question.QuestionViews.Where(qv => qv.UserId == userId)
                                     .DefaultIfEmpty(defaultQuestionView).Single().ViewDate.AddDays(1) < DateTime.Now
-                                    && a.Evaluations.Count < MyConsts.MinEvaluationLimit).OrderByDescending(a => a.Evaluations.Count()).ToList();
+                                    && a.Evaluations.Count < MyConsts.MinEvaluationLimit
+                                    && a.AnswerId != null).OrderByDescending(a => a.Evaluations.Count()).ToList();
                     if (bottomGreedy.Any())
                     {
                         int n = bottomGreedy.First().Evaluations.Count();
