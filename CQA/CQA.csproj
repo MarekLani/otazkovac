@@ -206,8 +206,13 @@
     <Compile Include="Migrations\201403232023079_UsersSetupsDateAdded.Designer.cs">
       <DependentUpon>201403232023079_UsersSetupsDateAdded.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201403262013553_ErrorsModelAddedMigration.cs" />
+    <Compile Include="Migrations\201403262013553_ErrorsModelAddedMigration.Designer.cs">
+      <DependentUpon>201403262013553_ErrorsModelAddedMigration.cs</DependentUpon>
+    </Compile>
     <Compile Include="Models\Concept.cs" />
     <Compile Include="Models\DateCreatedModel.cs" />
+    <Compile Include="Models\Error.cs" />
     <Compile Include="Models\MyConsts.cs" />
     <Compile Include="Models\Notifications.cs" />
     <Compile Include="Models\SetupsProbabilityChanges.cs" />
@@ -460,6 +465,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201403232023079_UsersSetupsDateAdded.resx">
       <DependentUpon>201403232023079_UsersSetupsDateAdded.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201403262013553_ErrorsModelAddedMigration.resx">
+      <DependentUpon>201403262013553_ErrorsModelAddedMigration.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\ErrorStrings.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>

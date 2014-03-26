@@ -29,29 +29,39 @@ namespace CQA.Controllers
         [Authorize]
         public ActionResult CreateAnswer(int questionId, string text, int setupId)
         {
-            if (ModelState.IsValid)
+            try
             {
-                RemoveHandledObjectFromSession(false);
-
-                if (db.Answers.Where(a => a.QuestionId == questionId && a.UserId == WebSecurity.CurrentUserId).Any())
+                if (ModelState.IsValid)
                 {
-                    ModelState.AddModelError("", "Na otázku ste už odpovedali");
+                    RemoveHandledObjectFromSession(false);
+
+                    if (db.Answers.Where(a => a.QuestionId == questionId && a.UserId == WebSecurity.CurrentUserId).Any())
+                    {
+                        ModelState.AddModelError("", "Na otázku ste už odpovedali");
+                        return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest);
+                    }
+
+                    var answer = new Answer(questionId, HttpUtility.HtmlDecode(text), WebSecurity.CurrentUserId, setupId);
+                    db.Answers.Add(answer);
+                    db.SaveChanges();
+
+                    UserMadeAction(UserActionType.Answering, 0, questionId, WebSecurity.CurrentUserId);
+                    UserSeenQuestion(questionId, WebSecurity.CurrentUserId);
+
+                    object result = new { answerText = text };
+                    return Json(result);
+                }
+                else
+                {
                     return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest);
                 }
-
-                var answer = new Answer(questionId, HttpUtility.HtmlDecode(text), WebSecurity.CurrentUserId, setupId);
-                db.Answers.Add(answer);
-                db.SaveChanges();
-
-                UserMadeAction(UserActionType.Answering, 0, questionId, WebSecurity.CurrentUserId);
-                UserSeenQuestion(questionId, WebSecurity.CurrentUserId);
-
-                object result = new { answerText = text };
-                return Json(result);
             }
-            else
+            catch (Exception e)
             {
-                return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest);
+                Error error = new Error(UserActionType.Answering, HttpUtility.HtmlEncode(text), e.Message);
+                db.Errors.Add(error);
+                db.SaveChanges();
+                return new HttpStatusCodeResult((int)HttpStatusCode.InternalServerError);
             }
         }
 
@@ -59,26 +69,36 @@ namespace CQA.Controllers
         [ValidateInput(false)]
         public ActionResult ExternCreateAnswer()
         {
-            Answer ans = new JavaScriptSerializer().Deserialize<Answer>(Request.Form["json"]);
-
-            if (!db.UserProfiles.Where(u => u.UserId == ans.UserId).Any() ||
-                db.Answers.Where(a => a.QuestionId == ans.QuestionId && a.UserId == ans.UserId).Any())
+            try
             {
-                return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest);
+                Answer ans = new JavaScriptSerializer().Deserialize<Answer>(Request.Form["json"]);
+
+                if (!db.UserProfiles.Where(u => u.UserId == ans.UserId).Any() ||
+                    db.Answers.Where(a => a.QuestionId == ans.QuestionId && a.UserId == ans.UserId).Any())
+                {
+                    return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest);
+                }
+
+                ans.Text = HttpUtility.HtmlEncode(ans.Text).Replace("\"", "'");
+
+                db.Answers.Add(ans);
+                db.SaveChanges();
+
+                UserMadeAction(UserActionType.Answering, 0, ans.QuestionId, (int)ans.UserId);
+                UserSeenQuestion(ans.QuestionId, (int)ans.UserId);
+
+                Question que = db.Questions.Single(q => q.QuestionId == ans.QuestionId);
+
+                object result = new { answerText = HttpUtility.HtmlDecode(ans.Text), answerId = ans.AnswerId, questionId = ans.QuestionId, questionFileId = que.QuestionFileId };
+                return Json(result);
             }
-
-            ans.Text = HttpUtility.HtmlEncode(ans.Text).Replace("\"", "'");
-
-            db.Answers.Add(ans);
-            db.SaveChanges();
-
-            UserMadeAction(UserActionType.Answering, 0, ans.QuestionId, (int)ans.UserId);
-            UserSeenQuestion(ans.QuestionId, (int)ans.UserId);
-
-            Question que = db.Questions.Single(q => q.QuestionId == ans.QuestionId);
-
-            object result = new { answerText = HttpUtility.HtmlDecode(ans.Text), answerId = ans.AnswerId, questionId = ans.QuestionId, questionFileId = que.QuestionFileId };
-            return Json(result);
+            catch (Exception e)
+            {
+                Error error = new Error(UserActionType.Answering, HttpUtility.HtmlEncode(Request.Form["json"].ToString()), e.Message);
+                db.Errors.Add(error);
+                db.SaveChanges();
+                return new HttpStatusCodeResult((int)HttpStatusCode.InternalServerError);
+            }
         }  
 
         [HttpPost]
@@ -86,62 +106,80 @@ namespace CQA.Controllers
         [Authorize]
         public ActionResult CreateEvaluation(int answerId, int value)
         {
-            if (ModelState.IsValid)
+            try
             {
-                RemoveHandledObjectFromSession(true);
-
-                if (db.Ratings.Where(a => a.AnswerId == answerId && a.UserId == WebSecurity.CurrentUserId).Any())
+                if (ModelState.IsValid)
                 {
-                    ModelState.AddModelError("", "Odpoveď ste už hodnotili");
-                    return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest);
+                    RemoveHandledObjectFromSession(true);
+
+                    if (db.Ratings.Where(a => a.AnswerId == answerId && a.UserId == WebSecurity.CurrentUserId).Any())
+                    {
+                        ModelState.AddModelError("", "Odpoveď ste už hodnotili");
+                        return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest);
+                    }
+
+                    //Notifications
+                    Answer answer = db.Answers.Find(answerId);
+                    CreateNotifications(answer, NotificationType.NewEvaluation, WebSecurity.CurrentUserId);
+
+                    var e = new Evaluation(WebSecurity.CurrentUserId, answerId, (double)value / 100);
+                    db.Ratings.Add(e);
+                    db.SaveChanges();
+
+                    //Mark action
+                    UserMadeAction(UserActionType.Evaluation, answerId, 0, WebSecurity.CurrentUserId);
+                    //Mark question as seen
+                    UserSeenQuestion(answer.QuestionId, WebSecurity.CurrentUserId);
+
+                    return Json(new { avgEval = answer.GetAvgEvaluation(), evalsCount = answer.Evaluations.Count(), comments = answer.GetAnswerComments() });
                 }
 
-                //Notifications
-                Answer answer = db.Answers.Find(answerId);
-                CreateNotifications(answer, NotificationType.NewEvaluation, WebSecurity.CurrentUserId);
-
-                var e = new Evaluation(WebSecurity.CurrentUserId, answerId, (double)value / 100);
-                db.Ratings.Add(e);
-                db.SaveChanges();
-
-                //Mark action
-                UserMadeAction(UserActionType.Evaluation, answerId, 0, WebSecurity.CurrentUserId);
-                //Mark question as seen
-                UserSeenQuestion(answer.QuestionId, WebSecurity.CurrentUserId);
-                
-                return Json(new { avgEval = answer.GetAvgEvaluation(), evalsCount = answer.Evaluations.Count(), comments = answer.GetAnswerComments() });
+                return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest);
             }
-
-            return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest);
+            catch (Exception e)
+            {
+                Error error = new Error(UserActionType.Evaluation, "", e.Message);
+                db.Errors.Add(error);
+                db.SaveChanges();
+                return new HttpStatusCodeResult((int)HttpStatusCode.InternalServerError);
+            }
         }
 
         [HttpPost]
         public ActionResult ExternCreateEvaluation()
         {
-
-            Evaluation eval = new JavaScriptSerializer().Deserialize<Evaluation>(Request.Form["json"]);
-            eval.Value = eval.Value / (double)100;
-
-            if (!db.UserProfiles.Where(u => u.UserId == eval.UserId).Any() || 
-                db.Ratings.Where(a => a.AnswerId == eval.AnswerId && a.UserId == eval.UserId).Any())
+            try
             {
-                return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest);
+                Evaluation eval = new JavaScriptSerializer().Deserialize<Evaluation>(Request.Form["json"]);
+                eval.Value = eval.Value / (double)100;
+
+                if (!db.UserProfiles.Where(u => u.UserId == eval.UserId).Any() ||
+                    db.Ratings.Where(a => a.AnswerId == eval.AnswerId && a.UserId == eval.UserId).Any())
+                {
+                    return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest);
+                }
+
+                //Notifications
+                Answer answer = db.Answers.Find(eval.AnswerId);
+                CreateNotifications(answer, NotificationType.NewEvaluation, eval.UserId);
+
+                db.Ratings.Add(eval);
+                db.SaveChanges();
+
+                //Mark action
+                UserMadeAction(UserActionType.Evaluation, eval.AnswerId, 0, eval.UserId);
+                //Mark question as seen
+                UserSeenQuestion(eval.Answer.QuestionId, eval.UserId);
+
+                return Json(new { avgEval = answer.GetAvgEvaluation(), evalsCount = answer.Evaluations.Count(), comments = answer.GetAnswerComments(), answerId = eval.AnswerId });
             }
-
-            //Notifications
-            Answer answer = db.Answers.Find(eval.AnswerId);
-            CreateNotifications(answer, NotificationType.NewEvaluation, eval.UserId);
-
-            db.Ratings.Add(eval);
-            db.SaveChanges();
-
-            //Mark action
-            UserMadeAction(UserActionType.Evaluation, eval.AnswerId, 0, eval.UserId);
-            //Mark question as seen
-            UserSeenQuestion(eval.Answer.QuestionId, eval.UserId);
-
-            return Json(new { avgEval = answer.GetAvgEvaluation(), evalsCount = answer.Evaluations.Count(), comments = answer.GetAnswerComments(), answerId = eval.AnswerId });
-            
+            catch (Exception e)
+            {
+                Error error = new Error(UserActionType.Evaluation, HttpUtility.HtmlEncode(Request.Form["json"].ToString()), e.Message);
+                db.Errors.Add(error);
+                db.SaveChanges();
+                return new HttpStatusCodeResult((int)HttpStatusCode.InternalServerError);
+            }
         }
 
         [HttpPost]
@@ -150,10 +188,53 @@ namespace CQA.Controllers
         [ValidateInput(false)]
         public ActionResult CreateComment(Comment comment)
         {
-            if (ModelState.IsValid)
+            try
             {
-                comment.UserId = WebSecurity.CurrentUserId;
-                comment.Text = HttpUtility.HtmlEncode(comment.Text).Replace("\"","'");
+                if (ModelState.IsValid)
+                {
+                    comment.UserId = WebSecurity.CurrentUserId;
+                    comment.Text = HttpUtility.HtmlEncode(comment.Text).Replace("\"", "'");
+                    db.Comments.Add(comment);
+                    db.SaveChanges();
+
+                    Answer ans = db.Answers.Single(a => a.AnswerId == comment.AnswerId);
+                    //Create Notification
+                    CreateNotifications(ans, NotificationType.NewComment, comment.UserId);
+
+                    //Mark action
+                    UserMadeAction(UserActionType.Commented, comment.AnswerId, 0, WebSecurity.CurrentUserId);
+                    ViewComment vc;
+                    if (comment.Anonymous)
+                        vc = new ViewComment(comment.Text, "Anonym", comment.AnswerId);
+                    else
+                        vc = new ViewComment(comment.Text, db.UserProfiles.Find(comment.UserId).RealName, comment.AnswerId);
+
+                    vc.Text = HttpUtility.HtmlDecode(vc.Text);
+
+                    return Json(vc);
+
+                }
+
+                return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest);
+            }
+            catch (Exception e)
+            {
+                Error error = new Error(UserActionType.Commented, HttpUtility.HtmlEncode(comment.Text), e.Message);
+                db.Errors.Add(error);
+                db.SaveChanges();
+                return new HttpStatusCodeResult((int)HttpStatusCode.InternalServerError);
+            }
+        }
+
+        [HttpPost]
+        [ValidateInput(false)]
+        public ActionResult ExternCreateComment()
+        {
+            try
+            {
+                Comment comment = new JavaScriptSerializer().Deserialize<Comment>(Request.Form["json"]);
+                comment.Text = HttpUtility.HtmlEncode(comment.Text).Replace("\"", "'");
+
                 db.Comments.Add(comment);
                 db.SaveChanges();
 
@@ -162,46 +243,22 @@ namespace CQA.Controllers
                 CreateNotifications(ans, NotificationType.NewComment, comment.UserId);
 
                 //Mark action
-                UserMadeAction(UserActionType.Commented, comment.AnswerId, 0, WebSecurity.CurrentUserId);
+                UserMadeAction(UserActionType.Commented, comment.AnswerId, 0, comment.UserId);
                 ViewComment vc;
-                if(comment.Anonymous)
-                    vc = new ViewComment( comment.Text, "Anonym", comment.AnswerId);
+                if (comment.Anonymous)
+                    vc = new ViewComment(comment.Text, "Anonym", comment.AnswerId);
                 else
                     vc = new ViewComment(comment.Text, db.UserProfiles.Find(comment.UserId).RealName, comment.AnswerId);
-
-                vc.Text = HttpUtility.HtmlDecode(vc.Text); 
-
+                vc.Text = HttpUtility.HtmlDecode(vc.Text).Replace("\"", "'");
                 return Json(vc);
-
             }
-
-            return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest);
-        }
-
-        [HttpPost]
-        [ValidateInput(false)]
-        public ActionResult ExternCreateComment()
-        {
-
-            Comment comment = new JavaScriptSerializer().Deserialize<Comment>(Request.Form["json"]);
-            comment.Text = HttpUtility.HtmlEncode(comment.Text).Replace("\"", "'");
-
-            db.Comments.Add(comment);
-            db.SaveChanges();
-
-            Answer ans = db.Answers.Single(a => a.AnswerId == comment.AnswerId);
-            //Create Notification
-            CreateNotifications(ans, NotificationType.NewComment, comment.UserId);
-
-            //Mark action
-            UserMadeAction(UserActionType.Commented, comment.AnswerId, 0, comment.UserId);
-            ViewComment vc;
-            if (comment.Anonymous)
-                vc = new ViewComment(comment.Text, "Anonym", comment.AnswerId);
-            else
-                vc = new ViewComment(comment.Text, db.UserProfiles.Find(comment.UserId).RealName, comment.AnswerId);
-            vc.Text = HttpUtility.HtmlDecode(vc.Text).Replace("\"", "'");
-            return Json(vc);
+            catch (Exception e)
+            {
+                Error error = new Error(UserActionType.Commented, HttpUtility.HtmlEncode(Request.Form["json"].ToString()), e.Message);
+                db.Errors.Add(error);
+                db.SaveChanges();
+                return new HttpStatusCodeResult((int)HttpStatusCode.InternalServerError);
+            }
         }
 
 

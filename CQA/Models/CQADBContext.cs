@@ -26,6 +26,7 @@ namespace CQA.Models
         public DbSet<QuestionView> QuestionViews { get; set; }
         public DbSet<Notification> Notifications { get; set; }
         public DbSet<Concept> Concepts { get; set; }
+        public DbSet<Error> Errors { get; set; }
         
         //Not needed right now
         //public DbSet<SetupsStatistics> SetupsStatistics { get; set; }

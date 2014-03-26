@@ -343,22 +343,31 @@ namespace CQA.Controllers
                     string[] concepts = values[7].Split(',');
                     var conceptsList = concepts.ToList();
                     conceptsList.RemoveAt(concepts.Count() - 1);
+                    Concept c;
                     foreach (var concept in conceptsList)
                     {
 
-                        if (!db.Concepts.Where(c => c.SubjectId == subjectId && c.Value == concept).ToList().Any())
+                        if (!db.Concepts.Where(con => con.SubjectId == subjectId && con.Value == concept).ToList().Any())
                         {
-                            Concept c = new Concept();
+                            c = new Concept();
                             c.Value = concept;
                             c.SubjectId = subjectId;
                             db.Concepts.Add(c);
                             db.SaveChanges();
 
-                            q.Concepts.Add(c);
-                            db.Entry(q).State = EntityState.Modified;
-                            db.SaveChanges();
+                            if (!q.Concepts.Contains(c))
+                            {
+                                q.Concepts.Add(c);
+                                db.Entry(q).State = EntityState.Modified;
+                                db.SaveChanges();
+                            }
                         }
-                        else q.Concepts.Add(db.Concepts.Where(c => c.SubjectId == subjectId && c.Value == concept).First());
+                        else
+                        {
+                            c = db.Concepts.Where(con => con.SubjectId == subjectId && con.Value == concept).First();
+                            if (!q.Concepts.Contains(c))
+                                q.Concepts.Add(c);
+                        }
                     }
                 }
 
