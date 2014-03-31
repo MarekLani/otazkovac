@@ -204,12 +204,18 @@ namespace CQA.Jobs
            k = 3;
            while (start.AddDays(7) < DateTime.Now)
            {
-               writer.MergeCells(GetCellReference(k, 1),GetCellReference(k+1, 1));
+               writer.MergeCells(GetCellReference(k, 1),GetCellReference(k+7, 1));
                start = start.AddDays(7);
                writer.PasteText(GetCellReference(k,1), "k " + start.ToString());
                writer.PasteText(GetCellReference(k,2),"# Hodnotení");
-               writer.PasteText(GetCellReference(k+1,2),"# Odpovedí");
-               k += 2;
+               writer.PasteText(GetCellReference(k + 1, 2), "% Hodnotení");
+               writer.PasteText(GetCellReference(k + 2, 2), "# Preskočení hodnotenia");
+               writer.PasteText(GetCellReference(k + 3, 2), "% Preskočení hodnotenia");
+               writer.PasteText(GetCellReference(k + 4, 2), "# Odpovedí");
+               writer.PasteText(GetCellReference(k + 5, 2), "% Odpovedí");
+               writer.PasteText(GetCellReference(k + 6, 2), "# Preskočení odpovedania");
+               writer.PasteText(GetCellReference(k + 7, 2), "% Preskočení odpovedania");
+               k += 8;
            }
 
            writer.PasteText(GetCellReference(1,2),"Login");
@@ -226,9 +232,42 @@ namespace CQA.Jobs
                while (start.AddDays(7) < DateTime.Now)
                {
                    start = start.AddDays(7);
-                   writer.PasteText(GetCellReference(j,i),us.User.Evaluations.Where(e => e.DateCreated <= start && e.Answer.SetupId == setupId).ToList().Count.ToString());
-                   writer.PasteText(GetCellReference(j+1,i), us.User.Answers.Where(a => a.DateCreated <= start && a.SetupId == setupId).ToList().Count.ToString());
-                   j += 2;
+                   //TODO solve setupID add to action table
+                   int evalsCount = us.User.Evaluations.Where(e => e.DateCreated <= start && e.Answer.SetupId == setupId).ToList().Count;
+                   int evalsSkipCount = us.User.UsersActions.Where(ua => ua.DateCreated <= start && ua.Action == UserActionType.SkippedEvaluation).ToList().Count;
+                   int evalsActionsTotal = evalsCount + evalsSkipCount;
+                   writer.PasteText(GetCellReference(j,i), evalsCount.ToString());
+                   //percent
+                   if(evalsCount == 0)
+                        writer.PasteText(GetCellReference(j+1, i), "0");
+                   else
+                       writer.PasteText(GetCellReference(j+1, i), ((double)evalsCount/(double)evalsActionsTotal).ToString("#.###"));
+
+                   writer.PasteText(GetCellReference(j+2, i), evalsSkipCount.ToString());
+                   //percent
+                   if (evalsSkipCount == 0)
+                       writer.PasteText(GetCellReference(j + 3, i), "0");
+                   else
+                       writer.PasteText(GetCellReference(j + 3, i), ((double)evalsSkipCount / (double)evalsActionsTotal).ToString("#.###"));
+
+                   int ansCount = us.User.Answers.Where(a => a.DateCreated <= start && a.SetupId == setupId).ToList().Count;
+                   int ansSkipCount = us.User.UsersActions.Where(ua => ua.DateCreated <= start && ua.Action == UserActionType.SkippedAnswering).ToList().Count;
+                   int ansActionsTotal = ansCount + ansSkipCount;
+                   writer.PasteText(GetCellReference(j+4,i), ansCount.ToString());
+                   //percent
+                   if (ansCount == 0)
+                       writer.PasteText(GetCellReference(j + 5, i), "0");
+                   else
+                       writer.PasteText(GetCellReference(j + 5, i), ((double)ansCount / (double)ansActionsTotal).ToString("#.###"));
+
+                   writer.PasteText(GetCellReference(j + 6, i), ansSkipCount.ToString());
+                   //percent
+                   if (ansSkipCount == 0)
+                       writer.PasteText(GetCellReference(j + 7, i), "0");
+                   else
+                       writer.PasteText(GetCellReference(j + 7, i), ((double)ansSkipCount / (double)ansActionsTotal).ToString("#.###"));
+
+                   j += 8;
                }
                j = 3;
                i++;
@@ -250,10 +289,11 @@ namespace CQA.Jobs
 
             StringBuilder sb = new StringBuilder();
 
-            if (x / 26 == 0)
-                return alpha[x - 1] + y.ToString();
-            else
-                return alpha[(x / 26) - 1] + alpha[(x % 26) - 1] + y.ToString();
+            if ((x-1) / 26 == 0 )
+                return alpha[x - 1].ToString() + y.ToString();
+            else{
+                return alpha[(x / 26) - 1].ToString() + alpha[(x % 26)].ToString() + y.ToString();
+            }
 
 
         }
