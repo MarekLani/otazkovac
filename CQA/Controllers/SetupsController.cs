@@ -243,8 +243,13 @@ namespace CQA.Controllers
             return View();
         }
 
-        public ActionResult GetEvaluatedAnswers()
+        public void GetEvaluatedAnswers()
         {
+            Response.Clear();
+            Response.ContentType = "text/csv";
+            Response.AppendHeader("Content-Disposition",
+                            string.Format("attachment; filename={0}.csv", DateTime.Now));
+            
             var newAns = db.Answers.Where(a => a.Evaluations.Count >= 16).ToList();
             using (StreamWriter sw = new StreamWriter(Response.OutputStream))
             {
@@ -255,8 +260,7 @@ namespace CQA.Controllers
                     sw.WriteLine();
                 }
             }
-            Response.Flush();
-            return new HttpStatusCodeResult(HttpStatusCode.OK);
+            Response.End();
 
         }
 
