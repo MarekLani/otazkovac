@@ -242,6 +242,17 @@ namespace CQA.Controllers
             return View();
         }
 
+        public ActionResult GetEvaluatedAnswers()
+        {
+            using (StreamWriter sw = new StreamWriter(Response.OutputStream))
+            {
+
+            }
+            Response.Flush();
+            return new HttpStatusCodeResult(HttpStatusCode.OK);
+
+        }
+
         protected override void Dispose(bool disposing)
         {
             db.Dispose();
