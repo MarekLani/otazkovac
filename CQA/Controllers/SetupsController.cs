@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.Entity;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
@@ -244,9 +245,15 @@ namespace CQA.Controllers
 
         public ActionResult GetEvaluatedAnswers()
         {
+            var newAns = db.Answers.Where(a => a.Evaluations.Count >= 16).ToList();
             using (StreamWriter sw = new StreamWriter(Response.OutputStream))
             {
-
+                sw.WriteLine("QuestionId;AnswerId;Question;Image;Answer");
+                foreach (var a in newAns)
+                {
+                    sw.Write(a.QuestionId.ToString() + ";" + a.AnswerId.ToString() + ";" + a.Question.QuestionText + ";" + a.Question.ImageUri + ";" + a.Text);
+                    sw.WriteLine();
+                }
             }
             Response.Flush();
             return new HttpStatusCodeResult(HttpStatusCode.OK);
