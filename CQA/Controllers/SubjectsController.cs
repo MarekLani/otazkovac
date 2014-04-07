@@ -237,7 +237,7 @@ namespace CQA.Controllers
             public string value;
         }
 
-        public ActionResult SearchConcepts(int subjectId, string term, int questionId)
+        public ActionResult SearchConceptsForQuestion(int subjectId, string term, int questionId)
         {
             List<AutocompletedConcepts> result = new List<AutocompletedConcepts>();
             Question que = db.Questions.Find(questionId);
@@ -251,6 +251,21 @@ namespace CQA.Controllers
                     c.value = concept.Value;
                     result.Add(c);
                 }
+            }
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult SearchConcepts(int subjectId, string term)
+        {
+            List<AutocompletedConcepts> result = new List<AutocompletedConcepts>();
+
+            foreach (var concept in db.Concepts.Where(c => c.Value.StartsWith(term) && c.SubjectId == subjectId))
+            {
+                    AutocompletedConcepts c = new AutocompletedConcepts();
+                    c.id = concept.ConceptId;
+                    c.label = concept.Value;
+                    c.value = concept.Value;
+                    result.Add(c);
             }
             return Json(result, JsonRequestBehavior.AllowGet);
         }
@@ -382,6 +397,11 @@ namespace CQA.Controllers
         public ActionResult Questions(int id)
         {
             ViewData["SubjectId"] = id;
+            int week = 0;
+            DateTime start = db.Setups.Where(s => s.SubjectId == id && s.Active).OrderByDescending(s => s.SetupId).First().StartDate;
+            while ((start = start.AddDays(7)) < DateTime.Now)
+                week++;
+            ViewData["CurrentWeek"] = week;
             var subject = db.Subjects.Find(id);
             ViewData["SubjectName"] = subject.Name;
             var questions = db.Subjects.Find(id).Questions;

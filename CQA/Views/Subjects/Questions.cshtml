@@ -10,17 +10,51 @@
 
 <h2>Otázky pre predmet  @(ViewData["SubjectName"])</h2>
 
-<form action="@Url.Action("AddQuestions", "Subjects")" method="post" enctype="multipart/form-data" >
+<form action="@Url.Action("AddQuestions", "Subjects")" method="post" enctype="multipart/form-data" style="float: left" >
     <input name="file" type="file" accept=".csv" />
     <input type="hidden" name="subjectId" value="@(ViewData["SubjectId"])" />
     <button type="submit" class="btn btn-primary">Pridať otázky</button>
 </form>
-
+<div style="float:right">
+    <span style="float:left; line-height: 40px; font-size:20px; margin-right: 10px; vertical-align:central">Filter:</span>
+    <div style="float:left">
+        <input type="checkbox" name="active" id="activeCheckbox" autocomplete="off" style="margin-left: 20px"/>
+        <label for="active">aktívne</label>
+    </div>
+    <div style="float:left; margin-left: 10px">
+        <input type="checkbox" checked="checked" name="all" id="all" style="margin-left: 20px" />
+        <label for="all" >všetky</label>
+     </div>
+    <div style="float:left; margin-left: 10px">
+        <input type="text" id="conceptsFilter"  autocomplete="off" name="conceptsFilter" />
+        <label for="conceptsFilter" style="margin-left: 50px">Podľa konceptu</label>
+     </div>
+</div>
+<div style="clear: both" />
+<hr />
 
 @foreach (var item in Model)
 {
     <div class="questionInList">
-        <div style="float: left; margin-right: 20px;">
+        @{
+            bool t = false;
+            foreach (var c in item.Concepts)
+            {
+                if (c.ActiveWeeksList.Contains(Convert.ToInt32(ViewData["CurrentWeek"])))
+                {
+                    t = true;
+                }
+            }
+            if (t)
+            {
+                <input type="hidden" class="active" value="1" />
+            }
+            else{
+                <input type="hidden" class="active" value="0" />
+            }
+            
+        }
+        <!--<div style="float: left; margin-right: 20px;">
             <div style="text-align: center">@item.Answers.Count()</div>
             <div>
                 @if (item.Answers.Count() == 1)
@@ -34,8 +68,8 @@
                     @Html.Raw("Odpovedí")
                 }
             </div>
-        </div>
-        <span style="line-height: 40px; font-size: 10px; vertical-align: central">
+        </div>-->
+        <!-- <span style="line-height: 40px; font-size: 10px; vertical-align: central">
             @if (@item.IsActive)
             {
                 @("Aktívna")
@@ -44,9 +78,13 @@
             {
                 @("Neaktívna")
             }
-        </span>
-        <span style="line-height: 40px; font-size: 20px; vertical-align: central">@item.QuestionText </span>
-        <div class="conceptList">
+        </span>-->
+        <span style="line-height: 16px; font-size: 14px; vertical-align: central">@item.QuestionText </span>
+        @if (item.ImageUri != "" && item.ImageUri != null)
+        {
+        <span> <a target="_blank" href="@(item.ImageUri)" style="color:darkblue">( obr.)</a> </span>
+        }
+        <div class="conceptList" style="font-size: 12px;">
             Priradené koncepty: 
             @foreach (var concept in item.Concepts)
             {
@@ -57,9 +95,10 @@
                     <b class="removeConcept" style="cursor:pointer">x</b>
                 </span>
             }
+            <a class="showAddConcept" style="cursor:pointer; margin-left:10px;">Priradiť koncept</a>
         </div>
 
-        <form>
+        <form class="addConcept" style="display:none">
             <input name="questionId" class="questionId" type="hidden" value="@(item.QuestionId)" />
             <input class="concepts" />
         </form>
@@ -68,7 +107,7 @@
 
 <br />
 <div>
-    @Html.ActionLink("Späť na setupy", "Index")
+    @Html.ActionLink("Späť na predmety", "Index")
 </div>
 
 @section Scripts {
@@ -76,11 +115,17 @@
     @Scripts.Render("~/bundles/jqueryval")
     <script>
         $(document).ready(function () {
+
+            $(".showAddConcept").click(function (event) {
+                event.preventDefault();
+                $(this).parent().siblings(".addConcept").slideToggle();
+            });
+
             $(".concepts").each(function () {
                 var thisEl = $(this);
                 thisEl.autocomplete({
                     source: function (request, response) {
-                        $.getJSON("@Url.Action("SearchConcepts", "Subjects")?subjectId=@(ViewData["SubjectId"])&term=" + request.term + "&questionId=" + thisEl.siblings(".questionId").val(),
+                        $.getJSON("@Url.Action("SearchConceptsForQuestion", "Subjects")?subjectId=@(ViewData["SubjectId"])&term=" + request.term + "&questionId=" + thisEl.siblings(".questionId").val(),
                               response);
                     },
                     minLength: 2,
@@ -96,6 +141,58 @@
                 }
                 });
             });
+
+            $("#conceptsFilter").autocomplete({
+                source: function (request, response) {
+                    $.getJSON("@Url.Action("SearchConcepts", "Subjects")?subjectId=@(ViewData["SubjectId"])&term=" + request.term ,
+                              response);
+                    },
+                    minLength: 2,
+                    select: function (event, ui) {
+                        $(".questionInList").each(function () {
+                            $(this).show();
+                        });
+                        $(".questionInList").each(function()
+                        {
+                            var has = false;
+                            $(this).find(".concept").each(function()
+                            {
+                                if($(this).html() == ui.item.label)
+                                    has = true;
+                            });
+                            if (!has)
+                                $(this).hide();
+                        });
+                    }
+            });
+
+            $("#all").click(function () {
+                if ($(this).is(':checked')) {
+                    $('#activeCheckbox').prop('checked', false);
+                    $(".questionInList").each(function()
+                    {
+                        $(this).show()
+                        $("#conceptsFilter").val("")
+                    })
+                }
+            })
+
+            $("#activeCheckbox").click(function () {
+                if ($(this).is(':checked')) {
+                    $('#all').prop('checked', false);
+                    $(".questionInList").each(function () {
+                        if ($(this).find(".active").val() != 1)
+                            $(this).hide();
+                    })
+                }
+                else {
+                    $('#all').prop('checked', true);
+                    $(".questionInList").each(function () {
+                        $(this).show()
+                        $("#conceptsFilter").val("")
+                    })
+                }
+            })
 
             $(document).on("click", ".removeConcept", function (event) {
 
