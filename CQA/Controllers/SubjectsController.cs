@@ -399,13 +399,57 @@ namespace CQA.Controllers
             ViewData["SubjectId"] = id;
             int week = 0;
             DateTime start = db.Setups.Where(s => s.SubjectId == id && s.Active).OrderByDescending(s => s.SetupId).First().StartDate;
-            while ((start = start.AddDays(7)) < DateTime.Now)
+            while ((start = start.AddDays(7)) < DateTime.Now && week < 13)
                 week++;
             ViewData["CurrentWeek"] = week;
             var subject = db.Subjects.Find(id);
             ViewData["SubjectName"] = subject.Name;
             var questions = db.Subjects.Find(id).Questions;
             return View(questions);
+        }
+
+        [HttpGet]
+        public void CreateActiveQuestionsFile(int id)
+        {
+            int week = 0;
+            DateTime start = db.Setups.Where(s => s.SubjectId == id && s.Active).OrderByDescending(s => s.SetupId).First().StartDate;
+            while ((start = start.AddDays(7)) < DateTime.Now && week < 13)
+                week++;
+            var subject = db.Subjects.Find(id);
+            var questions = db.Subjects.Find(id).Questions;
+            using (StreamWriter sw = new StreamWriter(Server.MapPath("~/Reports/") + "activeQuestions.csv", false))
+            {
+
+                sw.WriteLine("Otázka; Priradené koncepty");
+                
+                foreach (Question q in questions)
+                {
+                    bool a = false;
+                    foreach (var c in q.Concepts)
+                    {
+                        if (c.ActiveWeeksList.Contains(week))
+                        {
+                            a = true;
+                            break;
+                        }   
+                    }
+                    if (a)
+                    {
+                        sw.Write(q.QuestionText + ";");
+                        StringBuilder sb = new StringBuilder();
+
+                        foreach (var c in q.Concepts)
+                            if (c != q.Concepts.Last())
+                                sb.Append(c.Value + ",");
+                            else
+                                sb.Append(c.Value);
+                        sw.WriteLine(sb.ToString());
+                    }
+                    
+                    
+                }
+            }
+            RedirectToAction("Questions");
         }
 
         private void FillupQuestion(ref Question q, string[] values)
