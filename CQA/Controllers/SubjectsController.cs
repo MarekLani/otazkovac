@@ -420,7 +420,7 @@ namespace CQA.Controllers
             using (StreamWriter sw = new StreamWriter(Server.MapPath("~/Reports/") + "activeQuestions.csv", false))
             {
 
-                sw.WriteLine("Otázka; Priradené koncepty");
+                sw.WriteLine("Otázka; Obrázok; Priradené koncepty");
                 
                 foreach (Question q in questions)
                 {
@@ -435,7 +435,7 @@ namespace CQA.Controllers
                     }
                     if (a)
                     {
-                        sw.Write(q.QuestionText + ";");
+                        sw.Write(q.QuestionText + ";" + q.ImageUri + ";");
                         StringBuilder sb = new StringBuilder();
 
                         foreach (var c in q.Concepts)
