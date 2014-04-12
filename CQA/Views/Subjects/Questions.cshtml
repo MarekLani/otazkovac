@@ -103,6 +103,16 @@
             <input class="concepts" />
         </form>
         <div style="margin-top:10px;">
+
+            <!-- TODO apply setup selection or move view into setups-->
+            @{
+                int n = 0;
+                foreach(var a in item.Answers)
+                {
+                    n += a.Evaluations.Count();
+                }
+            }
+        Hodnotení vykonaných nad otázkov: @n <br />    
         Odpovedí spolu: @item.Answers.Count() z toho nových: @item.Answers.Where(an => an.UserId != null).ToList().Count()
         <button class="showAnswers" style="padding:2; font-size: 12px; font-weight:normal">Zobraziť odpovede</button>
         <div class="answers" style="display:none">
@@ -110,13 +120,13 @@
             @foreach (var a in item.Answers.Where(an => an.UserId != null))
             {
                 <div class="answer" style="margin-left:10px; ">
-                    @Html.Raw(HttpUtility.HtmlDecode(a.Text)) <span style="color:#168813">(new)</span>
+                    @Html.Raw(HttpUtility.HtmlDecode(a.Text)) (@a.Evaluations.Count() hodnot.) <span style="color:#168813">(new)</span>
                 </div>
             }
             @foreach (var a in item.Answers.Where(an => an.UserId == null))
             {
                 <div class="answer" style="margin-left:10px;">
-                    @Html.Raw(HttpUtility.HtmlDecode(a.Text)) <span style="color:#b7170b">(old)</span>
+                    @Html.Raw(HttpUtility.HtmlDecode(a.Text)) (@a.Evaluations.Count() hodnot.) <span style="color:#b7170b">(old)</span>
                 </div>
             }
         </div>
