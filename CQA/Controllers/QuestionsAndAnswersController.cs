@@ -565,7 +565,7 @@ namespace CQA.Controllers
                                 .Where(a => a.Question.QuestionViews.Where(qv => qv.UserId == userId)
                                     .DefaultIfEmpty(defaultQuestionView).Single().ViewDate.AddDays(1) < DateTime.Now
                                     && a.Evaluations.Count < MyConsts.MinEvaluationLimit
-                                    && a.AnswerId != null).OrderByDescending(a => a.Evaluations.Count()).ToList();
+                                    && a.UserId != null).OrderByDescending(a => a.Evaluations.Count()).ToList();
                     if (bottomGreedy.Any())
                     {
                         int n = bottomGreedy.First().Evaluations.Count();
