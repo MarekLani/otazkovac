@@ -79,12 +79,12 @@
                 @("Neaktívna")
             }
         </span>-->
-        <span style="line-height: 16px; font-size: 14px; vertical-align: central">@item.QuestionText </span>
+        <span style="line-height: 16px; font-size: 16px; vertical-align: central">@item.QuestionText </span>
         @if (item.ImageUri != "" && item.ImageUri != null)
         {
-        <span> <a target="_blank" href="@(item.ImageUri)" style="color:darkblue">( obr.)</a> </span>
+            <div style="margin:10px"><img src="@(item.ImageUri)" style="max-width:600px"/></div>
         }
-        <div class="conceptList" style="font-size: 12px;">
+        <div class="conceptList" style="font-size: 14px; margin-top:10px;">
             Priradené koncepty: 
             @foreach (var concept in item.Concepts)
             {
@@ -102,6 +102,25 @@
             <input name="questionId" class="questionId" type="hidden" value="@(item.QuestionId)" />
             <input class="concepts" />
         </form>
+        <div style="margin-top:10px;">
+        Odpovedí spolu: @item.Answers.Count() z toho nových: @item.Answers.Where(an => an.UserId != null).ToList().Count()
+        <button class="showAnswers" style="padding:2; font-size: 12px; font-weight:normal">Zobraziť odpovede</button>
+        <div class="answers" style="display:none">
+            <h5>Odpovede:</h5>
+            @foreach (var a in item.Answers.Where(an => an.UserId != null))
+            {
+                <div class="answer" style="margin-left:10px; ">
+                    @Html.Raw(HttpUtility.HtmlDecode(a.Text)) <span style="color:#168813">(new)</span>
+                </div>
+            }
+            @foreach (var a in item.Answers.Where(an => an.UserId == null))
+            {
+                <div class="answer" style="margin-left:10px;">
+                    @Html.Raw(HttpUtility.HtmlDecode(a.Text)) <span style="color:#b7170b">(old)</span>
+                </div>
+            }
+        </div>
+            </div>
     </div>
 }
 
@@ -193,6 +212,14 @@
                     })
                 }
             })
+
+            $(".showAnswers").click(function () {
+                $(this).siblings(".answers").toggle();
+                if($(this).html() == "Zobraziť odpovede")
+                    $(this).html("Skryť odpovede")
+                else
+                    $(this).html("Zobraziť odpovede")
+            });
 
             $(document).on("click", ".removeConcept", function (event) {
 
