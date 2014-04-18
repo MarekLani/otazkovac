@@ -79,7 +79,7 @@ namespace CQA.Controllers
                     return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest);
                 }
 
-                ans.Text = HttpUtility.HtmlEncode(ans.Text).Replace("\"", "'");
+                ans.Text = HttpUtility.HtmlEncode(ans.Text);
 
                 db.Answers.Add(ans);
                 db.SaveChanges();
@@ -233,7 +233,7 @@ namespace CQA.Controllers
             try
             {
                 Comment comment = new JavaScriptSerializer().Deserialize<Comment>(Request.Form["json"]);
-                comment.Text = HttpUtility.HtmlEncode(comment.Text).Replace("\"", "'");
+                comment.Text = HttpUtility.HtmlEncode(comment.Text);
 
                 db.Comments.Add(comment);
                 db.SaveChanges();
