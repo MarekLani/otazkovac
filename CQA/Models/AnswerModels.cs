@@ -63,7 +63,7 @@ namespace CQA.Models
             return total / this.Evaluations.Count();
         }
 
-        public List<ViewComment> GetAnswerComments()
+        public List<ViewComment> GetAnswerComments(bool externReq = false)
         {
             CQADBContext db = new CQADBContext();
             List<Comment> comments = this.Comments.ToList();
@@ -76,7 +76,11 @@ namespace CQA.Models
                 else
                     vc = new ViewComment(c.Text, db.UserProfiles.Find(c.UserId).RealName, this.AnswerId);
 
-                vc.Text = HttpUtility.HtmlDecode(vc.Text);
+                if(externReq)
+                    vc.Text = HttpUtility.HtmlDecode(vc.Text).Replace("\"", "'");
+                else
+                    vc.Text = HttpUtility.HtmlDecode(vc.Text);
+                
                 viewComments.Add(vc);
             }
             return viewComments;

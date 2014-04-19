@@ -89,7 +89,7 @@ namespace CQA.Controllers
 
                 Question que = db.Questions.Single(q => q.QuestionId == ans.QuestionId);
 
-                object result = new { answerText = HttpUtility.HtmlDecode(ans.Text), answerId = ans.AnswerId, questionId = ans.QuestionId, questionFileId = que.QuestionFileId };
+                object result = new { answerText = HttpUtility.HtmlDecode(ans.Text).Replace("\"", "'"), answerId = ans.AnswerId, questionId = ans.QuestionId, questionFileId = que.QuestionFileId };
                 return Json(result);
             }
             catch (Exception e)
@@ -171,7 +171,7 @@ namespace CQA.Controllers
                 //Mark question as seen
                 UserSeenQuestion(eval.Answer.QuestionId, eval.UserId);
 
-                return Json(new { avgEval = answer.GetAvgEvaluation(), evalsCount = answer.Evaluations.Count(), comments = answer.GetAnswerComments(), answerId = eval.AnswerId });
+                return Json(new { avgEval = answer.GetAvgEvaluation(), evalsCount = answer.Evaluations.Count(), comments = answer.GetAnswerComments(true), answerId = eval.AnswerId });
             }
             catch (Exception e)
             {
