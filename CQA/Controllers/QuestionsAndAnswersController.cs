@@ -209,7 +209,7 @@ namespace CQA.Controllers
                     else
                         vc = new ViewComment(comment.Text, db.UserProfiles.Find(comment.UserId).RealName, comment.AnswerId);
 
-                    vc.Text = HttpUtility.HtmlDecode(vc.Text);
+                    vc.Text = vc.Text.Replace("&lt;br /&gt;","<br />");
 
                     return Json(vc);
 

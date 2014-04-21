@@ -105,7 +105,7 @@ else
                 </div>
             </div>
 
-            <div class="elipsis">@(a.Question.QuestionText)</div>
+            <div class="elipsis">@Html.Raw(a.Question.QuestionText.Replace("&lt;br /&gt;","<br />"))</div>
             <div class="elipsis" style="border-left: 1px solid lightgrey;">@(a.Text)</div>
             <div class="detail btn" title="Zobraziť detail">
                 ››
@@ -121,7 +121,7 @@ else
                 }
                     
             </div>
-            <div class="answerText"><b>Odpoveď: </b>@(a.Text)</div>
+            <div class="answerText"><b>Odpoveď: </b>@Html.Raw(a.Text.Replace("&lt;br /&gt;","<br />"))</div>
             <div class="textValue"></div>
             <div class="sliderWrap">
                 <div class="ui-widget-content-wrapper" style="width: 100%; margin-top: 25px;">
@@ -185,7 +185,7 @@ else
                                     @(c.Author.RealName + ":")
                                 }
                             </b>
-                            @(c.Text)
+                            @Html.Raw(c.Text.Replace("&lt;br /&gt;","<br />"))
                         </div>
                         }
                     }
