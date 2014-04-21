@@ -106,7 +106,7 @@ else
             </div>
 
             <div class="elipsis">@Html.Raw(a.Question.QuestionText.Replace("&lt;br /&gt;","<br />"))</div>
-            <div class="elipsis" style="border-left: 1px solid lightgrey;">@(a.Text)</div>
+            <div class="elipsis" style="border-left: 1px solid lightgrey;">@Html.Raw(a.Text.Replace("&lt;br /&gt;","<br />"))</div>
             <div class="detail btn" title="Zobraziť detail">
                 ››
             </div>
