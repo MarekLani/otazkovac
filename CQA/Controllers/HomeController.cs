@@ -26,13 +26,13 @@ namespace CQA.Controllers
 
         public ActionResult GetEvals()
         {
-            using (var sw = new StreamWriter("evals.scv",false))
+            using (var sw = new StreamWriter(Server.MapPath("~")+"evals.csv",false))
             {
                 foreach(var a in db.Answers.Where(a => a.Evaluations.Count > 15))
                 {
                     foreach (var eval in a.Evaluations)
                     {
-                        sw.WriteLine(a.QuestionId + ";" + eval.AnswerId + ";" + eval.Author.UserName + ";" + eval.UserId + ";" + eval.Value + "\n");
+                        sw.WriteLine(a.QuestionId + ";" + eval.AnswerId + ";" + eval.Author.UserName + ";" + eval.UserId + ";" + eval.Value);
                     }
                 }
             }
