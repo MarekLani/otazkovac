@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
+using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -21,6 +22,21 @@ namespace CQA.Controllers
         {
 
             return View();
+        }
+
+        public ActionResult GetEvals()
+        {
+            using (var sw = new StreamWriter("evals.scv",false))
+            {
+                foreach(var a in db.Answers.Where(a => a.Evaluations.Count > 15))
+                {
+                    foreach (var eval in a.Evaluations)
+                    {
+                        sw.WriteLine(a.QuestionId + ";" + eval.AnswerId + ";" + eval.Author.UserName + ";" + eval.UserId + ";" + eval.Value + "\n");
+                    }
+                }
+            }
+            return Json(true);
         }
 
         /// <summary>
