@@ -233,8 +233,8 @@ namespace CQA.Jobs
                {
                    start = start.AddDays(7);
                    //TODO solve setupID add to action table
-                   int evalsCount = us.User.Evaluations.Where(e => e.DateCreated <= start && e.Answer.SetupId == setupId).ToList().Count;
-                   int evalsSkipCount = us.User.UsersActions.Where(ua => ua.DateCreated <= start && ua.Action == UserActionType.SkippedEvaluation).ToList().Count;
+                   int evalsCount = us.User.Evaluations.Where(e => e.DateCreated <= start && e.DateCreated > start.AddDays(-7) && e.Answer.SetupId == setupId).ToList().Count;
+                   int evalsSkipCount = us.User.UsersActions.Where(ua => ua.DateCreated <= start && ua.DateCreated > start.AddDays(-7) && ua.Action == UserActionType.SkippedEvaluation).ToList().Count;
                    int evalsActionsTotal = evalsCount + evalsSkipCount;
                    writer.PasteText(GetCellReference(j,i), evalsCount.ToString());
                    //percent
@@ -250,8 +250,8 @@ namespace CQA.Jobs
                    else
                        writer.PasteText(GetCellReference(j + 3, i), ((double)evalsSkipCount / (double)evalsActionsTotal).ToString("#.###"));
 
-                   int ansCount = us.User.Answers.Where(a => a.DateCreated <= start && a.SetupId == setupId).ToList().Count;
-                   int ansSkipCount = us.User.UsersActions.Where(ua => ua.DateCreated <= start && ua.Action == UserActionType.SkippedAnswering).ToList().Count;
+                   int ansCount = us.User.Answers.Where(a => a.DateCreated <= start && a.DateCreated > start.AddDays(-7) && a.SetupId == setupId).ToList().Count;
+                   int ansSkipCount = us.User.UsersActions.Where(ua => ua.DateCreated <= start && ua.DateCreated > start.AddDays(-7) && ua.Action == UserActionType.SkippedAnswering).ToList().Count;
                    int ansActionsTotal = ansCount + ansSkipCount;
                    writer.PasteText(GetCellReference(j+4,i), ansCount.ToString());
                    //percent
