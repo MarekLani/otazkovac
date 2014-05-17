@@ -39,7 +39,7 @@ namespace CQA.Jobs
            int k = 2;
            writer.FindColumn(1).BestFit = true;
            //active users
-           while (start.AddDays(7) < DateTime.Now)
+           while (start < DateTime.Now)
            {
                start = start.AddDays(7);
                writer.PasteText( GetCellReference(k,1), "k " + start.ToString());
@@ -53,7 +53,7 @@ namespace CQA.Jobs
            start = s.StartDate;
            //active users
            writer.PasteText(GetCellReference(1, 2), "Počet zapojených študentov");
-           while (start.AddDays(7) < DateTime.Now)
+           while (start < DateTime.Now)
            {
                start = start.AddDays(7);
                writer.PasteText(GetCellReference(k, 2), db.UsersSetups.Where(us => us.SetupId == setupId && us.DateCreated <= start).ToList().Count.ToString());
@@ -64,7 +64,7 @@ namespace CQA.Jobs
            k = 2;
            //evaluations : users
            writer.PasteText(GetCellReference(1, 3),"Priemer hodnotení na študenta");
-           while (start.AddDays(7) < DateTime.Now)
+           while (start < DateTime.Now)
            {
                start = start.AddDays(7);
                int sCount = db.UsersSetups.Where(us => us.SetupId == setupId && us.DateCreated <= start).ToList().Count;
@@ -82,7 +82,7 @@ namespace CQA.Jobs
            k = 2;
            //evaluations : answers
            writer.PasteText(GetCellReference(1, 4),"Priemer hodnotení na odpoveď");
-           while (start.AddDays(7) < DateTime.Now)
+           while (start < DateTime.Now)
            {
               
                start = start.AddDays(7);
@@ -100,7 +100,7 @@ namespace CQA.Jobs
            k = 2;
            //answers : users
            writer.PasteText(GetCellReference(1, 5), "Priemer odpovedí na študenta");
-           while (start.AddDays(7) < DateTime.Now)
+           while (start < DateTime.Now)
            {
                start = start.AddDays(7);
                int aCount = db.UsersSetups.Where(a => a.SetupId == setupId && a.DateCreated <= start && a.UserId != null).ToList().Count;
@@ -120,7 +120,7 @@ namespace CQA.Jobs
            k = 2;
            //maxHodnoteni
            writer.PasteText(GetCellReference(1, 6),"Max. počet hodnotení odpovede");
-           while (start.AddDays(7) < DateTime.Now)
+           while (start < DateTime.Now)
            {
                start = start.AddDays(7);
                if (db.Answers.Where(a => a.SetupId == setupId && a.DateCreated <= start).ToList().Count > 0)
@@ -137,7 +137,7 @@ namespace CQA.Jobs
            k = 2;
            writer.PasteText(GetCellReference(1, 7),"Celkový počet hodnotení");
            //pocet hodnoteni
-           while (start.AddDays(7) < DateTime.Now)
+           while (start < DateTime.Now)
            {
                start = start.AddDays(7);
                writer.PasteText(GetCellReference(k,7), db.Ratings.Where(e => e.Answer.SetupId == setupId && e.DateCreated <= start).ToList().Count().ToString());
@@ -148,7 +148,7 @@ namespace CQA.Jobs
            k = 2;
            //pocet odpovedi
            writer.PasteText(GetCellReference(1,8),"Celkový počet štud. odpovedí");
-           while (start.AddDays(7) < DateTime.Now)
+           while (start < DateTime.Now)
            {
                start = start.AddDays(7);
                writer.PasteText(GetCellReference(k,8),db.Answers.Where(a => a.SetupId == setupId && a.DateCreated <= start && a.UserId != null).ToList().Count().ToString());
@@ -159,7 +159,7 @@ namespace CQA.Jobs
            k = 2;
            //pocet hodnotenych odpovedi
            writer.PasteText(GetCellReference(1,9), "Počet hodnotených odpovedí");
-           while (start.AddDays(7) < DateTime.Now)
+           while (start < DateTime.Now)
            {
                start = start.AddDays(7);
                var evals = db.Ratings.Where(e => e.Answer.SetupId == setupId && e.DateCreated <= start).ToList();
@@ -180,7 +180,7 @@ namespace CQA.Jobs
            k = 2;
            writer.PasteText(GetCellReference(1,10),"Počet odpovedí s aspoň 15 hodnoteniami");
            //pocet odpovedi
-           while (start.AddDays(7) < DateTime.Now)
+           while (start < DateTime.Now)
            {
                start = start.AddDays(7);
                writer.PasteText(GetCellReference(k, 10), db.Answers.Where(a => a.SetupId == setupId && a.DateCreated <= start && a.Evaluations.Count >= 15).ToList().Count().ToString()) ;
@@ -202,7 +202,7 @@ namespace CQA.Jobs
 
            start = s.StartDate;
            k = 3;
-           while (start.AddDays(7) < DateTime.Now)
+           while (start < DateTime.Now)
            {
                writer.MergeCells(GetCellReference(k, 1),GetCellReference(k+7, 1));
                start = start.AddDays(7);
@@ -223,13 +223,13 @@ namespace CQA.Jobs
 
            j = 3;
            i++;
-           foreach (UsersSetup us in s.UsersSetups.OrderBy(us => us.User.RealName))
+           foreach (UsersSetup us in s.UsersSetups.OrderByDescending(us => (us.User.Answers.Count() + us.User.Evaluations.Count())))
            {
                writer.PasteText(GetCellReference(1,i), us.User.UserName);
-               writer.PasteText(GetCellReference(2,i),us.User.RealName);
+               writer.PasteText(GetCellReference(2, i), us.User.RealName.Split(' ')[1] + us.User.RealName.Split(' ')[0]);
                start = s.StartDate;
 
-               while (start.AddDays(7) < DateTime.Now)
+               while (start < DateTime.Now)
                {
                    start = start.AddDays(7);
                    //TODO solve setupID add to action table

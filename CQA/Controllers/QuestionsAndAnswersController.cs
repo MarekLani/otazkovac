@@ -99,7 +99,7 @@ namespace CQA.Controllers
                 db.SaveChanges();
                 return new HttpStatusCodeResult((int)HttpStatusCode.InternalServerError);
             }
-        }  
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -209,7 +209,7 @@ namespace CQA.Controllers
                     else
                         vc = new ViewComment(comment.Text, db.UserProfiles.Find(comment.UserId).RealName, comment.AnswerId);
 
-                    vc.Text = vc.Text.Replace("&lt;br /&gt;","<br />");
+                    vc.Text = vc.Text.Replace("&lt;br /&gt;", "<br />");
 
                     return Json(vc);
 
@@ -279,7 +279,8 @@ namespace CQA.Controllers
             //ForEach already assigned evaluation we need to create notifications too
             foreach (Evaluation eval in answer.Evaluations)
             {
-                if(eval.UserId != authorId){
+                if (eval.UserId != authorId)
+                {
                     Notification not2 = new Notification();
                     not2.Answer = eval.Answer;
                     not2.User = eval.Author;
@@ -389,7 +390,7 @@ namespace CQA.Controllers
             }
             if (que != null)
             {
-                AddHandledObjectToSession(que.QuestionId,false, setupId);
+                AddHandledObjectToSession(que.QuestionId, false, setupId);
                 return View("Answer", que);
             }
 
@@ -432,13 +433,15 @@ namespace CQA.Controllers
 
             ChooseAnswerOrQuestion(setupId, 0, 0, ref ans, ref que, user.UserId);
 
-            if(ans != null){
+            if (ans != null)
+            {
                 string imgUri = "";
-                if(ans.Question.ImageUri != null)
+                if (ans.Question.ImageUri != null)
                     imgUri = ans.Question.ImageUri;
-                return Json(new { 
+                return Json(new
+                {
                     action = "Eval",
-                    questionText = ans.Question.QuestionText.Replace("\"","'"),
+                    questionText = ans.Question.QuestionText.Replace("\"", "'"),
                     answerText = ans.Text.Replace("\"", "'"),
                     answerId = ans.AnswerId,
                     setupId = ans.SetupId,
@@ -478,29 +481,30 @@ namespace CQA.Controllers
         /// <returns></returns>
         private bool ChooseAnswerOrQuestion(int setupId, int skippedAnswerId, int skippedQuestionId, ref Answer ans, ref Question que, int userId)
         {
-            
 
             //Hack for selecting, when user has not seen the question, so there is no record to be selected
             //See selects lower using DefaultIfEmpty
             var defaultQuestionView = new QuestionView();
             defaultQuestionView.ViewDate = DateTime.MinValue;
-            
-            Random rand = new Random();
 
+            Random rand = new Random();
             Setup s = db.Setups.Find(setupId);
 
-            int week = (int)(DateTime.Now-s.StartDate).TotalDays / 7;
-            if(week > 13)
+            //ziskanie aktualneho tyzdna
+            int week = (int)(DateTime.Now - s.StartDate).TotalDays / 7;
+            if (week > 13)
                 week = 13;
 
+            //ziskanie aktivnych konceptov
             var concepts = db.Concepts.Where(c => c.SubjectId == s.SubjectId).ToList();
             List<Concept> activeConcepts = new List<Concept>();
-            foreach(var c in concepts)
+            foreach (var c in concepts)
             {
-                if(c.ActiveWeeksList.Contains(week))
+                if (c.ActiveWeeksList.Contains(week))
                     activeConcepts.Add(c);
             }
 
+            //ziskanie aktivnych otazok
             var ques = db.Questions.Where(q => q.SubjectId == s.SubjectId).ToList();
             List<Question> activeQuestions = new List<Question>();
             foreach (var q in ques)
@@ -509,7 +513,8 @@ namespace CQA.Controllers
                     activeQuestions.Add(q);
             }
 
-             var anws = db.Answers;
+            //ziskanie aktivnych odpovedi
+            var anws = db.Answers;
             List<Answer> activeAns = new List<Answer>();
             foreach (var a in anws)
             {
@@ -517,7 +522,8 @@ namespace CQA.Controllers
                     activeAns.Add(a);
             }
 
-            //Base on probability set for setup it is selected if user is going to evaluate or answer
+            ///Na zaklade pravdepodobnosti nastavenej zostave
+            ///sa urci ci sa bude hladat otazka alebo odpoved
             int p = s.AnsweringProbability;
             if (rand.Next(p) != p - 1)
             {
@@ -546,7 +552,7 @@ namespace CQA.Controllers
                                         // && activeQuestions.Where(q => q.QuestionId == a.Question.QuestionId).Any()
                                         && a.Question.SubjectId == s.SubjectId
                                         && (a.UserId == null || a.UserId != userId)).ToList();
-                                       // && a.Question.IsActive).ToList();*/
+                // && a.Question.IsActive).ToList();*/
                 answers = answers.Intersect(activeAns).ToList();
 
 
@@ -605,7 +611,7 @@ namespace CQA.Controllers
 
             //Step 1 take active questions which user has not answered yet
             var tempQuestions = activeQuestions.Where(q => !q.Answers.Where(r => r.UserId == userId).Any() &&
-               // q.IsActive &&
+                // q.IsActive &&
                 q.SubjectId == s.SubjectId).OrderBy(q => q.Answers.Count()).ToList();
 
             if (skippedQuestionId != 0 && tempQuestions.Count() > 1)
@@ -636,6 +642,212 @@ namespace CQA.Controllers
                 }
             }
             return false;
+        }
+
+
+        private bool ChooseAnswerOrQuestion2(int setupId, int skippedAnswerId, int skippedQuestionId, ref Answer ans, ref Question que, int userId)
+        {
+            Random rand = new Random();
+            Setup s = db.Setups.Find(setupId);
+
+            //ziskanie aktualneho tyzdna
+            int week = (int)(DateTime.Now - s.StartDate).TotalDays / 7;
+            if (week > 13)
+                week = 13;
+
+            //ziskanie aktivnych konceptov
+            var concepts = db.Concepts.Where(c => c.SubjectId == s.SubjectId).ToList();
+            List<Concept> activeConcepts = new List<Concept>();
+            foreach (var c in concepts)
+            {
+                if (c.ActiveWeeksList.Contains(week))
+                    activeConcepts.Add(c);
+            }
+
+            //ziskanie aktivnych otazok
+            var ques = db.Questions.Where(q => q.SubjectId == s.SubjectId).ToList();
+            List<Question> activeQuestions = new List<Question>();
+            foreach (var q in ques)
+            {
+                if (q.Concepts.Intersect(activeConcepts).Any())
+                    activeQuestions.Add(q);
+            }
+
+            //ziskanie aktivnych odpovedi
+            var anws = db.Answers;
+            List<Answer> activeAns = new List<Answer>();
+            foreach (var a in anws)
+            {
+                if (activeQuestions.Contains(a.Question))
+                    activeAns.Add(a);
+            }
+
+            ///Na zaklade pravdepodobnosti nastavenej zostave
+            ///sa urci ci sa bude hladat otazka alebo odpoved
+            int p = s.AnsweringProbability;
+            if (rand.Next(p) != p - 1)
+            {
+                //vyberie sa odpoved na hodnotenie
+                if (ChooseAnswerToEvaluate(skippedAnswerId, ref ans, userId, activeAns, s))
+                    return true;
+                else
+                {
+                    ///ak sa nepodarilo najst odpoved na hodnotenie,
+                    ///pokusime sa najst otazku na zodpovedanie
+                    return ChooseQuestionToAnswer(skippedQuestionId, ref que, userId, activeQuestions, s);
+                }
+            }
+            else
+            {
+                //vyberie sa otazka na zodpovedanie
+                if (ChooseQuestionToAnswer(skippedQuestionId, ref que, userId, activeQuestions, s))
+                    return true;
+                else
+                {
+                    ///ak sa nepodarilo najst otazku na zodpovedanie,
+                    ///pokusime sa najst odpoved na hodnotenie
+                    return ChooseAnswerToEvaluate(skippedAnswerId, ref ans, userId, activeAns, s);
+                }
+            }
+        }
+
+
+
+        /// <param name="skippedAnswerId">id preskocenej odpovede (ak nebola preskocena == 0)</param>
+        /// <param name="ans">premenna poslana referenciou - ukladame do nej vysledok</param>
+        /// <param name="userId">id ziadajuceho pouzivatela</param>
+        /// <param name="activeAns">zoznam aktivnych odpovedi vzhladom na koncepty</param>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        public bool ChooseAnswerToEvaluate(int skippedAnswerId, ref Answer ans, int userId, List<Answer> activeAns, Setup s)
+        {
+            Random rand = new Random();
+            var defaultQuestionView = new QuestionView();
+            defaultQuestionView.ViewDate = DateTime.MinValue;
+
+            ///krok 1 - vyberu sa aktivne odpovede pre danu zostavu,
+            ///ktore pouzivatel nehodnotil a nevytvoril
+            var answers = db.Answers
+                                .Where(a => !a.Evaluations
+                                    .Where(e => e.UserId == userId).Any()
+                                        && a.SetupId == s.SetupId
+                                        && a.Question.IsActive
+                                        && (a.UserId == null || a.UserId != userId))
+                                .ToList();
+            answers = answers.Intersect(activeAns).ToList();
+
+            /// ak  je zoznam prazdny ide sa hladat otazka na odpovedanie
+            /// (ak sa este nehladala)
+            if (!answers.Any())
+                return false;
+
+            //Krok 2. Odstran preskocenu odpoved (ak bola a ak nie je jedina)
+            if (skippedAnswerId != 0 && answers.Count() > 1)
+            {
+                Answer delAns = answers.
+                    Find(a => a.AnswerId == skippedAnswerId);
+                if (delAns != null)
+                    answers.Remove(delAns);
+            }
+
+            ///krok 3 a 4 hladanie odpovedi
+            var bottomGreedy = answers
+                        .Where(a => a.Question.QuestionViews
+                            .Where(qv => qv.UserId == userId)
+                            .DefaultIfEmpty(defaultQuestionView)
+                            .Single()
+                            .ViewDate.AddDays(1) < DateTime.Now
+                            && a.Evaluations.Count < MyConsts.MinEvaluationLimit
+                            && a.UserId != null).OrderByDescending(a => a.Evaluations.Count()).ToList();
+            if (bottomGreedy.Any())
+            {
+                int n = bottomGreedy.First().Evaluations.Count();
+                var bestEvaluatedAnswers = bottomGreedy.
+                    Where(a => a.Evaluations.Count() == n);
+                ans = bestEvaluatedAnswers.
+                    ElementAt(rand.Next(bestEvaluatedAnswers.Count()));
+                return true;
+            }
+            else
+            {
+                ///krok 4. skusime najst odpoved s najviac hodnoteniami,
+                ///ktora ma menej ako 16 hodnoteni, ak sa nepodari ignorujeme
+                ///podmienku videnia v poslednych 24 hod.
+                var upperGreedy = answers
+                    .Where(a => a.Evaluations.Count < MyConsts.FullEvaluationLimit)
+                    .OrderByDescending(a => a.Evaluations.Count()).ToList();
+
+                if (upperGreedy.Any())
+                {
+                    var UnseenAnswers = upperGreedy.Where(a => a.Question.QuestionViews
+                        .Where(qv => qv.QuestionId == a.QuestionId && qv.UserId == userId)
+                        .DefaultIfEmpty(defaultQuestionView)
+                        .Single().ViewDate.AddDays(1) < DateTime.Now)
+                        .ToList();
+                    if (UnseenAnswers.Any())
+                        upperGreedy = UnseenAnswers;
+                    int n = upperGreedy.First().Evaluations.Count();
+                    var bestEvaluatedAnswers = upperGreedy
+                        .Where(a => a.Evaluations.Count() == n);
+                    ans = bestEvaluatedAnswers.ElementAt(rand.Next(bestEvaluatedAnswers.Count()));
+                    return true;
+                }
+            }
+            return false;
+        }
+
+
+        /// <param name="skippedQuestionId">id preskocenej otazky (ak nebola preskocena == 0)</param>
+        /// <param name="que">premenna poslana referenciou - ukladame do nej vysledok</param>
+        /// <param name="userId">id ziadajuceho pouzivatela</param>
+        /// <param name="activeQuestions">zoznam aktivnych otazok vzhladom na koncepty</param>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        public bool ChooseQuestionToAnswer(int skippedQuestionId, ref Question que, int userId, List<Question> activeQuestions, Setup s)
+        {
+            Random rand = new Random();
+            var defaultQuestionView = new QuestionView();
+            defaultQuestionView.ViewDate = DateTime.MinValue;
+
+            ///Krok 1. Vyber aktivne otazky pre aktualnu zostavu,
+            ///na ktore pouzivatel neodpovedal)
+            var tempQuestions = activeQuestions.Where(q => !q.Answers
+                .Where(r => r.UserId == userId).Any()
+                && q.IsActive
+                && q.SubjectId == s.SubjectId)
+            .OrderBy(q => q.Answers.Count()).ToList();
+
+            /// ak  je zoznam prazdny ide sa hladat odpoved na hodnotenie 
+            /// (ak sa este nehladala)
+            if (!tempQuestions.Any())
+                return false;
+
+            ///Krok 2. Odstran preskocenu odpoved (ak bola a ak nie je jedina)
+            if (skippedQuestionId != 0 && tempQuestions.Count() > 1)
+            {
+                Question delQue = tempQuestions
+                    .Find(q => q.QuestionId == skippedQuestionId);
+                if (delQue != null)
+                    tempQuestions.Remove(delQue);
+            }
+
+            //Krok 3. odflitrujeme otazky videne za poslednych 24 hod.
+            var questions = tempQuestions.Where(q => q.QuestionViews
+                .Where(qv => qv.UserId == userId)
+                .DefaultIfEmpty(defaultQuestionView)
+                .Single().ViewDate.AddDays(1) < DateTime.Now)
+                .ToList();
+
+            //Krok 4. ak nam nezostala ziadna otazka ignorujeme predchadzajuci filter
+            if (!questions.Any())
+                questions = tempQuestions;
+
+            ///krok 5. vyberieme nahodnu z vybranych odpovedi, ktorej prislucha odpovedi
+            int n = questions.First().Answers.Count();
+            var worstAnsweredQuestions = questions.Where(a => a.Answers.Count() == n);
+            que = worstAnsweredQuestions.ElementAt(rand.Next(worstAnsweredQuestions.Count()));
+            return true;
+
         }
 
         /// <summary>
@@ -696,7 +908,7 @@ namespace CQA.Controllers
         {
             UserMadeAction(UserActionType.SkippedAnswering, 0, questionId);
             RemoveHandledObjectFromSession(false);
-            Session["SkippedQuestionId"] = questionId;  
+            Session["SkippedQuestionId"] = questionId;
             return RedirectToAction("AnswerAndEvaluate", new { setupId = setupId });
         }
 
@@ -710,8 +922,8 @@ namespace CQA.Controllers
         {
             UserMadeAction(UserActionType.SkippedEvaluation, answerId, 0);
             RemoveHandledObjectFromSession(true);
-            Session["SkippedAnswerId"] = answerId; 
-            return RedirectToAction("AnswerAndEvaluate", new { setupId = setupId});
+            Session["SkippedAnswerId"] = answerId;
+            return RedirectToAction("AnswerAndEvaluate", new { setupId = setupId });
         }
 
         [HttpGet]
@@ -725,7 +937,7 @@ namespace CQA.Controllers
         /// </summary>
         /// <param name="handledObjectId"></param>
         /// <param name="evaluating"></param>
-        private void AddHandledObjectToSession(int handledObjectId,bool evaluating, int setupId)
+        private void AddHandledObjectToSession(int handledObjectId, bool evaluating, int setupId)
         {
             Session["SetupId"] = setupId;
             if (evaluating)
