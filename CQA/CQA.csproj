@@ -446,6 +446,7 @@
     <Content Include="Views\Subjects\Questions.cshtml" />
     <Content Include="Views\Users\AllEvaluations.cshtml" />
     <Content Include="Views\Setups\GetReport.cshtml" />
+    <Content Include="Views\Setups\ShowStudents.cshtml" />
     <None Include="Web.Production.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

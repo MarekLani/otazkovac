@@ -457,6 +457,21 @@ namespace CQA.Controllers
 
         }
 
+        [HttpGet]
+        public ActionResult ShowStudents(int setupId)
+        {
+            ViewBag.SetupName = db.Setups.Find(setupId).Subject.Shortcut+ " " + db.Setups.Find(setupId).Name;
+            List<UserProfile> students = db.UserProfiles.Where(u => u.UsersSetups.Where(us => us.SetupId == setupId && us.UserId == u.UserId).Any()).ToList();
+            students = students.OrderByDescending(s => s.Evaluations.Count() + s.Answers.Count()).ToList();
+            return View(students);
+        }
+
+        [HttpGet]
+        public ActionResult ShowStudentDetail(int studentId, int setupId)
+        {
+            return View();
+        }
+
         private void releaseObject(object obj)
         {
             try
