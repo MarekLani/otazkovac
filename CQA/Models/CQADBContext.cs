@@ -125,7 +125,7 @@ namespace CQA.Models
                 .WithMany(s => s.Answers)
                 .WillCascadeOnDelete(false);
 
-            modelBuilder.Entity<QuestionView>()
+           modelBuilder.Entity<QuestionView>()
               .HasKey(qv => new { qv.UserId, qv.QuestionId });
 
             #endregion

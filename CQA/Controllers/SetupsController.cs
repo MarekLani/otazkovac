@@ -458,8 +458,9 @@ namespace CQA.Controllers
         }
 
         [HttpGet]
-        public ActionResult ShowStudents(int setupId)
-        {
+        public ActionResult ShowStudents(int setupId){
+        
+            ViewBag.SetupId = setupId;
             ViewBag.SetupName = db.Setups.Find(setupId).Subject.Shortcut+ " " + db.Setups.Find(setupId).Name;
             List<UserProfile> students = db.UserProfiles.Where(u => u.UsersSetups.Where(us => us.SetupId == setupId && us.UserId == u.UserId).Any()).ToList();
             students = students.OrderByDescending(s => s.Evaluations.Count() + s.Answers.Count()).ToList();
@@ -467,9 +468,16 @@ namespace CQA.Controllers
         }
 
         [HttpGet]
-        public ActionResult ShowStudentDetail(int studentId, int setupId)
+        public ActionResult ShowStudentsDetail(int userId, int setupId)
         {
-            return View();
+            ViewBag.UserName = db.UserProfiles.Find(userId).RealName;
+            ViewBag.SubjectName = db.Setups.Find(setupId).Subject.Shortcut+ " " + db.Setups.Find(setupId).Name;
+            var evaluated = db.Answers.Where( a => a.Evaluations.Where(e => e.UserId == userId).Any()).ToList();
+            var answered = db.Answers.Where(a => a.UserId == userId).ToList();
+            ViewBag.EvalsCount = evaluated.Count();
+            ViewBag.AnswersCount = answered.Count();
+            var answers = db.Answers.Where( a => a.Evaluations.Where(e => e.UserId == userId).Any() || a.UserId == userId).ToList();
+            return View(answers);
         }
 
         private void releaseObject(object obj)

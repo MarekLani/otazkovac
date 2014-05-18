@@ -7,6 +7,10 @@
 
 @foreach (var u in Model)
 {
-    <h3>@(u.RealName.Split(' ')[1] + " " + u.RealName.Split(' ')[0])</h3>
-    <span>#hodnoteni: <b>@(u.Evaluations.Count())</b> #odpovedi: <b>@(u.Answers.Count())</b> #komentárov: <b>@(u.Comments.Count())</b></span>
+    <a href="@Url.Action("ShowStudentsDetail","Setups",new {setupId = ViewBag.SetupId, userId = u.UserId})">
+        <div style="border-bottom: 1px #808080 solid; cursor: pointer">    
+            <h5 style="margin-bottom: 2px;">@(u.RealName.Split(' ')[1] + " " + u.RealName.Split(' ')[0])</h5>
+            <span>#hodnoteni: <b>@(u.Evaluations.Count())</b> #odpovedi: <b>@(u.Answers.Count())</b> #komentárov: <b>@(u.Comments.Count())</b></span>
+       </div>
+    </a>
 }

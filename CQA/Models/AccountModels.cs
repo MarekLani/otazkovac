@@ -37,7 +37,6 @@ namespace CQA.Models
 
         public virtual ICollection<UploadedImage> Images { get; set; }
 
-        public virtual ICollection<Question> Questions { get; set; }
         public virtual ICollection<Answer> Answers { get; set; }
         public virtual ICollection<Evaluation> Evaluations { get; set; }
         public virtual ICollection<Comment> Comments { get; set; }

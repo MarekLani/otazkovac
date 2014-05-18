@@ -210,6 +210,10 @@
     <Compile Include="Migrations\201403262013553_ErrorsModelAddedMigration.Designer.cs">
       <DependentUpon>201403262013553_ErrorsModelAddedMigration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201405181750008_removed_UserId_from_Question.cs" />
+    <Compile Include="Migrations\201405181750008_removed_UserId_from_Question.Designer.cs">
+      <DependentUpon>201405181750008_removed_UserId_from_Question.cs</DependentUpon>
+    </Compile>
     <Compile Include="Models\Concept.cs" />
     <Compile Include="Models\DateCreatedModel.cs" />
     <Compile Include="Models\Error.cs" />
@@ -447,6 +451,7 @@
     <Content Include="Views\Users\AllEvaluations.cshtml" />
     <Content Include="Views\Setups\GetReport.cshtml" />
     <Content Include="Views\Setups\ShowStudents.cshtml" />
+    <Content Include="Views\Setups\ShowStudentsDetail.cshtml" />
     <None Include="Web.Production.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -469,6 +474,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201403262013553_ErrorsModelAddedMigration.resx">
       <DependentUpon>201403262013553_ErrorsModelAddedMigration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201405181750008_removed_UserId_from_Question.resx">
+      <DependentUpon>201405181750008_removed_UserId_from_Question.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Resources\ErrorStrings.resx">
       <Generator>PublicResXFileCodeGenerator</Generator>
