@@ -476,6 +476,7 @@ namespace CQA.Controllers
             var answered = db.Answers.Where(a => a.UserId == userId).ToList();
             ViewBag.EvalsCount = evaluated.Count();
             ViewBag.AnswersCount = answered.Count();
+            ViewBag.UserId = userId;
             var answers = db.Answers.Where( a => a.Evaluations.Where(e => e.UserId == userId).Any() || a.UserId == userId).ToList();
             return View(answers);
         }

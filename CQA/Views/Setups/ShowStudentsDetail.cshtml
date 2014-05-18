@@ -52,7 +52,7 @@ else
         i++;
 
         string cl = "answered";
-        if (a.UserId == WebSecurity.CurrentUserId)
+        if (a.UserId == ViewBag.UserId)
         {
             cl = "evaluated";
         }
