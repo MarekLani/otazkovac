@@ -492,8 +492,8 @@ namespace CQA.Controllers
 
             //ziskanie aktualneho tyzdna
             int week = (int)(DateTime.Now - s.StartDate).TotalDays / 7;
-            if (week > 13)
-                week = 13;
+            if (week >= 13)
+                week = 12;
 
             //ziskanie aktivnych konceptov
             var concepts = db.Concepts.Where(c => c.SubjectId == s.SubjectId).ToList();
