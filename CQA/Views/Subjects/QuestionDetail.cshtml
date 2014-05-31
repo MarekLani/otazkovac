@@ -80,7 +80,17 @@
                 </div>
             </div>
 
-            <div class="elipsis" style="border-left: 1px solid lightgrey;">@Html.Raw(a.Text.Replace("&lt;br /&gt;", "<br />"))</div>
+            <div class="elipsis" style="border-left: 1px solid lightgrey;">@Html.Raw(a.Text.Replace("&lt;br /&gt;", "<br />"))
+
+                @if (a.Author == null)
+                {
+                    <span style="color:#b7170b">(old)</span>
+                }
+                else
+                {
+                    <span style="color:#168813">(new)</span>
+                }
+            </div>
             <div class="detail btn" title="Zobraziť detail">
                 ››
             </div>

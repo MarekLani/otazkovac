@@ -120,16 +120,16 @@
         <div class="answers" style="display:none">
             <h5>Odpovede:</h5>
 
-            @foreach (var a in item.Answers.Where(an => an.UserId != null))
+            @foreach (var a in item.Answers.Where(an => an.UserId != null).OrderByDescending(an => an.Evaluations.Count()))
             {
                 <div class="answer" style="margin-left:10px; ">
-                    @Html.Raw(HttpUtility.HtmlDecode(a.Text)) (@a.Evaluations.Count() hodnot.) <span style="color:#168813">(new)</span>
+                    @Html.Raw(HttpUtility.HtmlDecode(a.Text)) (@a.Evaluations.Count() hodnot., priemerné hodnot.: @a.GetAvgEvaluation(), kometárov: @a.Comments) <span style="color:#168813">(new)</span>
                 </div>
             }
-            @foreach (var a in item.Answers.Where(an => an.UserId == null))
+            @foreach (var a in item.Answers.Where(an => an.UserId == null).OrderByDescending(an => an.Evaluations.Count()))
             {
                 <div class="answer" style="margin-left:10px;">
-                    @Html.Raw(HttpUtility.HtmlDecode(a.Text)) (@a.Evaluations.Count() hodnot., priemerné hodnot.: @a.GetAvgEvaluation()) <span style="color:#b7170b">(old)</span>
+                    @Html.Raw(HttpUtility.HtmlDecode(a.Text)) (@a.Evaluations.Count() hodnot., priemerné hodnot.: @a.GetAvgEvaluation(), kometárov: @a.Comments) <span style="color:#b7170b">(old)</span>
                 </div>
             }
         </div>
