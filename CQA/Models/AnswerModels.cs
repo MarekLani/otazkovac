@@ -55,6 +55,8 @@ namespace CQA.Models
 
         public double GetAvgEvaluation()
         {
+            if (this.Evaluations.Count == 0)
+                return -1;
             double total = 0;
             foreach (var e in this.Evaluations)
             {

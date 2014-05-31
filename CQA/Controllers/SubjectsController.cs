@@ -408,6 +408,12 @@ namespace CQA.Controllers
             return View(questions);
         }
 
+        public ActionResult QuestionDetail(int questionId)
+        {
+            var question = db.Questions.Find(questionId);
+            return View(question);
+        }
+
         [HttpGet]
         public void CreateActiveQuestionsFile(int id)
         {
