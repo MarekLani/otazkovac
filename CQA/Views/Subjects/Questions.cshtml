@@ -116,7 +116,7 @@
         Hodnotení vykonaných nad otázkov: @n <br />    
         Odpovedí spolu: @item.Answers.Count() z toho nových: @item.Answers.Where(an => an.UserId != null).ToList().Count()
         <button class="showAnswers" style="padding:2; font-size: 12px; font-weight:normal">Zobraziť odpovede</button>
-        <button onclick="window.location.href='@Url.Action("QuestionDetail", new { questionId = item.QuestionId })'" style="padding:2; font-size: 12px; font-weight:normal">Detail otázky</button>
+        <button onclick="window.location.href='@Url.Action("QuestionDetail", new { questionId = item.QuestionId })'" style="padding:2; font-size: 12px; font-weight:normal">Detail odpovedí</button>
         <div class="answers" style="display:none">
             <h5>Odpovede:</h5>
 
