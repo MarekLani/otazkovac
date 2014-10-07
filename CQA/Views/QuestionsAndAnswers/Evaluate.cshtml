@@ -18,7 +18,7 @@
     }
 </div>
 <div class="answer">
-    <div id="answerText"><span style="font-size: 0.85em; font-weight: bold">Odpoveď: </span>@Html.DisplayFor(model => model.Text)</div>
+    <div id="answerText"><span style="font-size: 0.85em; font-weight: bold">Odpoveď: </span>@Html.Raw(Model.Text.Replace("&lt;br /&gt;","<br />"))</div>
 </div>
 
 <div style="text-align: center">
