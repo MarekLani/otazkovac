@@ -9,7 +9,6 @@ namespace CQA
     using System.Web.Security;
     using CQA.Membership;
     using CQA.Models;
-    using CQA.Models;
     using WebMatrix.WebData;
 
     namespace SeedSimple
