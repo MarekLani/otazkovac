@@ -354,36 +354,36 @@ namespace CQA.Controllers
                     db.Questions.Add(newQ);
                     db.SaveChanges();
                     q = newQ;
+                }
+                string[] concepts = values[7].Split(',');
+                var conceptsList = concepts.ToList();
+                conceptsList.RemoveAt(concepts.Count() - 1);
+                Concept c;
+                foreach (var concept in conceptsList)
+                {
 
-                    string[] concepts = values[7].Split(',');
-                    var conceptsList = concepts.ToList();
-                    conceptsList.RemoveAt(concepts.Count() - 1);
-                    Concept c;
-                    foreach (var concept in conceptsList)
+                    if (!db.Concepts.Where(con => con.SubjectId == subjectId && con.Value == concept).ToList().Any())
                     {
+                        c = new Concept();
+                        c.Value = concept;
+                        c.SubjectId = subjectId;
+                        db.Concepts.Add(c);
+                        db.SaveChanges();
 
-                        if (!db.Concepts.Where(con => con.SubjectId == subjectId && con.Value == concept).ToList().Any())
+                        if (!q.Concepts.Contains(c))
                         {
-                            c = new Concept();
-                            c.Value = concept;
-                            c.SubjectId = subjectId;
-                            db.Concepts.Add(c);
+                            q.Concepts.Add(c);
+                            db.Entry(q).State = EntityState.Modified;
                             db.SaveChanges();
-
-                            if (!q.Concepts.Contains(c))
-                            {
-                                q.Concepts.Add(c);
-                                db.Entry(q).State = EntityState.Modified;
-                                db.SaveChanges();
-                            }
-                        }
-                        else
-                        {
-                            c = db.Concepts.Where(con => con.SubjectId == subjectId && con.Value == concept).First();
-                            if (!q.Concepts.Contains(c))
-                                q.Concepts.Add(c);
                         }
                     }
+                    else
+                    {
+                        c = db.Concepts.Where(con => con.SubjectId == subjectId && con.Value == concept).First();
+                        if (!q.Concepts.Contains(c))
+                            q.Concepts.Add(c);
+                    }
+                    
                 }
 
             }
