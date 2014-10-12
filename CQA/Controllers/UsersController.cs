@@ -61,7 +61,7 @@ namespace CQA.Controllers
         public ActionResult MyEvaluations()
         {
             List<EvaluatedAnswers> evaluatedAnswers = new List<Models.EvaluatedAnswers>();
-            var subjectsWithEvaluatedAnswers = db.Answers.Where(a => a.Evaluations.Where(e => e.UserId == WebSecurity.CurrentUserId).Any())
+            var subjectsWithEvaluatedAnswers = db.Answers.Where(a => a.Evaluations.Where(e => e.UserId == WebSecurity.CurrentUserId).Any() && a.Setup.Active)
                 .OrderByDescending(a => a.DateCreated).GroupBy(a => a.Question.Subject);
             foreach (var s in subjectsWithEvaluatedAnswers)
             {
